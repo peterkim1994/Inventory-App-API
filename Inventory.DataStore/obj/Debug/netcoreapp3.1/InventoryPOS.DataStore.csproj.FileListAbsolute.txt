@@ -1,0 +1,9 @@
+C:\Users\peter\Documents\CSharpProjects\InventoryApp\Inventory.DataStore\bin\Debug\netcoreapp3.1\InventoryPOS.DataStore.deps.json
+C:\Users\peter\Documents\CSharpProjects\InventoryApp\Inventory.DataStore\bin\Debug\netcoreapp3.1\InventoryPOS.DataStore.dll
+C:\Users\peter\Documents\CSharpProjects\InventoryApp\Inventory.DataStore\bin\Debug\netcoreapp3.1\InventoryPOS.DataStore.pdb
+C:\Users\peter\Documents\CSharpProjects\InventoryApp\Inventory.DataStore\obj\Debug\netcoreapp3.1\InventoryPOS.DataStore.csprojAssemblyReference.cache
+C:\Users\peter\Documents\CSharpProjects\InventoryApp\Inventory.DataStore\obj\Debug\netcoreapp3.1\InventoryPOS.DataStore.AssemblyInfoInputs.cache
+C:\Users\peter\Documents\CSharpProjects\InventoryApp\Inventory.DataStore\obj\Debug\netcoreapp3.1\InventoryPOS.DataStore.AssemblyInfo.cs
+C:\Users\peter\Documents\CSharpProjects\InventoryApp\Inventory.DataStore\obj\Debug\netcoreapp3.1\InventoryPOS.DataStore.csproj.CoreCompileInputs.cache
+C:\Users\peter\Documents\CSharpProjects\InventoryApp\Inventory.DataStore\obj\Debug\netcoreapp3.1\InventoryPOS.DataStore.dll
+C:\Users\peter\Documents\CSharpProjects\InventoryApp\Inventory.DataStore\obj\Debug\netcoreapp3.1\InventoryPOS.DataStore.pdb

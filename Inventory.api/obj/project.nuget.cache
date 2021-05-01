@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "vIF4/Ntr+a1c2eLzKcikDnj6cJ5dbhev4/YOPJNiG1CrJfStj8PFpPFYgI9ywfnkCTob0fLWEtZPVDuB0AQqpA==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\peter\\Documents\\CSharpProjects\\InventoryApp\\Inventory.api\\InventoryPOS.api.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\peter\\.nuget\\packages\\microsoft.aspnetcore.app.ref\\3.1.10\\microsoft.aspnetcore.app.ref.3.1.10.nupkg.sha512",
+    "C:\\Users\\peter\\.nuget\\packages\\microsoft.netcore.app.host.win-x64\\3.1.12\\microsoft.netcore.app.host.win-x64.3.1.12.nupkg.sha512"
+  ],
+  "logs": []
+}
