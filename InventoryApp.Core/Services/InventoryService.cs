@@ -8,8 +8,8 @@ namespace InventoryPOSApp.Core.Services
 {
     public class InventoryService : IInventoryService
     {
-        private InventoryRepo _repo { get; set; }
-        public InventoryService(InventoryRepo inventoryRepo)
+        private IInventoryRepo _repo { get; set; }
+        public InventoryService(IInventoryRepo inventoryRepo)
         {
             _repo = inventoryRepo;
         }

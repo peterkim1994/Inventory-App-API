@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using InventoryPOS.DataStore;
+using InventoryPOSApp.Core.Repositories;
 using InventoryPOSApp.Core.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -29,8 +30,8 @@ namespace Inventory.api
         {
             services.AddControllers();
             services.AddDbContext<DBContext>();
-
             services.AddTransient<IInventoryService, InventoryService>();
+            services.AddTransient<IInventoryRepo, InventoryRepo>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using InventoryPOS.DataStore.Models;
 using InventoryPOSApp.Core.Repositories;
+using InventoryPOSApp.Core.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -19,12 +20,14 @@ namespace Inventory.api.Controllers
         };
 
         private readonly ILogger<InventoryController> _logger;
-        private InventoryRepo _inventory { get; set; }
+        private IInventoryRepo _inventory { get; set; }
+        private IInventoryService _service { get; set; }
 
-        public InventoryController(ILogger<InventoryController> logger, InventoryRepo inventoryRepo )
+        public InventoryController(ILogger<InventoryController> logger, IInventoryRepo inventoryRepo, IInventoryService service)
         {
             _logger = logger;
             _inventory = inventoryRepo;
+            _service = service;
         }
 
         [HttpGet]
@@ -45,6 +48,7 @@ namespace Inventory.api.Controllers
         {
             _inventory.AddColour(colour);
             _inventory.SaveChanges();
+
             return Ok(colour.ColourName);
         }
     }

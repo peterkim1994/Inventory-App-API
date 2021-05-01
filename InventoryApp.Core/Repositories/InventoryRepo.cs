@@ -6,7 +6,7 @@ using InventoryPOS.DataStore.Models;
 
 namespace InventoryPOSApp.Core.Repositories
 {
-    public class InventoryRepo
+    public class InventoryRepo : IInventoryRepo
     {
         private DBContext _context { get; }
 
