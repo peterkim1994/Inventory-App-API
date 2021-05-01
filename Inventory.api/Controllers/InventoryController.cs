@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using InventoryPOS.DataStore.Models;
+using InventoryPOSApp.Core.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -17,10 +19,12 @@ namespace Inventory.api.Controllers
         };
 
         private readonly ILogger<InventoryController> _logger;
+        private InventoryRepo _inventory { get; set; }
 
-        public InventoryController(ILogger<InventoryController> logger)
+        public InventoryController(ILogger<InventoryController> logger, InventoryRepo inventoryRepo )
         {
             _logger = logger;
+            _inventory = inventoryRepo;
         }
 
         [HttpGet]
@@ -34,6 +38,14 @@ namespace Inventory.api.Controllers
                 Summary = Summaries[rng.Next(Summaries.Length)]
             })
             .ToArray();
+        }
+
+        [HttpPost( Name="AddColour")]
+        public IActionResult AddColour(Colour colour)
+        {
+            _inventory.AddColour(colour);
+            _inventory.SaveChanges();
+            return Ok(colour.ColourName);
         }
     }
 }

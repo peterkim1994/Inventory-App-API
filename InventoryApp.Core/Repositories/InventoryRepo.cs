@@ -15,9 +15,10 @@ namespace InventoryPOSApp.Core.Repositories
             _context = context;
         }
 
-        public void AddColour(Colour colour)
+        public Colour AddColour(Colour colour)
         {
             _context.Add(colour);
+            return colour;
         }
 
         public void SaveChanges()
@@ -25,14 +26,15 @@ namespace InventoryPOSApp.Core.Repositories
             _context.SaveChanges();
         }
 
-        public void AddItemCategory(ItemCategory category)
+        public ItemCategory AddItemCategory(ItemCategory category)
         {
             _context.Add(category);
+            return category;
         }
 
         public void AddNewProduct(Product product)
         {
-
+            _context.Add(product);
         }
     }
 }
