@@ -11,7 +11,7 @@ namespace InventoryPOS.DataStore.Models
     public class Colour : ProductAttribute
     {
         [Key]
-        public int Id { get; set; }
+        public override int Id { get; set; }
         [Required]
         public override string Value { get; set; }
         public virtual List<Product> Products { get; set; }

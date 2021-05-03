@@ -93,7 +93,9 @@ namespace InventoryPOS.DataStore.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<int>("ItemCategoryId")
                         .HasColumnType("int");

@@ -15,8 +15,15 @@ namespace InventoryPOS.DataStore.Models
         public string ManufactureCode { get; set; }
         [Required]
         public string Name { get; set; }
-        public string Description { get; set; }
         [Required]
+        [MinLength(10),MaxLength(100)]
+        public string Description
+        { 
+            get { return Description; }
+            set { Description = String.Format("{0}, {1}, {2}, {3}, {4}", value, Brand, ItemCategory, Colour, Size); }
+        }
+        [Required]
+        [MinLength(3)]
         public Brand Brand{ get; set; }
         public Colour Colour { get; set; }
         [Required]
@@ -25,6 +32,5 @@ namespace InventoryPOS.DataStore.Models
         public Size Size { get; set; }
         public int Price { get; set; }        
         public int Qty { get; set; }
-
     }
 }

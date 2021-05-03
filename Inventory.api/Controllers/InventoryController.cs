@@ -30,32 +30,64 @@ namespace Inventory.api.Controllers
             _service = service;
         }
 
-        [HttpGet]
-        public IEnumerable<WeatherForecast> Get()
+
+        [HttpGet("GetAttributes")]
+        public IActionResult GetAttributes()
         {
-            var rng = new Random();
-            return Enumerable.Range(1, 5).Select(index => new WeatherForecast
-            {
-                Date = DateTime.Now.AddDays(index),
-                TemperatureC = rng.Next(-20, 55),
-                Summary = Summaries[rng.Next(Summaries.Length)]
-            })
-            .ToArray();
+            return Ok(_service.GetProductAttributes());
         }
 
-        [HttpPost("AddColour")]
+        [HttpPost("AddColour", Name ="AddColour")]
         [Route("[controller]/[action]")]
         public IActionResult AddColour(Colour colour)
         {
             if (_service.AddColour(colour))
-            {
-                _inventory.SaveChanges();
+            {                
                 return Ok(colour.Value);
             }
             else
                 return BadRequest("Colour Already Exists");               
         }
 
+        [HttpPost("AddProduct")]
+        public IActionResult AddProduct(Product product)
+        {
+            if (_service.AddProduct(product))
+            {
+                return Ok(product);
+            }
+            return BadRequest("Product already exists");
+        }
 
+        [HttpPost("AddSize")]
+        public IActionResult AddSize(Size size)
+        {
+            if (_service.AddSize(size))
+            {
+                return Ok(size);
+            }
+            return BadRequest("Size already exists");
+        }
+
+
+        [HttpPost("AddCategory")]
+        public IActionResult AddItemCategory(ItemCategory category)
+        {
+            if (_service.AddItemCategory(category))
+            {
+                return Ok(category);
+            }
+            return BadRequest("Category Already Exists");
+        }
+
+        [HttpPost("AddBrand")]
+        public IActionResult AddBrand(Brand brand)
+        {
+            if (_service.AddBrand(brand))
+            {
+                return Ok(brand);
+            }
+            return BadRequest("Brand already exists");
+        }
     }
 }
