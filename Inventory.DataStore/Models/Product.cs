@@ -16,13 +16,14 @@ namespace InventoryPOS.DataStore.Models
         [Required]
         public string Name { get; set; }
         public string Description { get; set; }
+        [Required]
         public Brand Brand{ get; set; }
         public Colour Colour { get; set; }
         [Required]
         public ItemCategory ItemCategory { get; set; }
+        [Required]
         public Size Size { get; set; }
-        public int Price { get; set; }
-        
+        public int Price { get; set; }        
         public int Qty { get; set; }
 
     }

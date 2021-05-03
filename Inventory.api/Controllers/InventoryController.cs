@@ -43,13 +43,19 @@ namespace Inventory.api.Controllers
             .ToArray();
         }
 
-        [HttpPost( Name="AddColour")]
+        [HttpPost("AddColour")]
+        [Route("[controller]/[action]")]
         public IActionResult AddColour(Colour colour)
         {
-            _inventory.AddColour(colour);
-            _inventory.SaveChanges();
-
-            return Ok(colour.ColourName);
+            if (_service.AddColour(colour))
+            {
+                _inventory.SaveChanges();
+                return Ok(colour.Value);
+            }
+            else
+                return BadRequest("Colour Already Exists");               
         }
+
+
     }
 }

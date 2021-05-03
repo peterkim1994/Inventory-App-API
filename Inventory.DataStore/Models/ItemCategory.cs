@@ -2,14 +2,18 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
+using InventoryPOS.DataStore.Models.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace InventoryPOS.DataStore.Models
 {
-    public class ItemCategory
+    [Index(nameof(Value), IsUnique = true)]
+    public class ItemCategory : ProductAttribute
     {
         [Key]
         public int Id { get; set; }
-        public string Category { get; set; }
+        [Required]
+        public override string Value { get; set; }
         public virtual List<Product> Products { get; set; }
     }
 }

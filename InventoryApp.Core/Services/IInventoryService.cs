@@ -7,6 +7,6 @@ namespace InventoryPOSApp.Core.Services
 {
     public interface IInventoryService
     {
-        Colour AddColour(Colour colour);
+        bool AddColour(Colour colour);
     }
 }
