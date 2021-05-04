@@ -2,7 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
+using InventoryPOS.Core.Dtos;
 using InventoryPOS.DataStore.Models;
+using InventoryPOSApp.Core.Dtos;
 using InventoryPOSApp.Core.Repositories;
 using InventoryPOSApp.Core.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -22,19 +25,46 @@ namespace Inventory.api.Controllers
         private readonly ILogger<InventoryController> _logger;
         private IInventoryRepo _inventory { get; set; }
         private IInventoryService _service { get; set; }
+        private readonly IMapper _mapper;
 
-        public InventoryController(ILogger<InventoryController> logger, IInventoryRepo inventoryRepo, IInventoryService service)
+        public InventoryController
+        (
+            ILogger<InventoryController> logger,
+            IInventoryRepo inventoryRepo,
+            IInventoryService service,
+            IMapper mapper
+        )
         {
             _logger = logger;
             _inventory = inventoryRepo;
             _service = service;
+            _mapper = mapper;
         }
 
 
-        [HttpGet("GetAttributes")]
+        [HttpGet("ProductAttributes")]
         public IActionResult GetAttributes()
         {
             return Ok(_service.GetProductAttributes());
+        }
+
+        [HttpGet]
+        public IActionResult GetProducts()
+        {
+            Product p = new Product()
+            {
+                ColourId = 1,
+                BrandId = 1,
+                SizeId = 1,
+                ItemCategoryId = 1,
+                Description = "Red plain Tshirt",
+                Price = 2000,
+                Qty = 0
+            };
+            _service.AddProduct(p);
+            
+            var productDtos = _mapper.Map<List<Product>, List<ProductDto>>(_service.GetAllProducts());
+            return Ok(productDtos);
         }
 
         [HttpPost("AddColour", Name ="AddColour")]
@@ -42,11 +72,11 @@ namespace Inventory.api.Controllers
         public IActionResult AddColour(Colour colour)
         {
             if (_service.AddColour(colour))
-            {                
-                return Ok(colour.Value);
+            {
+                var colourDto = _mapper.Map<Colour, ColourDto>(colour);
+                return Ok(colourDto);
             }
-            else
-                return BadRequest("Colour Already Exists");               
+            return BadRequest("Colour Already Exists");               
         }
 
         [HttpPost("AddProduct")]
@@ -89,5 +119,7 @@ namespace Inventory.api.Controllers
             }
             return BadRequest("Brand already exists");
         }
+
+    
     }
 }

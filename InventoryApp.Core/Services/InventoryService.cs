@@ -16,6 +16,11 @@ namespace InventoryPOSApp.Core.Services
             _repo = inventoryRepo;
         }
 
+        public List<Product> GetAllProducts()
+        {
+            return _repo.GetProducts();
+        }
+
         public bool AddColour(Colour colour)
         {
             colour.Value = TextProcessor.ToPronounCasing(colour.Value);
@@ -34,9 +39,13 @@ namespace InventoryPOSApp.Core.Services
             IEnumerable<ProductAttribute> colours =_repo.GetProductAttributes<Colour>();
             IEnumerable<ProductAttribute> brands = _repo.GetProductAttributes<Brand>();
             IEnumerable<ProductAttribute> categories = _repo.GetProductAttributes<ItemCategory>();
-            IEnumerable<ProductAttribute> sizes = _repo.GetProductAttributes<Size>();
+            SizeComparer sc = new SizeComparer();
+            List<Size> sizeList =  _repo.GetProductAttributes<Size>();
+            sizeList.Sort(sc);
+ 
+            IEnumerable<ProductAttribute> sizes = sizeList;
             allAttributes.Add(colours);
-            allAttributes.Add(sizes);
+            allAttributes.Add(brands);
             allAttributes.Add(categories);
             allAttributes.Add(sizes);
             return allAttributes;
@@ -58,7 +67,7 @@ namespace InventoryPOSApp.Core.Services
 
         public bool AddSize(Size size)
         {
-            size.Value = size.Value.ToUpper().Trim();
+            size.Value = size.Value.ToUpper();
             if (_repo.ContainsAtt(size))
             {
                 return false;

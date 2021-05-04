@@ -20,5 +20,7 @@ namespace InventoryPOSApp.Core.Services
 
         bool AddProduct(Product product);
         List<IEnumerable<ProductAttribute>> GetProductAttributes();
+
+        List<Product> GetAllProducts();
     }
 }

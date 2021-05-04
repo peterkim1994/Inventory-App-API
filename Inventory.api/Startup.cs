@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using InventoryPOS.api.Helpers;
 using InventoryPOS.DataStore;
 using InventoryPOSApp.Core.Repositories;
 using InventoryPOSApp.Core.Services;
@@ -32,6 +33,17 @@ namespace Inventory.api
             services.AddDbContext<DBContext>();
             services.AddTransient<IInventoryService, InventoryService>();
             services.AddTransient<IInventoryRepo, InventoryRepo>();
+            services.AddAutoMapper(typeof(AutoMapperProfiles));
+            services.AddCors(options =>
+            {
+                options.AddPolicy("InventoryPosPolicy",
+                builder =>
+                {
+                    builder.WithOrigins("*")
+                        .AllowAnyHeader()
+                        .AllowAnyMethod();
+                });
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -46,14 +58,14 @@ namespace Inventory.api
 
             app.UseRouting();
 
+            app.UseCors("InventoryPosPolicy");
+
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
             });
-
-
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Text;
 using InventoryPOS.DataStore.Models.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -19,5 +20,6 @@ namespace InventoryPOS.DataStore.Models
         {
             return Value;
         }
+       
     }
 }

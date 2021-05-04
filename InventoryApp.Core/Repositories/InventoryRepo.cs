@@ -5,6 +5,7 @@ using InventoryPOS.DataStore;
 using InventoryPOS.DataStore.Models;
 using InventoryPOS.DataStore.Models.Interfaces;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
 
 namespace InventoryPOSApp.Core.Repositories
 {
@@ -54,17 +55,13 @@ namespace InventoryPOSApp.Core.Repositories
 
         public Product GetProductByBarcode(long code)
         {
-            var product = _context.Products.First(product => product.Barcode == code);
+            var product = _context.Products.FirstOrDefault(prod => prod.Barcode == code);
             return product;
         }
 
         public List<T> GetProductAttributes<T>() where T : ProductAttribute
         {          
             List<T> x = _context.Set<T>().ToList();            
-            foreach( var ss in x)
-            {
-                System.Diagnostics.Debug.WriteLine("\n\n " + ss.Id + "\n");
-            }
             return x;
         }
 
@@ -73,23 +70,25 @@ namespace InventoryPOSApp.Core.Repositories
             var set = _context.Set<T>();
             var rows = set.ToList();
             var attribute = from at in rows
-                    where at.Value == newAtt.Value
+                    where at.Value == newAtt.Value                
                     select at;
             return (attribute.Count() == 1); 
         }
 
         public bool ContainsProduct(Product product)
         {
-            var prod = _context.Products.First(pr => 
-                pr.ManufactureCode == product.ManufactureCode
-                && pr.Name == product.Name 
+
+            if (_context.Products.Count() < 1)
+                return false;
+            var prod = _context.Products.Where(pr => 
+                pr.ManufactureCode == product.ManufactureCode               
                 && pr.Brand == product.Brand
                 && pr.Description == product.Description
                 && pr.Colour == product.Colour
                 && pr.Size == product.Size
                 && pr.ItemCategory == product.ItemCategory
             );
-            if (prod == null)
+            if (prod.Count() == 0)
                 return false;
             return true;
         }
@@ -107,18 +106,24 @@ namespace InventoryPOSApp.Core.Repositories
 
         public List<ItemCategory> GetCategories()
         {
-            return _context.ItemCategories.ToList();
+            return _context.ItemCategories.OrderBy(c => c.Value).ToList();
         }
 
 
         public List<Product> GetProducts()
         {
-            return _context.Products.ToList();
+            return _context.Products
+                .Include(pr => pr.Brand)
+                .Include(pr => pr.Colour)
+                .Include(pr => pr.Size)
+                .Include(pr => pr.ItemCategory)
+                .ToList();
+          //  var prods = _context.Products.Include()
         }
 
         public List<Size> GetSizes()
         {
-            return _context.Sizes.ToList();
+            return _context.Sizes.OrderBy(s => s.Value).ToList();
         }
 
         public List<Brand> GetBrands()
