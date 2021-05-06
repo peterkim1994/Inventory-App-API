@@ -4,7 +4,10 @@ project.lock.json
 .DS_Store
 *.pyc
 nupkg/
+
+#binary fukes
 *.dll
+*.pdb
 
 # Visual Studio Code
 .vscode
