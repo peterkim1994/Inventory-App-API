@@ -12,6 +12,9 @@ namespace InventoryPOS.DataStore.Models
         [Key]
         public int Id { get; set; }
 
+        [Required]
         public string Method { get; set; }
+
+        public virtual IList<Payment> Payments { get; set; }
     }
 }

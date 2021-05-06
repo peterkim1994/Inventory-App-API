@@ -15,11 +15,12 @@ namespace InventoryPOS.DataStore.Models
         public string ManufactureCode { get; set; }
 
         [Required]
-        [MinLength(10),MaxLength(100)]
+        [MinLength(5),MaxLength(100)]
         public string Description { get; set; }
-
+        [Required]
         public int BrandId { get; set; }
         public Brand Brand{ get; set; }
+        [Required]
         public int ColourId { get; set; }
         public Colour Colour { get; set; }
         [Required]
@@ -30,5 +31,8 @@ namespace InventoryPOS.DataStore.Models
         public Size Size { get; set; }
         public int Price { get; set; }        
         public int Qty { get; set; }
+        public bool Active { get; set; }
+        public virtual IList<ProductSale> ProductSales { get; set; }
+        public virtual IList<ProductPromotion> Promotions { get; set; }
     }
 }

@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace InventoryPOS.DataStore.Models
+namespace InventoryPOSApp.Core.Repositories
 {
-    class Sale
+    public interface ISalesRepository
     {
     }
 }

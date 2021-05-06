@@ -15,6 +15,5 @@ namespace InventoryPOS.DataStore.Models
         [Required]
         public override string Value { get; set; }
         public virtual List<Product> Products { get; set; }
-
     }
 }
