@@ -50,19 +50,7 @@ namespace Inventory.api.Controllers
 
         [HttpGet]
         public IActionResult GetProducts()
-        {
-            Product p = new Product()
-            {
-                ColourId = 1,
-                BrandId = 1,
-                SizeId = 1,
-                ItemCategoryId = 1,
-                Description = "Red plain Tshirt",
-                Price = 2000,
-                Qty = 0
-            };
-            _service.AddProduct(p);
-            
+        {            
             var productDtos = _mapper.Map<List<Product>, List<ProductDto>>(_service.GetAllProducts());
             return Ok(productDtos);
         }
@@ -84,7 +72,8 @@ namespace Inventory.api.Controllers
         {
             if (_service.AddProduct(product))
             {
-                return Ok(product);
+                var productDto = _mapper.Map<Product, ProductDto>(product);
+                return Ok(productDto);
             }
             return BadRequest("Product already exists");
         }

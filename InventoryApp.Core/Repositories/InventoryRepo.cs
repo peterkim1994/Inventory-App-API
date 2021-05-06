@@ -74,23 +74,19 @@ namespace InventoryPOSApp.Core.Repositories
                     select at;
             return (attribute.Count() == 1); 
         }
-
+         
         public bool ContainsProduct(Product product)
-        {
-
-            if (_context.Products.Count() < 1)
-                return false;
-            var prod = _context.Products.Where(pr => 
-                pr.ManufactureCode == product.ManufactureCode               
-                && pr.Brand == product.Brand
+        {          
+            var prod =  _context.Products.Where(pr =>
+                pr.ManufactureCode == product.ManufactureCode
+                && pr.BrandId == product.BrandId
                 && pr.Description == product.Description
-                && pr.Colour == product.Colour
-                && pr.Size == product.Size
-                && pr.ItemCategory == product.ItemCategory
+                && pr.ColourId == product.ColourId
+                && pr.SizeId == product.SizeId
+                && pr.ItemCategoryId == product.ItemCategoryId
             );
-            if (prod.Count() == 0)
-                return false;
-            return true;
+            bool s = prod.Count() > 0;
+            return (s);
         }
 
         public void EditProduct(Product product)

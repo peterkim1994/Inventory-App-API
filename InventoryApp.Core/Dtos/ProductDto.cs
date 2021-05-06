@@ -16,7 +16,7 @@ namespace InventoryPOS.Core.Dtos
         public string BrandValue { get; set; }
         public int ColourId { get; set; }
         public string ColourValue { get; set; }
-     //   public ItemCategory ItemCategory { get; set; }
+        public string ItemCategoryValue { get; set; }
         public int SizeId { get; set; }
         public string SizeValue { get; set; }
         public int Price { get; set; }

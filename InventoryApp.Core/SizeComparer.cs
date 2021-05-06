@@ -20,8 +20,8 @@ namespace InventoryPOSApp.Core
             //So sizes can be ordered eg XL and XXS           
             char[] thisSize = x.Value.ToCharArray();
             char[] otherSize = y.Value.ToCharArray();
-            Array.Reverse(thisSize);
-            Array.Reverse(otherSize);
+          //  Array.Reverse(thisSize);
+        //    Array.Reverse(otherSize);
             string s1 = new string(thisSize);
             string s2 = new string(otherSize);
             System.Diagnostics.Debug.WriteLine("\n\n\n" + thisSize);         
