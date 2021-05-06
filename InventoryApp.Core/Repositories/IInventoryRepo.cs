@@ -41,7 +41,6 @@ namespace InventoryPOSApp.Core.Repositories
         Product GetProductByBarcode(long code);
 
       //  List<Product> GetAllProducts();
-
         void SaveChanges();
     }
 }
