@@ -89,9 +89,15 @@ namespace InventoryPOSApp.Core.Repositories
             return (s);
         }
 
-        public void EditProduct(Product product)
+        public void EditProduct(Product editedProduct)
         {
-            throw new NotImplementedException();
+            //  var product = _context.Products.First(p => p.Id == editedProduct.Id);
+            //  product = editedProduct;
+            Product product = _context.Products.Find(editedProduct.Id);       
+            _context.Entry(product).CurrentValues.SetValues(editedProduct);
+          //  State = EntityState.Modified;
+            //product = editedProduct;
+            _context.SaveChanges();
         }
 
         public void DeleteProduct(Product product)

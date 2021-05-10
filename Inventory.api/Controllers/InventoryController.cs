@@ -55,6 +55,7 @@ namespace Inventory.api.Controllers
             return Ok(productDtos);
         }
 
+
         [HttpPost("AddColour", Name ="AddColour")]
         [Route("[controller]/[action]")]
         public IActionResult AddColour(Colour colour)
@@ -67,15 +68,32 @@ namespace Inventory.api.Controllers
             return BadRequest("Colour Already Exists");               
         }
 
+
         [HttpPost("AddProduct")]
         public IActionResult AddProduct(Product product)
-        {
+        {                       
+          //  Product product = _mapper.Map<>
             if (_service.AddProduct(product))
             {
                 var productDto = _mapper.Map<Product, ProductDto>(product);
                 return Ok(productDto);
+            }else if (product.Barcode != 0 && _service.IsValidBarcode(product.Barcode))
+            {
+                return BadRequest("That Barcode already exists");
             }
-            return BadRequest("Product already exists");
+            return BadRequest("Product Details are invalide or it already exists");
+        }
+
+        [HttpPut("EditProduct")]
+        public IActionResult EditProduct(Product product)
+        {
+        //    if (ModelState.IsValid)
+      //      {
+                _service.EditProduct(product);
+                var productDto = _mapper.Map<Product, ProductDto>(product);
+                return Ok(productDto);
+     //       }
+     //       return BadRequest("Product Details are not valid");
         }
 
         [HttpPost("AddSize")]
@@ -98,6 +116,7 @@ namespace Inventory.api.Controllers
             }
             return BadRequest("Category Already Exists");
         }
+
 
         [HttpPost("AddBrand")]
         public IActionResult AddBrand(Brand brand)

@@ -22,5 +22,9 @@ namespace InventoryPOSApp.Core.Services
         List<IEnumerable<ProductAttribute>> GetProductAttributes();
 
         List<Product> GetAllProducts();
+
+        bool IsValidBarcode(long barcode);
+
+        Product EditProduct(Product product);
     }
 }

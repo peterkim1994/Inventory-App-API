@@ -19,7 +19,6 @@ namespace InventoryPOS.api.Controllers
         private IInventoryService _service { get; set; }
 
         private readonly IMapper _mapper;
-
     }
         
 }

@@ -92,10 +92,20 @@ namespace InventoryPOSApp.Core.Services
         public long GenerateBarcode()
         {
             Random random = new Random();
-            string code = string.Empty;
-            for (int i = 0; i < 12; i++)
-                code = String.Concat(code, random.Next(10).ToString());         
-            return long.Parse(code);
+            long newBarcode;
+            do
+            {
+                string code = string.Empty;
+                for (int i = 0; i < 12; i++)
+                    code = String.Concat(code, random.Next(10).ToString());
+                newBarcode = long.Parse(code);
+            } while (_repo.GetProductByBarcode(newBarcode) != null);
+            return newBarcode;
+            //Random random = new Random();
+            //string code = string.Empty;
+            //for (int i = 0; i < 12; i++)
+            //    code = String.Concat(code, random.Next(10).ToString());         
+            //return long.Parse(code);
         }
 
         public bool AddProduct(Product product)
@@ -105,18 +115,44 @@ namespace InventoryPOSApp.Core.Services
             else
             {
                 if(product.Barcode == 0)
+                {                   
+                    product.Barcode = GenerateBarcode();
+                }
+                else if(IsValidBarcode(product.Barcode))
                 {
-                    long newBarcode = GenerateBarcode();
-                    while (_repo.GetProductByBarcode(newBarcode) != null)
-                    {
-                        newBarcode = GenerateBarcode();
-                    }
-                    product.Barcode = newBarcode;          
+                    return false;
                 }
                 _repo.AddNewProduct(product);
                 _repo.SaveChanges();
                 return true;
             }
         }
+
+        public Product EditProduct(Product product)
+        {
+            if(product.Barcode == 0)
+            {
+                product.Barcode = GenerateBarcode();
+            }
+      //      else if (!IsValidBarcode(product.Barcode))
+      //      {
+        //        return null;
+          //  }
+            _repo.EditProduct(product);
+            return product;
+        }
+
+
+        public bool IsValidBarcode(long barcode)
+        {
+            if (_repo.GetProductByBarcode(barcode) != null)
+            {
+                return false;
+            }                
+            else
+                return true;
+        }
+
+
     }
 }
