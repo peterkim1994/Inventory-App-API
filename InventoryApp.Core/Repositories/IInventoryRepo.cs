@@ -8,6 +8,8 @@ namespace InventoryPOSApp.Core.Repositories
 {
     public interface IInventoryRepo
     {
+        Product GetProduct(int id);
+
         void AddColour(Colour colour);
 
         List<Colour> GetColours();  
@@ -32,6 +34,14 @@ namespace InventoryPOSApp.Core.Repositories
 
         void AddBrand(Brand brand);
 
+        void EditBrand(Brand brand);
+
+        void EditColour(Colour colour);
+
+        void EditCategory(ItemCategory category);
+
+        void EditSize(Size size);
+
         List<Brand> GetBrands();
 
         bool ContainsAtt<T>(T newAtt) where T : ProductAttribute;
@@ -40,7 +50,17 @@ namespace InventoryPOSApp.Core.Repositories
 
         Product GetProductByBarcode(long code);
 
-      //  List<Product> GetAllProducts();
         void SaveChanges();
+
+        Brand GetBrandByName(string brandName);
+
+        Colour GetColourByName(string colourName);
+
+        ItemCategory GetItemCategoryByName(string categoryName);
+
+        Size GetSizeByName(string sizeName);
+        
+
+
     }
 }

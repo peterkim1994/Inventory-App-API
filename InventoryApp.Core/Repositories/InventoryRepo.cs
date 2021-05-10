@@ -97,7 +97,18 @@ namespace InventoryPOSApp.Core.Repositories
             _context.Entry(product).CurrentValues.SetValues(editedProduct);
           //  State = EntityState.Modified;
             //product = editedProduct;
-            _context.SaveChanges();
+            _context.SaveChanges();          
+        }
+
+
+        public Product GetProduct(int id)
+        {
+           return _context.Products
+             .Include(pr => pr.Brand)
+             .Include(pr => pr.Colour)
+             .Include(pr => pr.Size)
+             .Include(pr => pr.ItemCategory)
+             .First(pr => pr.Id == id);
         }
 
         public void DeleteProduct(Product product)
@@ -132,5 +143,55 @@ namespace InventoryPOSApp.Core.Repositories
         {
             return _context.Brands.ToList();
         }
+
+        public void EditBrand(Brand brand)
+        {
+            var existingBrand = GetBrandByName(brand.Value);
+            if (existingBrand == null)
+            {
+                _context.Entry<Brand>(brand).State = EntityState.Modified;
+                // brand.Value = brand.Value;
+                _context.SaveChanges();
+            }
+            //  Brand brand = _context.Brands.Find(brand.Id);
+        }
+
+        public Brand GetBrandByName(string brandName)
+        {            
+            return _context.Brands.FirstOrDefault(b => b.Value == brandName);
+        }
+
+        public Colour GetColourByName(string colourName)
+        {
+            return _context.Colours.FirstOrDefault(c => c.Value == colourName);
+        }
+
+        public ItemCategory GetItemCategoryByName(string categoryName)
+        {
+            return _context.ItemCategories.FirstOrDefault(c => c.Value == categoryName);
+        }
+
+        public Size GetSizeByName(string sizeName)
+        {
+            return _context.Sizes.FirstOrDefault(s => s.Value == sizeName);
+        }
+
+        public void EditColour(Colour colour)
+        {
+            _context.Entry<Colour>(colour).State = EntityState.Modified;   
+            _context.SaveChanges();
+        }
+
+        public void EditCategory(ItemCategory category)
+        {
+            _context.Entry<ItemCategory>(category).State = EntityState.Modified;     
+            _context.SaveChanges();
+        }
+        public void EditSize(Size size)
+        {
+            _context.Entry<Size>(size).State = EntityState.Modified;
+            _context.SaveChanges();
+        }
+
     }
 }

@@ -87,13 +87,14 @@ namespace Inventory.api.Controllers
         [HttpPut("EditProduct")]
         public IActionResult EditProduct(Product product)
         {
-        //    if (ModelState.IsValid)
-      //      {
+            if (ModelState.IsValid)
+            {
                 _service.EditProduct(product);
-                var productDto = _mapper.Map<Product, ProductDto>(product);
+                Product updatedProduct = _inventory.GetProduct(product.Id);
+                var productDto = _mapper.Map<Product, ProductDto>(updatedProduct);
                 return Ok(productDto);
-     //       }
-     //       return BadRequest("Product Details are not valid");
+            }
+            return BadRequest("Product Details are not valid");
         }
 
         [HttpPost("AddSize")]
@@ -128,6 +129,52 @@ namespace Inventory.api.Controllers
             return BadRequest("Brand already exists");
         }
 
-    
+        [HttpPut("EditBrand")]
+        public IActionResult EditBrand(Brand brand)
+        {
+            if (ModelState.IsValid)
+            {             
+                if(_service.EditBrand(brand))
+                  return Ok(brand);
+                else
+                  return BadRequest("This brand already exists");
+            }
+            else
+            {
+                return BadRequest("Improper brand name format");
+            }
+        }
+
+        [HttpPut("EditCategory")]
+        public IActionResult EditItemCategory(ItemCategory category)
+        {
+            if (ModelState.IsValid)
+            {
+                if (_service.EditCategory(category))
+                    return Ok(category);
+                else
+                    return BadRequest("This category already exists");
+            }
+            else
+            {
+                return BadRequest("Improper item category format");
+            }
+        }
+
+        [HttpPut("EditSize")]
+        public IActionResult EditSize(Size size)
+        {
+            if (ModelState.IsValid)
+            {
+                if (_service.EditSize(size))
+                    return Ok(size);
+                else
+                    return BadRequest("This size already exists");
+            }
+            else
+            {
+                return BadRequest("Improper size name format");
+            }
+        }
     }
 }

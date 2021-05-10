@@ -139,6 +139,7 @@ namespace InventoryPOSApp.Core.Services
         //        return null;
           //  }
             _repo.EditProduct(product);
+            
             return product;
         }
 
@@ -153,6 +154,64 @@ namespace InventoryPOSApp.Core.Services
                 return true;
         }
 
+        public bool EditBrand(Brand brand)
+        {
+            brand.Value = TextProcessor.ToPronounCasing(brand.Value);
+            var existingBrand = _repo.GetBrandByName(brand.Value);
+            if (existingBrand == null)
+            {
+                _repo.EditBrand(brand);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
 
+        public bool EditColour(Colour colour)
+        {
+            colour.Value = TextProcessor.ToPronounCasing(colour.Value);
+            var existingBrand = _repo.GetColourByName(colour.Value);
+            if (existingBrand == null)
+            {
+                _repo.EditColour(colour);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public bool EditCategory(ItemCategory category)
+        {
+            category.Value = TextProcessor.ToPronounCasing(category.Value);
+            var existingCategory = _repo.GetItemCategoryByName(category.Value);
+            if (existingCategory == null)
+            {
+                _repo.EditCategory(category);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public bool EditSize(Size size)
+        {
+            size.Value = TextProcessor.ToPronounCasing(size.Value);
+            var existingSize = _repo.GetSizeByName(size.Value);
+            if (existingSize == null)
+            {
+                _repo.EditSize(size);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
     }
 }

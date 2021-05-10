@@ -16,6 +16,14 @@ namespace InventoryPOSApp.Core.Services
 
         bool AddBrand(Brand brand);
 
+        bool EditBrand(Brand brand);
+
+        bool EditCategory(ItemCategory category);
+
+        bool EditSize(Size size);
+
+        bool EditColour(Colour colour);
+
         long GenerateBarcode();
 
         bool AddProduct(Product product);
