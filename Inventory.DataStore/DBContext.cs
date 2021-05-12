@@ -44,6 +44,10 @@ namespace InventoryPOS.DataStore
             modelBuilder.Entity<ProductPromotion>()
                .HasKey(pd => new { pd.PromotionId, pd.ProductId });
 
+            modelBuilder.Entity<SaleInvoice>()
+                .Property(s => s.Finalised)
+                .HasDefaultValue(false);
+
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

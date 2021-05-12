@@ -6,11 +6,15 @@ using Microsoft.EntityFrameworkCore;
 
 namespace InventoryPOS.DataStore.Models
 {
-    
+    [Index(nameof(PromotionName), IsUnique = true)]
     public class Promotion
     {
         [Key]
         public int Id { get; set; }
+        [Required]
+        [MinLength(3)]
+        [MaxLength(50)]
+        public string PromotionName { get; set; }
         public DateTime Start { get; set; }
         public DateTime End { get; set; }
         [Required]  
@@ -19,6 +23,6 @@ namespace InventoryPOS.DataStore.Models
         [Required]
         public int PromotionPrice { get; set; }
 
-        public IList<ProductPromotion> ProductPromotions { get; set; }
+        public virtual IList<ProductPromotion> ProductPromotions { get; set; }
     }
 }

@@ -33,6 +33,8 @@ namespace Inventory.api
             services.AddDbContext<DBContext>();
             services.AddTransient<IInventoryService, InventoryService>();
             services.AddTransient<IInventoryRepo, InventoryRepo>();
+            services.AddTransient<ISalesRepository, SalesRepository>();
+            services.AddTransient<ISalesService, SalesService>();
             services.AddAutoMapper(typeof(AutoMapperProfiles));
             services.AddCors(options =>
             {

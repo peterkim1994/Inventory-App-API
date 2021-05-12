@@ -13,6 +13,7 @@ namespace InventoryPOS.DataStore.Models
         public int Id { get; set; }
 
         [Required]
+        [MaxLength(50)]
         public string Method { get; set; }
 
         public virtual IList<Payment> Payments { get; set; }

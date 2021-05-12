@@ -9,10 +9,10 @@ namespace InventoryPOS.DataStore.Models
     {
         [Key]
         public int Id { get; set; }
-        public DateTime InvoiceDate { get; set; }
-        public bool Finalised { get; set; }
+        public DateTime InvoiceDate { get; set; }        
         public List<ProductSale> ProductSales { get; set; }
         public List<Payment> Payments { get; set; }
+        public bool Finalised { get; set; }
 
     }
 }

@@ -10,6 +10,7 @@ namespace InventoryPOS.DataStore.Models
     public class PromotionType
     {
         public int Id { get; set; }
+      
         public string Type { get; set; }
 
     //    public virtual IList<Promotion> Promotions {get; set;}

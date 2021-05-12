@@ -13,7 +13,8 @@ namespace InventoryPOS.DataStore.Models
         [Key]
         public override int Id { get; set; }
         [Required]
+        [MaxLength(50)]
         public override string Value { get; set; }
-        public virtual List<Product> Products { get; set; }
+        public virtual IList<Product> Products { get; set; }
     }
 }

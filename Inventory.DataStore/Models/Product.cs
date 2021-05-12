@@ -12,6 +12,7 @@ namespace InventoryPOS.DataStore.Models
         [Key]
         public int Id { get; set; }
         public long Barcode { get; set; }
+        [MaxLength(50)]
         public string ManufactureCode { get; set; }
 
         [Required]

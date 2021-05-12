@@ -25,6 +25,7 @@ namespace Inventory.api.Controllers
         private readonly ILogger<InventoryController> _logger;
         private IInventoryRepo _inventory { get; set; }
         private IInventoryService _service { get; set; }
+
         private readonly IMapper _mapper;
 
         public InventoryController
@@ -70,13 +71,14 @@ namespace Inventory.api.Controllers
 
 
         [HttpPost("AddProduct")]
-        public IActionResult AddProduct(Product product)
+        public IActionResult AddProduct(ProductDto productDto)
         {                       
-          //  Product product = _mapper.Map<>
+            var product = _mapper.Map<ProductDto, Product>(productDto);
             if (_service.AddProduct(product))
             {
-                var productDto = _mapper.Map<Product, ProductDto>(product);
-                return Ok(productDto);
+                productDto = _mapper.Map<Product, ProductDto>(product);
+                return CreatedAtRoute("AddProduct", new { productDto.Id }, productDto);
+             //   return Ok(productDto);
             }else if (product.Barcode != 0 && _service.IsValidBarcode(product.Barcode))
             {
                 return BadRequest("That Barcode already exists");
@@ -85,13 +87,16 @@ namespace Inventory.api.Controllers
         }
 
         [HttpPut("EditProduct")]
-        public IActionResult EditProduct(Product product)
+        public IActionResult EditProduct(ProductDto productDto)
         {
+            //  var Product product = _mapper.Map<ProductDto, Product>(productDto);
+            var product = _mapper.Map<ProductDto, Product>(productDto);
             if (ModelState.IsValid)
-            {
+            {                
                 _service.EditProduct(product);
                 Product updatedProduct = _inventory.GetProduct(product.Id);
-                var productDto = _mapper.Map<Product, ProductDto>(updatedProduct);
+           //       var productDtos = _mapper.Map<Product, ProductDto>(updatedProduct);
+                productDto = _mapper.Map<Product, ProductDto>(updatedProduct);
                 return Ok(productDto);
             }
             return BadRequest("Product Details are not valid");
@@ -106,7 +111,6 @@ namespace Inventory.api.Controllers
             }
             return BadRequest("Size already exists");
         }
-
 
         [HttpPost("AddCategory")]
         public IActionResult AddItemCategory(ItemCategory category)

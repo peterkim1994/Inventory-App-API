@@ -11,16 +11,24 @@ namespace InventoryPOSApp.Core.Repositories
 
         IList<Promotion> GetCurrentPromotions();
 
+        IList<Promotion> GetPromotionsByDate(DateTime rangeStart, DateTime rangeEnd);
+
         void AddPromotion(Promotion promotion);
+
+        void AddProductPromotion(ProductPromotion productPromotion);
 
         void EditPromotion(Promotion promotion);
 
-        Promotion CheckPromotionEligibility(IList<Product> productsToBeSold);
+      //  Promotion CheckPromotionEligibility(IList<Product> productsToBeSold);
 
         void AddProductsToTransaction(IList<Product> products, SaleInvoice invoice);
 
         bool CompleteTransaction(SaleInvoice invoice);
 
+        bool IsInvoiceFinalised(SaleInvoice invoice);
 
+        Promotion GetPromotionByName(string promotionName);
+
+        ProductPromotion GetProductPromotion(int productId, int promotionId);
     }
 }

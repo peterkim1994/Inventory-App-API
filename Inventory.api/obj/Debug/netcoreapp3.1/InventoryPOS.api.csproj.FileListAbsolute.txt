@@ -1,3 +1,7 @@
+C:\Users\peter\Documents\CSharpProjects\InventoryApp\Inventory.api\obj\Debug\netcoreapp3.1\InventoryPOS.api.AssemblyInfoInputs.cache
+C:\Users\peter\Documents\CSharpProjects\InventoryApp\Inventory.api\obj\Debug\netcoreapp3.1\InventoryPOS.api.AssemblyInfo.cs
+C:\Users\peter\Documents\CSharpProjects\InventoryApp\Inventory.api\obj\Debug\netcoreapp3.1\InventoryPOS.api.csproj.CoreCompileInputs.cache
+C:\Users\peter\Documents\CSharpProjects\InventoryApp\Inventory.api\obj\Debug\netcoreapp3.1\InventoryPOS.api.MvcApplicationPartsAssemblyInfo.cache
 C:\Users\peter\Documents\CSharpProjects\InventoryApp\Inventory.api\bin\Debug\netcoreapp3.1\appsettings.Development.json
 C:\Users\peter\Documents\CSharpProjects\InventoryApp\Inventory.api\bin\Debug\netcoreapp3.1\appsettings.json
 C:\Users\peter\Documents\CSharpProjects\InventoryApp\Inventory.api\bin\Debug\netcoreapp3.1\InventoryPOS.api.exe
@@ -55,10 +59,6 @@ C:\Users\peter\Documents\CSharpProjects\InventoryApp\Inventory.api\bin\Debug\net
 C:\Users\peter\Documents\CSharpProjects\InventoryApp\Inventory.api\bin\Debug\netcoreapp3.1\InventoryPOS.DataStore.pdb
 C:\Users\peter\Documents\CSharpProjects\InventoryApp\Inventory.api\bin\Debug\netcoreapp3.1\InventoryPOSApp.Core.pdb
 C:\Users\peter\Documents\CSharpProjects\InventoryApp\Inventory.api\obj\Debug\netcoreapp3.1\InventoryPOS.api.csprojAssemblyReference.cache
-C:\Users\peter\Documents\CSharpProjects\InventoryApp\Inventory.api\obj\Debug\netcoreapp3.1\InventoryPOS.api.AssemblyInfoInputs.cache
-C:\Users\peter\Documents\CSharpProjects\InventoryApp\Inventory.api\obj\Debug\netcoreapp3.1\InventoryPOS.api.AssemblyInfo.cs
-C:\Users\peter\Documents\CSharpProjects\InventoryApp\Inventory.api\obj\Debug\netcoreapp3.1\InventoryPOS.api.csproj.CoreCompileInputs.cache
-C:\Users\peter\Documents\CSharpProjects\InventoryApp\Inventory.api\obj\Debug\netcoreapp3.1\InventoryPOS.api.MvcApplicationPartsAssemblyInfo.cache
 C:\Users\peter\Documents\CSharpProjects\InventoryApp\Inventory.api\obj\Debug\netcoreapp3.1\staticwebassets\InventoryPOS.api.StaticWebAssets.Manifest.cache
 C:\Users\peter\Documents\CSharpProjects\InventoryApp\Inventory.api\obj\Debug\netcoreapp3.1\staticwebassets\InventoryPOS.api.StaticWebAssets.xml
 C:\Users\peter\Documents\CSharpProjects\InventoryApp\Inventory.api\obj\Debug\netcoreapp3.1\scopedcss\bundle\InventoryPOS.api.styles.css
