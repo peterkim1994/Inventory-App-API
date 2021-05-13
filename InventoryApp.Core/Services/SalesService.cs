@@ -38,7 +38,19 @@ namespace InventoryPOSApp.Core.Services
             return false;
         }
 
+
+
         public Promotion GetPromotion(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Promotion EditPromotion(Promotion promotion)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool RemoveProductPromotion(int productId, int PromotionId)
         {
             throw new NotImplementedException();
         }

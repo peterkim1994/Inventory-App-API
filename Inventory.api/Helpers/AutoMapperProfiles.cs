@@ -43,7 +43,12 @@ namespace InventoryPOS.api.Helpers
                 (
                     d => d.End,
                     o => o.MapFrom(s => s.End.ToString())
-                );
+                )
+                .ForMember
+                (
+                    d => d.PromotionPrice,
+                    o => o.MapFrom(s => Convert.ToInt32(s.PromotionPrice * 100.0))
+                ); 
             CreateMap<PromotionDto, Promotion>()
                 .ForMember
                 (
@@ -54,6 +59,11 @@ namespace InventoryPOS.api.Helpers
                 (
                     d => d.End,
                     o => o.MapFrom(s => DateTime.Parse(s.End))
+                )
+                .ForMember
+                (
+                    d => d.PromotionPrice,
+                    o => o.MapFrom(s => Convert.ToInt32(s.PromotionPrice * 100.0))
                 ); ;
         }
     }

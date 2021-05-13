@@ -66,7 +66,8 @@ namespace InventoryPOSApp.Core.Repositories
 
         public Promotion GetPromotionByName(string promotionName)
         {
-             return _context.Promotions.FirstOrDefault(pr => pr.PromotionName == promotionName);     
+            var product = _context.Promotions.FirstOrDefault(pr => pr.PromotionName == promotionName);
+            return product;
         }
 
         public void SaveChanges()
@@ -80,6 +81,21 @@ namespace InventoryPOSApp.Core.Repositories
                    (
                        pp => pp.ProductId== productId && pp.PromotionId == promotionId
                    );
+        }
+
+        public IList<Promotion> GetActivePromotions()
+        {
+            throw new NotImplementedException();
+        }
+
+        public IList<Promotion> GetInactivePromotions()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void RemoveProductPromotion(int productId, int promotionId)
+        {
+            throw new NotImplementedException();
         }
     }
 }

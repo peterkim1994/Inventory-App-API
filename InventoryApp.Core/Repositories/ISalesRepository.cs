@@ -30,5 +30,11 @@ namespace InventoryPOSApp.Core.Repositories
         Promotion GetPromotionByName(string promotionName);
 
         ProductPromotion GetProductPromotion(int productId, int promotionId);
+
+        IList<Promotion> GetActivePromotions();
+
+        IList<Promotion> GetInactivePromotions();
+
+        void RemoveProductPromotion(int productId, int promotionId);
     }
 }

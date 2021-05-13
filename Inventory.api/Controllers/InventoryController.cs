@@ -72,18 +72,24 @@ namespace Inventory.api.Controllers
 
         [HttpPost("AddProduct")]
         public IActionResult AddProduct(ProductDto productDto)
-        {                       
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest("Product Details are invalid");
+            }
             var product = _mapper.Map<ProductDto, Product>(productDto);
             if (_service.AddProduct(product))
             {
                 productDto = _mapper.Map<Product, ProductDto>(product);
                 return CreatedAtRoute("AddProduct", new { productDto.Id }, productDto);
              //   return Ok(productDto);
-            }else if (product.Barcode != 0 && _service.IsValidBarcode(product.Barcode))
+            }
+            else if (product.Barcode != 0 && _service.IsValidBarcode(product.Barcode))
             {
                 return BadRequest("That Barcode already exists");
             }
-            return BadRequest("Product Details are invalide or it already exists");
+            return BadRequest("That Product manufacture code already belongs to an exsiting product");
+
         }
 
         [HttpPut("EditProduct")]
