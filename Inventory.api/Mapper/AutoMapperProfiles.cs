@@ -31,12 +31,13 @@ namespace InventoryPOS.api.Helpers
             CreateMap<Promotion, PromotionDto>()
                 .ForMember
                 (
-                    d => d.Products,
-                    o => o.MapFrom(s => s.ProductPromotions.Select(pm => pm.ProductId).ToList())
+                  d => d.ProductIds,
+                  o => o.MapFrom(s => s.ProductPromotions.Select(pm => pm.ProductId).ToList())
+                //      o => o.MapFrom(s => s.ProductPromotions.ToList())
                 )
                 .ForMember
                 (
-                    d=> d.Start,
+                    d => d.Start,
                     o => o.MapFrom(s => s.Start.ToString())
                 )
                 .ForMember
@@ -47,8 +48,31 @@ namespace InventoryPOS.api.Helpers
                 .ForMember
                 (
                     d => d.PromotionPrice,
-                    o => o.MapFrom(s => Convert.ToInt32(s.PromotionPrice * 100.0))
-                ); 
+                    o => o.MapFrom(s => Convert.ToInt32(s.PromotionPrice / 100.0))
+                );
+                //.AfterMap((dao, dto) => {
+                //    if (dto.Products == null)
+                //        dto.Products = new List<ProductDto>();
+                //    dto.Products.Clear();      
+                //    foreach (var p in dao.ProductPromotions)
+                //    {                       
+                //        dto.Products.Add(new ProductDto { 
+                //            Id = p.ProductId,
+                //            //BrandId = p.Product.BrandId,
+                //            //BrandValue = p.Product.Brand.Value,
+                //            //ColourId = p.Product.ColourId,
+                //            //ColourValue = p.Product.Colour.Value,
+                //            //SizeId = p.Product.SizeId,
+                //            //SizeValue = p.Product.Size.Value,
+                //            //ItemCategoryId = p.Product.ItemCategoryId,
+                //            //ItemCategoryValue = p.Product.ItemCategory.Value,
+                //            //ManufactureCode = p.Product.ManufactureCode,
+                //            //Description = p.Product.Description,
+                //            //Price = p.Product.Price/100.00,
+                //            //Qty = p.Product.Qty
+                //        });              
+                //    }
+                //}); 
             CreateMap<PromotionDto, Promotion>()
                 .ForMember
                 (
@@ -64,7 +88,7 @@ namespace InventoryPOS.api.Helpers
                 (
                     d => d.PromotionPrice,
                     o => o.MapFrom(s => Convert.ToInt32(s.PromotionPrice * 100.0))
-                ); ;
+                ); 
         }
     }
 }

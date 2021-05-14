@@ -12,13 +12,11 @@ namespace InventoryPOSApp.Core.Services
 
         bool AddProductToPromotion(int productId, int promotionId);
 
-        Promotion GetPromotion(int id);
-
         Promotion EditPromotion(Promotion promotion);
 
         bool RemoveProductPromotion(int productId, int PromotionId);
 
-
+        IList<Promotion> GetActivePromotions();
 
     }
 }

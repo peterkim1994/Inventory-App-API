@@ -31,10 +31,14 @@ namespace InventoryPOSApp.Core.Repositories
 
         ProductPromotion GetProductPromotion(int productId, int promotionId);
 
+        IList<Promotion> GetPromotionsByDateRange(DateTime start, DateTime end);
+
         IList<Promotion> GetActivePromotions();
 
-        IList<Promotion> GetInactivePromotions();
+        void RemoveProductPromotion(ProductPromotion productPromotion);
 
-        void RemoveProductPromotion(int productId, int promotionId);
+        IList<Product> GetPromotionsProducts(int promotionId);
+
+        Promotion GetPromotion(int id);
     }
 }

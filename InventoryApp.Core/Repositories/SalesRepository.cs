@@ -4,6 +4,8 @@ using System.Text;
 using System.Linq;
 using InventoryPOS.DataStore;
 using InventoryPOS.DataStore.Models;
+using Microsoft.EntityFrameworkCore;
+using InventoryPOSApp.Core.Dtos;
 
 namespace InventoryPOSApp.Core.Repositories
 {
@@ -83,9 +85,25 @@ namespace InventoryPOSApp.Core.Repositories
                    );
         }
 
+        public IList<Promotion> GetPromotionsByDateRange(DateTime start, DateTime end)
+        {
+            var promos = from pr in _context.Promotions.Include(promo => promo.ProductPromotions)
+                         where                        
+                            pr.Start <= start &&
+                            pr.End >= end
+                         select pr;
+            return promos.ToList();
+        }
+
+
         public IList<Promotion> GetActivePromotions()
         {
-            throw new NotImplementedException();
+            var promos = from pr in _context.Promotions.Include(promo => promo.ProductPromotions)
+                         where
+                            pr.Start <= DateTime.Now &&
+                            pr.End >= DateTime.Now                         
+                         select pr;
+            return promos.ToList();
         }
 
         public IList<Promotion> GetInactivePromotions()
@@ -93,9 +111,35 @@ namespace InventoryPOSApp.Core.Repositories
             throw new NotImplementedException();
         }
 
-        public void RemoveProductPromotion(int productId, int promotionId)
+        public void RemoveProductPromotion(ProductPromotion productPromotion)
         {
-            throw new NotImplementedException();
+            _context.ProductPromotions.Remove(productPromotion);
+            SaveChanges();
+        }
+
+        public IList<Product> GetPromotionsProducts(int promotionId)
+        {
+           Promotion promo = _context.Promotions.Find(promotionId);
+           if (promo == null)
+                return null;
+            var products = from
+                             pp in _context.ProductPromotions//.Include(pp => pp.Product)                          
+                           where
+                              pp.PromotionId == promotionId
+                           join prod in _context.Products
+                                             .Include(pr => pr.Brand)
+                                             .Include(pr => pr.Colour)
+                                             .Include(pr => pr.Size)
+                                             .Include(pr => pr.ItemCategory)
+                           on pp.ProductId equals prod.Id 
+                           select prod;
+
+            return products.ToList();
+        }
+
+        public Promotion GetPromotion(int promotionId)
+        {
+            return _context.Promotions.Include(p=> p.ProductPromotions).FirstOrDefault(p => p.Id == promotionId);
         }
     }
 }

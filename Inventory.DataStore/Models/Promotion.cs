@@ -23,6 +23,6 @@ namespace InventoryPOS.DataStore.Models
         [Required]
         public int PromotionPrice { get; set; }
 
-        public virtual IList<ProductPromotion> ProductPromotions { get; set; }
+        public virtual List<ProductPromotion> ProductPromotions { get; set; }
     }
 }

@@ -38,21 +38,26 @@ namespace InventoryPOSApp.Core.Services
             return false;
         }
 
-
-
-        public Promotion GetPromotion(int id)
+        public IList<Promotion> GetActivePromotions()
         {
-            throw new NotImplementedException();
+            return _repo.GetActivePromotions();
         }
+
 
         public Promotion EditPromotion(Promotion promotion)
         {
             throw new NotImplementedException();
         }
 
-        public bool RemoveProductPromotion(int productId, int PromotionId)
+        public bool RemoveProductPromotion(int productId, int promotionId)
         {
-            throw new NotImplementedException();
+            var productPromo = _repo.GetProductPromotion(productId, promotionId); 
+            if (productPromo == null)
+            {
+                return false;
+            }
+            _repo.RemoveProductPromotion(productPromo);
+            return true;
         }
     }
 }

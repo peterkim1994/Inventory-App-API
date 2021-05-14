@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
 using InventoryPOS.Core.Dtos;
-
+using InventoryPOS.DataStore.Models;
 
 namespace InventoryPOSApp.Core.Dtos
 {
@@ -18,7 +18,7 @@ namespace InventoryPOSApp.Core.Dtos
         public string Start { get; set; }
         public string End { get; set; }
         public double PromotionPrice { get; set; }
-        public IList<ProductDto> Products { get; set; }
+        public IList<int> ProductIds { get; set; }
 
     }
 }
