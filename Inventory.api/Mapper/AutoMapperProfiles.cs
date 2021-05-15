@@ -38,12 +38,12 @@ namespace InventoryPOS.api.Helpers
                 .ForMember
                 (
                     d => d.Start,
-                    o => o.MapFrom(s => s.Start.ToString())
+                    o => o.MapFrom(s => s.Start.ToString("yyyy-MM-dd"))
                 )
                 .ForMember
                 (
                     d => d.End,
-                    o => o.MapFrom(s => s.End.ToString())
+                    o => o.MapFrom(s => s.End.ToString("yyyy-MM-dd"))
                 )
                 .ForMember
                 (

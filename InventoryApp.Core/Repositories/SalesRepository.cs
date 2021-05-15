@@ -48,7 +48,8 @@ namespace InventoryPOSApp.Core.Repositories
 
         public void EditPromotion(Promotion promotion)
         {
-            throw new NotImplementedException();
+            _context.Entry<Promotion>(promotion).State = EntityState.Modified;
+            _context.SaveChanges();
         }
 
         public IList<Promotion> GetCurrentPromotions()

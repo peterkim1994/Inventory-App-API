@@ -12,6 +12,8 @@ using InventoryPOSApp.Core.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace InventoryPOS.api.Controllers
 {
@@ -19,7 +21,7 @@ namespace InventoryPOS.api.Controllers
     [Route("[controller]")]
     public class SalesController : ControllerBase
     {
-        private readonly ILogger<SalesController> _logger;    
+        private readonly ILogger<SalesController> _logger;
         private ISalesService _service { get; set; }
         private ISalesRepository _repo { get; set; }
         private readonly IMapper _mapper;
@@ -29,7 +31,7 @@ namespace InventoryPOS.api.Controllers
             ILogger<SalesController> logger,
             ISalesRepository repo,
             ISalesService service,
-            IMapper mapper            
+            IMapper mapper
         )
         {
             _logger = logger;
@@ -50,13 +52,13 @@ namespace InventoryPOS.api.Controllers
                 }
                 return BadRequest("that promtion already exists");
             }
-            return BadRequest("Invalid promotion settings");         
+            return BadRequest("Invalid promotion settings");
         }
 
         [HttpPost("AddProductPromotion")]
         public IActionResult AddProductPromotion(int productId, int promotionId)
         {
-            if(_service.AddProductToPromotion(productId, promotionId))
+            if (_service.AddProductToPromotion(productId, promotionId))
             {
                 return Ok(new ProductPromotion { ProductId = productId, PromotionId = promotionId });
             }
@@ -82,36 +84,60 @@ namespace InventoryPOS.api.Controllers
             return Ok(ProductDtos);
         }
 
-        [HttpPost("AddManyProductPromotions")]
-        public IActionResult AddManyProductPromotions(int promoId, IList<int> productIds)
+        [HttpPost("AddProductPromotions")]
+        public IActionResult AddProductPromotions(Object jsonResult)
         {
-            Promotion promo = _repo.GetPromotion(promoId);
-            if(promo == null)
-            {
-                return BadRequest();
-            }
-            foreach (var productId in productIds)
-            {
-                _service.AddProductToPromotion(productId, promoId);
-            }
-            var promoDto = _mapper.Map<Promotion, PromotionDto>(promo);            
-            return Ok(promoDto);
-        }
+            dynamic reqBody = JObject.Parse(jsonResult.ToString());
 
-        [HttpDelete("RemoveManyProductPromotions")]
-        public IActionResult RemoveManyProductPromotions(int promoId, IList<int> productIds)
-        {
-            Promotion promo = _repo.GetPromotion(promoId);
+            int promotionId = reqBody.promotionId;
+            IList<int> productIds = reqBody.productIds.ToObject<IList<int>>();
+
+            Promotion promo = _repo.GetPromotion(promotionId);
             if (promo == null)
             {
-                return BadRequest();
+                return BadRequest("promotion doesnt exist");
             }
             foreach (var productId in productIds)
             {
-                _service.RemoveProductPromotion(productId, promoId);
+                _service.AddProductToPromotion(productId, promotionId);
             }
             var promoDto = _mapper.Map<Promotion, PromotionDto>(promo);
             return Ok(promoDto);
+        }
+
+        [HttpDelete("RemoveProductPromotions")]
+        public IActionResult RemoveProductPromotions(Object jsonResult)
+        {
+            dynamic reqBody = JObject.Parse(jsonResult.ToString());
+
+            int promotionId = reqBody.promotionId;
+            IList<int> productIds = reqBody.productIds.ToObject<IList<int>>();
+
+            Promotion promo = _repo.GetPromotion(promotionId);
+            if (promo == null)
+            {
+                return BadRequest("promotion doesnt exist");
+            }
+            foreach (var productId in productIds)
+            {
+                _service.RemoveProductPromotion(productId, promotionId);
+            }
+            var promoDto = _mapper.Map<Promotion, PromotionDto>(promo);
+            return Ok(promoDto);
+        }
+
+        [HttpPut("EditPromotion")]
+        public IActionResult EditPromotion(PromotionDto promotionDto)
+        {
+            Promotion promo = _mapper.Map<PromotionDto, Promotion>(promotionDto);
+            if (ModelState.IsValid)
+            {
+                _repo.EditPromotion(promo);
+                var promoDto = _mapper.Map<Promotion, PromotionDto>(promo);
+                return Ok(promoDto);
+            }
+            return BadRequest();
+
         }
 
     }
