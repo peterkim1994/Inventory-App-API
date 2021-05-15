@@ -14,7 +14,7 @@ namespace InventoryPOSApp.Core.Dtos
         [MinLength(3)]
         [MaxLength(50)]
         public string PromotionName { get; set; }
-        public int Quantitiy { get; set; }
+        public int Quantity { get; set; }
         public string Start { get; set; }
         public string End { get; set; }
         public double PromotionPrice { get; set; }
