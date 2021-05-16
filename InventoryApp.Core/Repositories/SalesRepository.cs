@@ -75,7 +75,7 @@ namespace InventoryPOSApp.Core.Repositories
 
         public void SaveChanges()
         {
-            throw new NotImplementedException();
+            _context.SaveChanges();
         }
 
         public ProductPromotion GetProductPromotion(int productId, int promotionId)
