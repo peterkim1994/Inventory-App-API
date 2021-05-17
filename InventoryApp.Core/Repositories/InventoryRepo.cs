@@ -125,13 +125,17 @@ namespace InventoryPOSApp.Core.Repositories
 
         public List<Product> GetProducts()
         {
-            return _context.Products
-                .Include(pr => pr.Brand)
-                .Include(pr => pr.Colour)
-                .Include(pr => pr.Size)
-                .Include(pr => pr.ItemCategory)
-                .ToList();
-          //  var prods = _context.Products.Include()
+          return _context.Products
+                 .Include(pr => pr.Brand)
+                 .Include(pr => pr.Colour)
+                 .Include(pr => pr.Size)
+                 .Include(pr => pr.ItemCategory)
+                 .OrderBy(pr => pr.BrandId)
+                 .ThenBy(pr => pr.ItemCategoryId)
+                 .ThenBy(pr => pr.ColourId)
+                 .ThenBy(pr => pr.Size)
+                 .ToList();
+            //  var prods = _context.Products.Include()
         }
 
         public List<Size> GetSizes()

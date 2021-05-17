@@ -132,12 +132,17 @@ namespace InventoryPOS.api.Controllers
             Promotion promo = _mapper.Map<PromotionDto, Promotion>(promotionDto);
             if (ModelState.IsValid)
             {
-                _repo.EditPromotion(promo);
+                _service.EditPromotion(promo);
                 var promoDto = _mapper.Map<Promotion, PromotionDto>(promo);
                 return Ok(promoDto);
             }
-            return BadRequest();
-
+            if(String.IsNullOrEmpty(promotionDto.PromotionName)) 
+                return BadRequest("You must provide a name for the promotion");
+            if (promotionDto.Quantity <= 0) 
+                return BadRequest("You must provide a min quantity for the promotion");
+            if(promotionDto.PromotionPrice <= 0)
+                return BadRequest("You must provide a price offer for the promotion");
+            return BadRequest("Please provide valid promotion details");
         }
 
     }

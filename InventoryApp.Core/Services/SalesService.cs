@@ -44,9 +44,10 @@ namespace InventoryPOSApp.Core.Services
         }
 
 
-        public Promotion EditPromotion(Promotion promotion)
+        public void EditPromotion(Promotion promotion)
         {
-            throw new NotImplementedException();
+           promotion.PromotionName = TextProcessor.ToTitleCase(promotion.PromotionName);
+            _repo.EditPromotion(promotion);
         }
 
         public bool RemoveProductPromotion(int productId, int promotionId)
@@ -58,6 +59,46 @@ namespace InventoryPOSApp.Core.Services
             }
             _repo.RemoveProductPromotion(productPromo);
             return true;
+        }
+
+        IList<Promotion> CheckEligibalePromotions(IList<Product> products)
+        {
+            throw new NotImplementedException();
+        }
+
+        public int CalculateTotal(int saleInvoiceId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Payment ProcessPayement(Payment payment, SaleInvoice sale)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool ValidateSalePayments(SaleInvoice sale)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ICollection<ProductPromotion> GetProductPromotions()
+        {
+            throw new NotImplementedException();
+        }
+
+        public SaleInvoice StartSaleTransaction()
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool CancelPrevSale()
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool AddProductToSale(int SaleId, int productId)
+        {
+            throw new NotImplementedException();
         }
     }
 }

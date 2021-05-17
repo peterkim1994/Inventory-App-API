@@ -19,14 +19,6 @@ namespace InventoryPOSApp.Core.Repositories
 
         void EditPromotion(Promotion promotion);
 
-      //  Promotion CheckPromotionEligibility(IList<Product> productsToBeSold);
-
-        void AddProductsToTransaction(IList<Product> products, SaleInvoice invoice);
-
-        bool CompleteTransaction(SaleInvoice invoice);
-
-        bool IsInvoiceFinalised(SaleInvoice invoice);
-
         Promotion GetPromotionByName(string promotionName);
 
         ProductPromotion GetProductPromotion(int productId, int promotionId);
@@ -40,5 +32,33 @@ namespace InventoryPOSApp.Core.Repositories
         IList<Product> GetPromotionsProducts(int promotionId);
 
         Promotion GetPromotion(int id);
+
+        SaleInvoice GetSaleByInvoiceNumber(int invoiceNumber);
+
+        SaleInvoice CreateNewSaleInvoice();
+
+        void AddProductToTransaction(int productId, SaleInvoice invoice);
+
+        void CompleteTransaction(int saleId);
+
+        bool IsInvoiceFinalised(int saleId);
+
+        ICollection<Product> GetProductsInTransaction(int saleId);
+
+        SaleInvoice GetCurerntSale();
+
+        ICollection<Payment> GetSalesPayments(int saleId);
+
+        void AddSalePayment(Payment payment);
+
+        void AddProductSale(ProductSale productSale);
+
+        void DeleteProductSale(ProductSale productSale);
+
+        void DeleteSaleInvoice(int saleInvoiceId);
+
+
+
+
     }
 }
