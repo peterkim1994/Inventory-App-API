@@ -8,11 +8,14 @@ namespace InventoryPOS.DataStore.Models
 {
     public class ProductSale
     {
-
+        [Key]
+        public int Id { get; set; }
         public int SalesInvoiceId { get; set; }
         public SaleInvoice SaleInvoice { get; set; }
         public int ProductId { get; set; }
         public Product Product { get; set; }
+        public bool PromotionApplied{get;set;}
+        public int PromotionId { get; set; }
         [Required]
         public int PriceSold { get; set; }
     }

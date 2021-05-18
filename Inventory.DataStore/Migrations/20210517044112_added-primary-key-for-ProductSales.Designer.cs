@@ -4,14 +4,16 @@ using InventoryPOS.DataStore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace InventoryPOS.DataStore.Migrations
 {
     [DbContext(typeof(DBContext))]
-    partial class DBContextModelSnapshot : ModelSnapshot
+    [Migration("20210517044112_added-primary-key-for-ProductSales")]
+    partial class addedprimarykeyforProductSales
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -205,12 +207,6 @@ namespace InventoryPOS.DataStore.Migrations
                         .HasColumnType("int");
 
                     b.Property<int>("ProductId")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("PromotionApplied")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("PromotionId")
                         .HasColumnType("int");
 
                     b.Property<int?>("SaleInvoiceId")

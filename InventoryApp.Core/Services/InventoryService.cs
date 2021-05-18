@@ -101,11 +101,6 @@ namespace InventoryPOSApp.Core.Services
                 newBarcode = long.Parse(code);
             } while (_repo.GetProductByBarcode(newBarcode) != null);
             return newBarcode;
-            //Random random = new Random();
-            //string code = string.Empty;
-            //for (int i = 0; i < 12; i++)
-            //    code = String.Concat(code, random.Next(10).ToString());         
-            //return long.Parse(code);
         }
 
         public bool AddProduct(Product product)

@@ -44,8 +44,6 @@ namespace InventoryPOSApp.Core.Repositories
             _context.SaveChanges();
         }
 
-
-
         public Promotion GetPromotionByName(string promotionName)
         {
             var product = _context.Promotions.FirstOrDefault(pr => pr.PromotionName == promotionName);
@@ -54,6 +52,15 @@ namespace InventoryPOSApp.Core.Repositories
 
         public void SaveChanges()
         {
+            _context.SaveChanges();
+        }
+
+        public void ClearPromotionProducts(int promotionId)
+        {
+            var productPromos = from pp in _context.ProductPromotions
+                                where pp.PromotionId == promotionId
+                                select pp;
+            _context.ProductPromotions.RemoveRange(productPromos);
             _context.SaveChanges();
         }
 
@@ -80,10 +87,39 @@ namespace InventoryPOSApp.Core.Repositories
         {
             var promos = from pr in _context.Promotions.Include(promo => promo.ProductPromotions)
                          where
+                            pr.Active == true &&
                             pr.Start <= DateTime.Now &&
                             pr.End >= DateTime.Now
                          select pr;
             return promos.ToList();
+        }
+
+        /// <summary>
+        /// Returns a hash map/dictionary, keys are product Ids currently included in a promotion.
+        /// values are a list of promotions which include that product
+        /// </summary>
+        /// <returns>A dictionary of products, and all promotions which include the product</returns>
+        public Dictionary<int, IList<Promotion>> GetProductActivePromotions()
+        {
+            var promos = GetActivePromotions();
+            Dictionary<int, IList<Promotion>> productPromos = new Dictionary<int, IList<Promotion>>(300);
+            foreach(var promo in promos)
+            {
+                foreach(var prod in promo.ProductPromotions)
+                {
+                    int prodId = prod.ProductId;
+                    if (!productPromos.ContainsKey(prodId))
+                    {
+                        productPromos[prodId] = new List<Promotion>();
+                        productPromos[prodId].Add(promo);
+                    }
+                    else
+                    {
+                        productPromos[prodId].Add(promo);
+                    }
+                }
+            }
+            return productPromos;
         }
 
         public IList<Promotion> GetInactivePromotions()
@@ -122,7 +158,6 @@ namespace InventoryPOSApp.Core.Repositories
             return products.ToList();
         }
 
-
         public IList<Promotion> GetPromotionsByDate(DateTime rangeStart, DateTime rangeEnd)
         {
             throw new NotImplementedException();
@@ -156,7 +191,7 @@ namespace InventoryPOSApp.Core.Repositories
             return products.ToList();
         }
 
-        public SaleInvoice GetCurerntSale()
+        public SaleInvoice GetPreviousSale()
         {
             return _context.SalesInvoices.Last();
         }
@@ -222,6 +257,13 @@ namespace InventoryPOSApp.Core.Repositories
             _context.SaveChanges();
         }
 
+
+        public void AddProductSale(ProductSale productSale)
+        {
+            _context.ProductSales.Add(productSale);
+            _context.SaveChanges();
+        }
+
         public void DeleteProductSale(ProductSale productSale)
         {
             ProductSale product = _context.ProductSales.FirstOrDefault(p =>
@@ -232,12 +274,12 @@ namespace InventoryPOSApp.Core.Repositories
                 _context.ProductSales.Remove(product);
                 _context.SaveChanges();
             }
-
         }
 
         public void DeleteSaleInvoice(int saleInvoiceId)
         {
             SaleInvoice sale = _context.SalesInvoices.Find(saleInvoiceId);
+            //Delete ProductSales?
             _context.SalesInvoices.Remove(sale);
             _context.SaveChanges();
         }

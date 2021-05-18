@@ -19,8 +19,9 @@ namespace InventoryPOSApp.Core.Services
         IList<Promotion> GetActivePromotions();
 
         ICollection<ProductPromotion> GetProductPromotions();
+        void DeletePromotion(int promotionId);
 
-        IList<Promotion> CheckEligibalePromotions(IList<Product> products);
+        IList<Promotion> CheckEligibalePromotions(IList<int> productIds);
 
         int CalculateTotal(int saleInvoiceId);
 

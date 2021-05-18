@@ -12,7 +12,7 @@ namespace InventoryPOS.DataStore.Models
         [Key]
         public int Id { get; set; }
         [Required]
-        [MinLength(3)]
+        [MinLength(1)]
         [MaxLength(50)]
         public string PromotionName { get; set; }
         public DateTime Start { get; set; }
@@ -22,7 +22,6 @@ namespace InventoryPOS.DataStore.Models
         public int Quantity { get; set; }
         [Required]
         public int PromotionPrice { get; set; }
-
-        public virtual List<ProductPromotion> ProductPromotions { get; set; }
+        public virtual List<ProductPromotion> ProductPromotions { get; set; }    
     }
 }

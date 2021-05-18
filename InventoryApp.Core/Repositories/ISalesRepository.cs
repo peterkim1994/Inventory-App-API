@@ -9,7 +9,7 @@ namespace InventoryPOSApp.Core.Repositories
     {
         void SaveChanges();
 
-        IList<Promotion> GetCurrentPromotions();
+        Dictionary<int, IList<Promotion>> GetProductActivePromotions();
 
         IList<Promotion> GetPromotionsByDate(DateTime rangeStart, DateTime rangeEnd);
 
@@ -19,6 +19,8 @@ namespace InventoryPOSApp.Core.Repositories
 
         void EditPromotion(Promotion promotion);
 
+        void ClearPromotionProducts(int promotionId);
+                
         Promotion GetPromotionByName(string promotionName);
 
         ProductPromotion GetProductPromotion(int productId, int promotionId);
@@ -45,7 +47,7 @@ namespace InventoryPOSApp.Core.Repositories
 
         ICollection<Product> GetProductsInTransaction(int saleId);
 
-        SaleInvoice GetCurerntSale();
+        SaleInvoice GetPreviousSale();
 
         ICollection<Payment> GetSalesPayments(int saleId);
 
@@ -57,8 +59,9 @@ namespace InventoryPOSApp.Core.Repositories
 
         void DeleteSaleInvoice(int saleInvoiceId);
 
+        SaleInvoice GetSale(int saleId);
 
-
+        void ClearProductSales(int saleId);
 
     }
 }

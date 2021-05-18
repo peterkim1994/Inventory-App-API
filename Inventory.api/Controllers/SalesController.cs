@@ -105,6 +105,16 @@ namespace InventoryPOS.api.Controllers
             return Ok(promoDto);
         }
 
+        [HttpDelete("DeletePromotion")]
+        public IActionResult DeletePromotion(Object jsonResult)
+        {
+            dynamic reqBody = JObject.Parse(jsonResult.ToString());
+            int promotionId = reqBody.promotionId;
+
+            _service.DeletePromotion(promotionId);
+            return Ok();
+        }
+
         [HttpDelete("RemoveProductPromotions")]
         public IActionResult RemoveProductPromotions(Object jsonResult)
         {
@@ -145,6 +155,16 @@ namespace InventoryPOS.api.Controllers
             return BadRequest("Please provide valid promotion details");
         }
 
+
+        [HttpPost("test")]
+        public IActionResult Test(Object jsonResult)
+        {
+            dynamic reqBody = JObject.Parse(jsonResult.ToString());       
+            IList<int> productIds = reqBody.productIds.ToObject<IList<int>>();
+            var promos = _service.CheckEligibalePromotions(productIds);
+           var dtos =  _mapper.Map<IList<Promotion>, IList<PromotionDto>>(promos);
+           return Ok(dtos);
+        }
     }
         
 }

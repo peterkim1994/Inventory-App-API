@@ -38,8 +38,8 @@ namespace InventoryPOS.DataStore
             modelBuilder.Entity<Payment>()
                 .HasKey(p => new { p.SaleInvoiceId, p.PaymentMethodId});
            
-            modelBuilder.Entity<ProductSale>()
-                .HasKey(ps => new { ps.SalesInvoiceId, ps.ProductId });
+            //modelBuilder.Entity<ProductSale>()
+            //    .HasKey(ps => new { ps.SalesInvoiceId, ps.ProductId });
 
             modelBuilder.Entity<ProductPromotion>()
                .HasKey(pd => new { pd.PromotionId, pd.ProductId });
