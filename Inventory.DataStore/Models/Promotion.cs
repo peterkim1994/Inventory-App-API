@@ -22,6 +22,8 @@ namespace InventoryPOS.DataStore.Models
         public int Quantity { get; set; }
         [Required]
         public int PromotionPrice { get; set; }
-        public virtual List<ProductPromotion> ProductPromotions { get; set; }    
+        public virtual List<ProductPromotion> ProductPromotions { get; set; }
+        
+        public bool Active { get; set; }
     }
 }

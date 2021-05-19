@@ -25,13 +25,13 @@ namespace InventoryPOSApp.Core.Services
             {
                 _repo.AddPromotion(promotion);
                 return true;
-            }     
-            return false;            
+            }
+            return false;
         }
 
         public bool AddProductToPromotion(int productId, int promotionId)
         {
-            if(_repo.GetProductPromotion(productId, promotionId) == null)
+            if (_repo.GetProductPromotion(productId, promotionId) == null)
             {
                 ProductPromotion productPromotion = new ProductPromotion { ProductId = productId, PromotionId = promotionId };
                 _repo.AddProductPromotion(productPromotion);
@@ -48,13 +48,13 @@ namespace InventoryPOSApp.Core.Services
 
         public void EditPromotion(Promotion promotion)
         {
-           promotion.PromotionName = TextProcessor.ToTitleCase(promotion.PromotionName);
+            promotion.PromotionName = TextProcessor.ToTitleCase(promotion.PromotionName);
             _repo.EditPromotion(promotion);
         }
 
         public bool RemoveProductPromotion(int productId, int promotionId)
         {
-            var productPromo = _repo.GetProductPromotion(productId, promotionId); 
+            var productPromo = _repo.GetProductPromotion(productId, promotionId);
             if (productPromo == null)
             {
                 return false;
@@ -67,14 +67,14 @@ namespace InventoryPOSApp.Core.Services
         {
             _repo.ClearPromotionProducts(promotionId);
             var promo = _repo.GetPromotion(promotionId);
-            promo.Active = false;         
+            promo.Active = false;
             _repo.EditPromotion(promo);
         }
 
         public int CalculateTotal(int saleInvoiceId)
         {
-           ICollection<Product> products = _repo.GetProductsInTransaction(saleInvoiceId);
-           throw new NotImplementedException();
+            ICollection<Product> products = _repo.GetProductsInTransaction(saleInvoiceId);
+            throw new NotImplementedException();
         }
 
         public Payment ProcessPayement(Payment payment, SaleInvoice sale)
@@ -110,8 +110,8 @@ namespace InventoryPOSApp.Core.Services
         }
 
         public bool AddProductToSale(int SaleId, int productId)
-        {
-           var sale = _repo.GetCurerntSale
+        {         
+            return false;
         }
 
         // looks like a lot of for loops but must of them will only iterate 1-3 times at most
@@ -127,45 +127,39 @@ namespace InventoryPOSApp.Core.Services
                 int product = productIds[p];
                 if (productPromos.ContainsKey(product))//if any active promotions include the product
                 {
-                    List<Promotion> promos = (List<Promotion>) productPromos[product]; // all promos which include the product
+                    List<Promotion> promos = (List<Promotion>)productPromos[product]; // all promos which include the product
                     PromotionComparer pc = new PromotionComparer();
                     promos.Sort(pc); //sorting promos by lowest cost Per product
                     Promotion bestPromotion = null; // cheapest promotion offer applicable will be selected 
                     foreach (var promo in promos)
                     {
+                        if (bestPromotion != null) break;
                         int qtyNeeded = promo.Quantity; //Counter to check if sale includes the min qty required for promotion offer
                         List<int> productList = new List<int>(productIds); // new list as, a productId will be removed once counted
+                        HashSet<int> promoProductList = new HashSet<int>(promo.ProductPromotions.Select(p => p.ProductId));
                         for (int j = p; j < productList.Count; j++)
-                      //      foreach (var prod in productList)
                         {
                             int prod = productList[j];
-                            for (int i = 0; i < promo.ProductPromotions.Count; i++)
+                            if (promoProductList.Contains(prod))
                             {
-                                int promoProduct = promo.ProductPromotions[i].ProductId;
-                                if (productList.Contains(promoProduct))
-                                {
-                                    qtyNeeded--;
-                                    productList[j] = 0;
-                                }                                  
-                                if (qtyNeeded == 0)
-                                {
-                                    bestPromotion = promo;
-                                    //All products included in the promotion will no longer be included in the productId list,
-                                    //as they are no longer applicable for other promos
-                                    productIds = productList; 
-                                    break;
-                                }                                  
+                                qtyNeeded--;
+                                productList[j] = 0;
                             }
-                          if(bestPromotion != null)  break;
-                        }
-                        if (bestPromotion != null) break;
-                    }
-                    if(bestPromotion != null) /// if null it means there the min qty for applicable products for promo wasnt reached
-                        eligiblePromotions.Add(bestPromotion);
+                            if (qtyNeeded == 0)
+                            {
+                                bestPromotion = promo;
+                                eligiblePromotions.Add(bestPromotion);
+                                //All products included in the promotion will no longer be included in the productId list,
+                                //as they are no longer applicable for other promos
+                                productIds = productList;
+                                break;
+                            }                           
+                        }                      
+                    }                       
                 }
             }
             return eligiblePromotions;
-        }        
+        }
 
         public List<ProductSale> ProcessPromotions(List<Product> products, int saleId)
         {
@@ -176,10 +170,10 @@ namespace InventoryPOSApp.Core.Services
                 Product product = products[i];
                 if (productPromos.ContainsKey(product.Id))
                 {
-                    List<Promotion> promosIncludingProduct = (List<Promotion>) productPromos[product.Id];
+                    List<Promotion> promosIncludingProduct = (List<Promotion>)productPromos[product.Id];
                     promosIncludingProduct.Sort(new PromotionComparer());
-                    
-                    foreach(var promo in promosIncludingProduct)
+
+                    foreach (var promo in promosIncludingProduct)
                     {
                         int qtyNeeded = promo.Quantity; //Counter to check if sale includes the min qty required for promotion offer
                         if (qtyNeeded == 1)
@@ -205,13 +199,13 @@ namespace InventoryPOSApp.Core.Services
                                 {
                                     SalesInvoiceId = saleId,
                                     ProductId = product.Id,
-                                    PriceSold = promo.PromotionPrice/promo.Quantity,
+                                    PriceSold = promo.PromotionPrice / promo.Quantity,
                                     PromotionId = promo.Id,
                                     PromotionApplied = true
                                 });
 
-                            }                             
-                            if(qtyNeeded == 0)
+                            }
+                            if (qtyNeeded == 0)
                             {
 
                             }

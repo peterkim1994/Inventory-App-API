@@ -48,6 +48,9 @@ namespace InventoryPOS.DataStore
                 .Property(s => s.Finalised)
                 .HasDefaultValue(false);
 
+            modelBuilder.Entity<Promotion>()
+              .Property(b => b.Active)
+              .HasDefaultValue(true);
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

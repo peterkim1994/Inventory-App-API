@@ -196,6 +196,19 @@ namespace InventoryPOSApp.Core.Repositories
             return _context.SalesInvoices.Last();
         }
 
+        public void ClearProductSales(int saleId)
+        {
+            var productSales = from ps in _context.ProductSales
+                               where ps.SalesInvoiceId == saleId
+                               select ps;
+            if (productSales.Count() == 0)
+                return;
+            else{
+                _context.ProductSales.RemoveRange(productSales);
+                SaveChanges();
+            }
+        }
+
         public ICollection<Payment> GetSalesPayments(int saleId)
         {
             var payments = from sale in _context.SalesInvoices
@@ -282,6 +295,11 @@ namespace InventoryPOSApp.Core.Repositories
             //Delete ProductSales?
             _context.SalesInvoices.Remove(sale);
             _context.SaveChanges();
+        }
+
+        public SaleInvoice GetSale(int saleId)
+        {
+            throw new NotImplementedException();
         }
     }
 }
