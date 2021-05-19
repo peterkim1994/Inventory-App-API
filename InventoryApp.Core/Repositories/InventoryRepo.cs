@@ -60,30 +60,30 @@ namespace InventoryPOSApp.Core.Repositories
         }
 
         public List<T> GetProductAttributes<T>() where T : ProductAttribute
-        {          
-            List<T> x = _context.Set<T>().ToList();            
+        {
+            List<T> x = _context.Set<T>().ToList();
             return x;
         }
 
         public bool ContainsAtt<T>(T newAtt) where T : ProductAttribute
-        {               
+        {
             var set = _context.Set<T>();
             var rows = set.ToList();
             var attribute = from at in rows
-                    where at.Value == newAtt.Value                
-                    select at;
-            return (attribute.Count() == 1); 
+                            where at.Value == newAtt.Value
+                            select at;
+            return (attribute.Count() == 1);
         }
-         
+
         public bool ContainsProduct(Product product)
-        {          
-            var prod =  _context.Products.Where(pr =>
-                pr.ManufactureCode == product.ManufactureCode
-                && pr.BrandId == product.BrandId
-                && pr.Description == product.Description
-                && pr.ColourId == product.ColourId
-                && pr.SizeId == product.SizeId
-                && pr.ItemCategoryId == product.ItemCategoryId
+        {
+            var prod = _context.Products.Where(pr =>
+               pr.ManufactureCode == product.ManufactureCode
+               && pr.BrandId == product.BrandId
+               && pr.Description == product.Description
+               && pr.ColourId == product.ColourId
+               && pr.SizeId == product.SizeId
+               && pr.ItemCategoryId == product.ItemCategoryId
             );
             bool s = prod.Count() > 0;
             return (s);
@@ -91,24 +91,30 @@ namespace InventoryPOSApp.Core.Repositories
 
         public void EditProduct(Product editedProduct)
         {
-            //  var product = _context.Products.First(p => p.Id == editedProduct.Id);
-            //  product = editedProduct;
-            Product product = _context.Products.Find(editedProduct.Id);       
+            Product product = _context.Products.Find(editedProduct.Id);
             _context.Entry(product).CurrentValues.SetValues(editedProduct);
-          //  State = EntityState.Modified;
-            //product = editedProduct;
-            _context.SaveChanges();          
+            _context.SaveChanges();
         }
 
 
         public Product GetProduct(int id)
         {
-           return _context.Products
+            return _context.Products
+              .Include(pr => pr.Brand)
+              .Include(pr => pr.Colour)
+              .Include(pr => pr.Size)
+              .Include(pr => pr.ItemCategory)
+              .First(pr => pr.Id == id);
+        }
+
+        public List<Product> GetProducts(List<int> productIds)
+        {
+            return _context.Products.Where(p => productIds.Contains(p.Id))
              .Include(pr => pr.Brand)
              .Include(pr => pr.Colour)
              .Include(pr => pr.Size)
              .Include(pr => pr.ItemCategory)
-             .First(pr => pr.Id == id);
+             .ToList();
         }
 
         public void DeleteProduct(Product product)
@@ -125,16 +131,16 @@ namespace InventoryPOSApp.Core.Repositories
 
         public List<Product> GetProducts()
         {
-          return _context.Products
-                 .Include(pr => pr.Brand)
-                 .Include(pr => pr.Colour)
-                 .Include(pr => pr.Size)
-                 .Include(pr => pr.ItemCategory)
-                 .OrderBy(pr => pr.BrandId)
-                 .ThenBy(pr => pr.ItemCategoryId)
-                 .ThenBy(pr => pr.ColourId)
-                 .ThenBy(pr => pr.Size)
-                 .ToList();
+            return _context.Products
+                   .Include(pr => pr.Brand)
+                   .Include(pr => pr.Colour)
+                   .Include(pr => pr.Size)
+                   .Include(pr => pr.ItemCategory)
+                   .OrderBy(pr => pr.BrandId)
+                   .ThenBy(pr => pr.ItemCategoryId)
+                   .ThenBy(pr => pr.ColourId)
+                   .ThenBy(pr => pr.Size)
+                   .ToList();
             //  var prods = _context.Products.Include()
         }
 
@@ -154,14 +160,12 @@ namespace InventoryPOSApp.Core.Repositories
             if (existingBrand == null)
             {
                 _context.Entry<Brand>(brand).State = EntityState.Modified;
-                // brand.Value = brand.Value;
                 _context.SaveChanges();
             }
-            //  Brand brand = _context.Brands.Find(brand.Id);
         }
 
         public Brand GetBrandByName(string brandName)
-        {            
+        {
             return _context.Brands.FirstOrDefault(b => b.Value == brandName);
         }
 
@@ -182,13 +186,13 @@ namespace InventoryPOSApp.Core.Repositories
 
         public void EditColour(Colour colour)
         {
-            _context.Entry<Colour>(colour).State = EntityState.Modified;   
+            _context.Entry<Colour>(colour).State = EntityState.Modified;
             _context.SaveChanges();
         }
 
         public void EditCategory(ItemCategory category)
         {
-            _context.Entry<ItemCategory>(category).State = EntityState.Modified;     
+            _context.Entry<ItemCategory>(category).State = EntityState.Modified;
             _context.SaveChanges();
         }
         public void EditSize(Size size)

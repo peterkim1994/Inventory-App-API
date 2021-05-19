@@ -21,7 +21,7 @@ namespace InventoryPOSApp.Core.Services
         ICollection<ProductPromotion> GetProductPromotions();
         void DeletePromotion(int promotionId);
 
-        IList<Promotion> CheckEligibalePromotions(IList<int> productIds);
+        IList<ProductSale> ApplyPromotions(int saleId, List<Product> products);
 
         int CalculateTotal(int saleInvoiceId);
 
@@ -31,7 +31,7 @@ namespace InventoryPOSApp.Core.Services
 
         SaleInvoice StartSaleTransaction();
 
-        bool CancelPrevSale();
+        void CancelSale();
 
         bool AddProductToSale(int SaleId, int productId);
 

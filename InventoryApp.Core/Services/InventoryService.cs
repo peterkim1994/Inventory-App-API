@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Linq;
 using InventoryPOS.DataStore.Models;
 using InventoryPOS.DataStore.Models.Interfaces;
 using InventoryPOSApp.Core.Repositories;
@@ -207,6 +208,17 @@ namespace InventoryPOSApp.Core.Services
             {
                 return false;
             }
+        }
+
+        public List<Product> GetProducts(List<int> productIds)
+        {
+            var products = _repo.GetProducts(productIds);
+            List<Product> productList = new List<Product>();
+            foreach(int prod in productIds)
+            {
+                productList.Add(products.First(p=> p.Id == prod));
+            }
+            return productList;
         }
     }
 }

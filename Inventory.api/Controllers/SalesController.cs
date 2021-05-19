@@ -25,12 +25,14 @@ namespace InventoryPOS.api.Controllers
         private ISalesService _service { get; set; }
         private ISalesRepository _repo { get; set; }
         private readonly IMapper _mapper;
+        private readonly IInventoryService _inventoryService;
 
         public SalesController
         (
             ILogger<SalesController> logger,
             ISalesRepository repo,
             ISalesService service,
+            IInventoryService inventoryService,
             IMapper mapper
         )
         {
@@ -38,6 +40,7 @@ namespace InventoryPOS.api.Controllers
             _service = service;
             _repo = repo;
             _mapper = mapper;
+            _inventoryService = inventoryService;
         }
 
         [HttpPost("AddPromotion")]
@@ -55,6 +58,7 @@ namespace InventoryPOS.api.Controllers
             return BadRequest("Invalid promotion settings");
         }
 
+
         [HttpPost("AddProductPromotion")]
         public IActionResult AddProductPromotion(int productId, int promotionId)
         {
@@ -64,6 +68,7 @@ namespace InventoryPOS.api.Controllers
             }
             return BadRequest("This promotion already contains this product");
         }
+
 
         [HttpGet("GetActivePromotions")]
         public IActionResult GetActivePromotions()
@@ -160,10 +165,11 @@ namespace InventoryPOS.api.Controllers
         public IActionResult Test(Object jsonResult)
         {
             dynamic reqBody = JObject.Parse(jsonResult.ToString());       
-            IList<int> productIds = reqBody.productIds.ToObject<IList<int>>();
-            var promos = _service.CheckEligibalePromotions(productIds);
-           var dtos =  _mapper.Map<IList<Promotion>, IList<PromotionDto>>(promos);
-           return Ok(dtos);
+       //     List<int> productIds = reqBody.productIds.ToObject<IList<int>>();
+            List<Product> products = _inventoryService.GetProducts(reqBody.productIds.ToObject<IList<int>>());
+            var promos = _service.ApplyPromotions(1,products);
+            var dtos = _mapper.Map<IList<ProductSale>, IList<ProductSaleDto>>(promos);
+            return Ok(dtos);
         }
     }
         

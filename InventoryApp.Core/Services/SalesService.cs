@@ -116,117 +116,79 @@ namespace InventoryPOSApp.Core.Services
 
         // looks like a lot of for loops but must of them will only iterate 1-3 times at most
         //Optimise later, use hashsets
-        public IList<Promotion> CheckEligibalePromotions(IList<int> productIds)
-        {
+        public IList<ProductSale> ApplyPromotions(int saleId, List<Product> products)
+        {          
             Dictionary<int, IList<Promotion>> productPromos = _repo.GetProductActivePromotions();
-            IList<Promotion> eligiblePromotions = new List<Promotion>();
+            List<ProductSale> productSales = new List<ProductSale>();
 
-            //foreach(var product in productIds)//for all products in a sale
-            for (int p = 0; p < productIds.Count; p++)
+            for (int p = 0; p < products.Count; p++)//for all products in a sale
             {
-                int product = productIds[p];
+                if (products[p] == null) continue;
+                int product = products[p].Id;
                 if (productPromos.ContainsKey(product))//if any active promotions include the product
                 {
                     List<Promotion> promos = (List<Promotion>)productPromos[product]; // all promos which include the product
                     PromotionComparer pc = new PromotionComparer();
                     promos.Sort(pc); //sorting promos by lowest cost Per product
-                    Promotion bestPromotion = null; // cheapest promotion offer applicable will be selected 
+                    bool promotionApplied = false; // cheapest promotion offer applicable will be selected 
                     foreach (var promo in promos)
                     {
-                        if (bestPromotion != null) break;
+                       
                         int qtyNeeded = promo.Quantity; //Counter to check if sale includes the min qty required for promotion offer
-                        List<int> productList = new List<int>(productIds); // new list as, a productId will be removed once counted
+                        List<Product> productList = new List<Product>(products); // new list as, a productId will be removed once counted
                         HashSet<int> promoProductList = new HashSet<int>(promo.ProductPromotions.Select(p => p.ProductId));
+                        List<ProductSale> pontentialPromos = new List<ProductSale>();
                         for (int j = p; j < productList.Count; j++)
-                        {
-                            int prod = productList[j];
-                            if (promoProductList.Contains(prod))
+                        {                            
+                            if (productList[j] !=null && promoProductList.Contains(productList[j].Id))
                             {
                                 qtyNeeded--;
-                                productList[j] = 0;
+                                pontentialPromos.Add(ProcessProductSale(saleId, productList[j], promotion : promo ));
+                                productList[j] = null;                        
                             }
                             if (qtyNeeded == 0)
                             {
-                                bestPromotion = promo;
-                                eligiblePromotions.Add(bestPromotion);
-                                //All products included in the promotion will no longer be included in the productId list,
-                                //as they are no longer applicable for other promos
-                                productIds = productList;
+                                promotionApplied = true;
+                                productSales.AddRange(pontentialPromos);            
+                                //All products included in this promotion will no longer be included in the productId list                                
+                                products = productList;
                                 break;
                             }                           
-                        }                      
-                    }                       
-                }
-            }
-            return eligiblePromotions;
-        }
-
-        public List<ProductSale> ProcessPromotions(List<Product> products, int saleId)
-        {
-            Dictionary<int, IList<Promotion>> productPromos = _repo.GetProductActivePromotions();
-            List<ProductSale> productSales = new List<ProductSale>();
-            for (int i = 0; i < products.Count; i++)
-            {
-                Product product = products[i];
-                if (productPromos.ContainsKey(product.Id))
-                {
-                    List<Promotion> promosIncludingProduct = (List<Promotion>)productPromos[product.Id];
-                    promosIncludingProduct.Sort(new PromotionComparer());
-
-                    foreach (var promo in promosIncludingProduct)
-                    {
-                        int qtyNeeded = promo.Quantity; //Counter to check if sale includes the min qty required for promotion offer
-                        if (qtyNeeded == 1)
-                        {
-                            ProductSale productSale = new ProductSale
-                            {
-                                SalesInvoiceId = saleId,
-                                ProductId = product.Id,
-                                PriceSold = promo.PromotionPrice,
-                                PromotionId = promo.Id,
-                                PromotionApplied = true
-                            };
-                            productSales.Add(productSale);
-                            break;
                         }
-                        List<ProductSale> promoProducts = new List<ProductSale>(); // new list as, a productId will be removed once counted
-                        for (int j = i; j < products.Count; j++)
-                        {
-                            if (promo.ProductPromotions.FirstOrDefault(pp => pp.ProductId == product.Id) != null)
-                            {
-                                qtyNeeded--;
-                                promoProducts.Add(new ProductSale
-                                {
-                                    SalesInvoiceId = saleId,
-                                    ProductId = product.Id,
-                                    PriceSold = promo.PromotionPrice / promo.Quantity,
-                                    PromotionId = promo.Id,
-                                    PromotionApplied = true
-                                });
-
-                            }
-                            if (qtyNeeded == 0)
-                            {
-
-                            }
-                        }
-                    }
+                        if (promotionApplied) break;
+                    }                    
+                    if(!promotionApplied) productSales.Add(ProcessProductSale(saleId, products[p]));
                 }
                 else
                 {
-                    ProductSale productSale = new ProductSale
-                    {
-                        SalesInvoiceId = saleId,
-                        ProductId = product.Id,
-                        PriceSold = product.Price,
-                        PromotionApplied = false
-                    };
-                    productSales.Add(productSale);
+                    productSales.Add(ProcessProductSale(saleId, products[p]));
                 }
             }
             return productSales;
         }
 
+        public ProductSale ProcessProductSale(int saleId, Product product, Promotion promotion = null)
+        {
+            ProductSale productSale = new ProductSale
+            {
+                SalesInvoiceId = saleId,
+                ProductId = product.Id,
+                Product = product,
+                PriceSold = product.Price,
+                PromotionApplied = false,
+                PromotionId = 0,     
+            };
+            if(promotion != null)
+            {
+                productSale.PriceSold = promotion.PromotionPrice / promotion.Quantity;
+                productSale.PromotionApplied = true;
+                productSale.PromotionId = promotion.Id;
+                productSale.Promotion = promotion;
+            }
+            return productSale;
+        }
+
+       
         //public List<ProductSale> CheckPromotionElgibility(List<Product> products , Promotion promo)
         //{
 

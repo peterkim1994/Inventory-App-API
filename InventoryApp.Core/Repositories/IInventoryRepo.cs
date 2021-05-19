@@ -59,7 +59,8 @@ namespace InventoryPOSApp.Core.Repositories
         ItemCategory GetItemCategoryByName(string categoryName);
 
         Size GetSizeByName(string sizeName);
-        
+
+        List<Product> GetProducts(List<int> productIds);
 
 
     }

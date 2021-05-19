@@ -16,6 +16,7 @@ namespace InventoryPOS.DataStore.Models
         public Product Product { get; set; }
         public bool PromotionApplied{get;set;}
         public int PromotionId { get; set; }
+        public Promotion Promotion { get; set; }
         [Required]
         public int PriceSold { get; set; }
     }

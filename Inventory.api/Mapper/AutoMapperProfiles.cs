@@ -17,15 +17,15 @@ namespace InventoryPOS.api.Helpers
               .ForMember
               (
                 dest => dest.Price,
-                opt => opt.MapFrom(src => src.Price/100.0)
+                opt => opt.MapFrom(src => src.Price / 100.0)
               );
 
             CreateMap<ProductDto, Product>()
                 .ForMember
                 (
-                    d => d.Price, 
+                    d => d.Price,
                     o => o.MapFrom(s => Convert.ToInt32(s.Price * 100.0))
-                );           
+                );
 
             CreateMap<Colour, ColourDto>();
 
@@ -37,7 +37,7 @@ namespace InventoryPOS.api.Helpers
                 .ForMember
                 (
                   d => d.ProductIds,
-                  o => o.MapFrom(s => s.ProductPromotions.Select(pm => pm.ProductId).ToList())            
+                  o => o.MapFrom(s => s.ProductPromotions.Select(pm => pm.ProductId).ToList())
                 )
                 .ForMember
                 (
@@ -70,7 +70,19 @@ namespace InventoryPOS.api.Helpers
                 (
                     d => d.PromotionPrice,
                     o => o.MapFrom(s => Convert.ToInt32(s.PromotionPrice * 100.0))
-                ); 
+                );
+
+            CreateMap<ProductSale, ProductSaleDto>()
+                .ForMember
+                (
+                    d => d.Product,
+                    o => o.MapFrom(s => String.Format("{0} {1} {2} {3}", s.Product.Brand.Value, s.Product.ItemCategory.Value, s.Product.Colour.Value, s.Product.Size.Value))
+                )           
+                .ForMember
+                (
+                    d => d.PromotionName,
+                    o => o.MapFrom(s => s.Promotion.PromotionName)
+                );
         }
     }
 }
