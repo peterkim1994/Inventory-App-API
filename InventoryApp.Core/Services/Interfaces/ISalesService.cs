@@ -8,19 +8,6 @@ namespace InventoryPOSApp.Core.Services
     public interface ISalesService
     {
 
-        bool AddPromotion(Promotion promotion);
-
-        bool AddProductToPromotion(int productId, int promotionId);
-
-        void EditPromotion(Promotion promotion);
-
-        bool RemoveProductPromotion(int productId, int PromotionId);
-
-        IList<Promotion> GetActivePromotions();
-
-        ICollection<ProductPromotion> GetProductPromotions();
-        void DeletePromotion(int promotionId);
-
         IList<ProductSale> ApplyPromotions(int saleId, List<Product> products);
 
         int CalculateTotal(int saleInvoiceId);

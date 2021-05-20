@@ -6,6 +6,7 @@ using InventoryPOS.api.Helpers;
 using InventoryPOS.DataStore;
 using InventoryPOSApp.Core.Repositories;
 using InventoryPOSApp.Core.Services;
+using InventoryPOSApp.Core.Services.Interfaces;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -33,6 +34,8 @@ namespace Inventory.api
             services.AddDbContext<DBContext>();
             services.AddScoped<IInventoryService, InventoryService>();
             services.AddScoped<IInventoryRepo, InventoryRepo>();
+            services.AddScoped<IPromotionsRepository, PromotionRepository>();
+            services.AddScoped<IPromotionsService, PromotionsService>();
             services.AddScoped<ISalesRepository, SalesRepository>();
             services.AddScoped<ISalesService, SalesService>();
             services.AddAutoMapper(typeof(AutoMapperProfiles));

@@ -11,108 +11,34 @@ namespace InventoryPOSApp.Core.Services
 {
     public class SalesService : ISalesService
     {
-        private readonly ISalesRepository _repo;
+        private readonly ISalesRepository _salesRepo;
+        private readonly IPromotionsRepository _promoRepo;
 
-        public SalesService(ISalesRepository repo)
+        public SalesService(ISalesRepository salesRepo, IPromotionsRepository  promoRepo)
         {
-            _repo = repo;
-        }
-
-        public bool AddPromotion(Promotion promotion)
-        {
-            promotion.PromotionName = TextProcessor.ToTitleCase(promotion.PromotionName);
-            if (_repo.GetPromotionByName(promotion.PromotionName) == null)
-            {
-                _repo.AddPromotion(promotion);
-                return true;
-            }
-            return false;
-        }
-
-        public bool AddProductToPromotion(int productId, int promotionId)
-        {
-            if (_repo.GetProductPromotion(productId, promotionId) == null)
-            {
-                ProductPromotion productPromotion = new ProductPromotion { ProductId = productId, PromotionId = promotionId };
-                _repo.AddProductPromotion(productPromotion);
-                return true;
-            }
-            return false;
-        }
-
-        public IList<Promotion> GetActivePromotions()
-        {
-            return _repo.GetActivePromotions();
+            _salesRepo = salesRepo;
+            _promoRepo = promoRepo;
         }
 
 
-        public void EditPromotion(Promotion promotion)
-        {
-            promotion.PromotionName = TextProcessor.ToTitleCase(promotion.PromotionName);
-            _repo.EditPromotion(promotion);
-        }
-
-        public bool RemoveProductPromotion(int productId, int promotionId)
-        {
-            var productPromo = _repo.GetProductPromotion(productId, promotionId);
-            if (productPromo == null)
-            {
-                return false;
-            }
-            _repo.RemoveProductPromotion(productPromo);
-            return true;
-        }
-
-        public void DeletePromotion(int promotionId)
-        {
-            var promo = _repo.GetPromotion(promotionId);
-            if (promo != null)
-            {
-                _repo.ClearPromotionProducts(promotionId);             
-                promo.Active = false;
-                _repo.EditPromotion(promo);
-            }
-          
-        }
-
-        public int CalculateTotal(int saleInvoiceId)
-        {
-            ICollection<Product> products = _repo.GetProductsInTransaction(saleInvoiceId);
-            throw new NotImplementedException();
-        }
-
-        public Payment ProcessPayement(Payment payment, SaleInvoice sale)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool ValidateSalePayments(SaleInvoice sale)
-        {
-            throw new NotImplementedException();
-        }
-
-        public ICollection<ProductPromotion> GetProductPromotions()
-        {
-            throw new NotImplementedException();
-        }
 
         public SaleInvoice StartSaleTransaction()
         {
-            var sale = _repo.GetPreviousSale();
+            var sale = _salesRepo.GetPreviousSale();
             if (sale.Finalised == true)
-                return _repo.CreateNewSaleInvoice();
+                return _salesRepo.CreateNewSaleInvoice();
             else
             {
-                _repo.ClearProductSales(sale.Id);
-                return _repo.CreateNewSaleInvoice();
+                _salesRepo.ClearProductSales(sale.Id);
+                return _salesRepo.CreateNewSaleInvoice();
             }
         }
 
         public void CancelSale()
         {
-            var sale = _repo.GetPreviousSale();
+            var sale = _salesRepo.GetPreviousSale();
             if (sale.Finalised == false)
-                _repo.ClearProductSales(sale.Id);
+                _salesRepo.ClearProductSales(sale.Id);
         }
 
         public bool AddProductToSale(int SaleId, int productId)
@@ -124,7 +50,7 @@ namespace InventoryPOSApp.Core.Services
         //Optimise later, use hashsets
         public IList<ProductSale> ApplyPromotions(int saleId, List<Product> products)
         {          
-            Dictionary<int, IList<Promotion>> productPromos = _repo.GetProductActivePromotions();
+            Dictionary<int, IList<Promotion>> productPromos = _promoRepo.GetProductActivePromotions();
             List<ProductSale> productSales = new List<ProductSale>();
 
             for (int p = 0; p < products.Count; p++)//for all products in a sale
@@ -175,6 +101,12 @@ namespace InventoryPOSApp.Core.Services
             return productSales;
         }
 
+        public int CalculateTotal(int saleInvoiceId)
+        {
+            ICollection<Product> products = _salesRepo.GetProductsInTransaction(saleInvoiceId);
+            throw new NotImplementedException();
+        }
+
         public ProductSale ProcessProductSale(int saleId, Product product, Promotion promotion = null)
         {
             ProductSale productSale = new ProductSale
@@ -196,7 +128,17 @@ namespace InventoryPOSApp.Core.Services
             return productSale;
         }
 
-       
+        public Payment ProcessPayement(Payment payment, SaleInvoice sale)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool ValidateSalePayments(SaleInvoice sale)
+        {
+            throw new NotImplementedException();
+        }
+
+
         //public List<ProductSale> CheckPromotionElgibility(List<Product> products , Promotion promo)
         //{
 
