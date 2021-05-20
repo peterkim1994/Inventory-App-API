@@ -63,5 +63,11 @@ namespace InventoryPOSApp.Core.Repositories
 
         void ClearProductSales(int saleId);
 
+        void DeleteSalePayments(int saleId);
+
+        void EditSalePayment(Payment payment);
+
+        
+
     }
 }

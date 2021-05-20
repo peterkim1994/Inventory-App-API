@@ -65,10 +65,14 @@ namespace InventoryPOSApp.Core.Services
 
         public void DeletePromotion(int promotionId)
         {
-            _repo.ClearPromotionProducts(promotionId);
             var promo = _repo.GetPromotion(promotionId);
-            promo.Active = false;
-            _repo.EditPromotion(promo);
+            if (promo != null)
+            {
+                _repo.ClearPromotionProducts(promotionId);             
+                promo.Active = false;
+                _repo.EditPromotion(promo);
+            }
+          
         }
 
         public int CalculateTotal(int saleInvoiceId)
@@ -104,9 +108,11 @@ namespace InventoryPOSApp.Core.Services
             }
         }
 
-        public bool CancelPrevSale()
+        public void CancelSale()
         {
-            throw new NotImplementedException();
+            var sale = _repo.GetPreviousSale();
+            if (sale.Finalised == false)
+                _repo.ClearProductSales(sale.Id);
         }
 
         public bool AddProductToSale(int SaleId, int productId)
@@ -131,13 +137,15 @@ namespace InventoryPOSApp.Core.Services
                     PromotionComparer pc = new PromotionComparer();
                     promos.Sort(pc); //sorting promos by lowest cost Per product
                     bool promotionApplied = false; // cheapest promotion offer applicable will be selected 
+
                     foreach (var promo in promos)
-                    {
-                       
+                    {                       
                         int qtyNeeded = promo.Quantity; //Counter to check if sale includes the min qty required for promotion offer
                         List<Product> productList = new List<Product>(products); // new list as, a productId will be removed once counted
                         HashSet<int> promoProductList = new HashSet<int>(promo.ProductPromotions.Select(p => p.ProductId));
+                      //  List<int> promoProductList = new List<int>(promo.ProductPromotions.Select(p => p.ProductId));
                         List<ProductSale> pontentialPromos = new List<ProductSale>();
+
                         for (int j = p; j < productList.Count; j++)
                         {                            
                             if (productList[j] !=null && promoProductList.Contains(productList[j].Id))

@@ -31,10 +31,10 @@ namespace Inventory.api
         {
             services.AddControllers();
             services.AddDbContext<DBContext>();
-            services.AddTransient<IInventoryService, InventoryService>();
-            services.AddTransient<IInventoryRepo, InventoryRepo>();
-            services.AddTransient<ISalesRepository, SalesRepository>();
-            services.AddTransient<ISalesService, SalesService>();
+            services.AddScoped<IInventoryService, InventoryService>();
+            services.AddScoped<IInventoryRepo, InventoryRepo>();
+            services.AddScoped<ISalesRepository, SalesRepository>();
+            services.AddScoped<ISalesService, SalesService>();
             services.AddAutoMapper(typeof(AutoMapperProfiles));
             services.AddCors(options =>
             {

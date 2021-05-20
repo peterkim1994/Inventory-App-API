@@ -17,6 +17,7 @@ namespace InventoryPOSApp.Core.Dtos
         public int Quantity { get; set; }
         public string Start { get; set; }
         public string End { get; set; }
+        public bool Active { set; get; }
         public double PromotionPrice { get; set; }
         public IList<int> ProductIds { get; set; }
 

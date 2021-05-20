@@ -71,6 +71,7 @@ namespace InventoryPOS.api.Helpers
                     d => d.PromotionPrice,
                     o => o.MapFrom(s => Convert.ToInt32(s.PromotionPrice * 100.0))
                 );
+                
 
             CreateMap<ProductSale, ProductSaleDto>()
                 .ForMember

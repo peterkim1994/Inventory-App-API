@@ -37,10 +37,9 @@ namespace InventoryPOSApp.Core.Repositories
         }
 
 
-
         public void EditPromotion(Promotion promotion)
         {
-            _context.Entry<Promotion>(promotion).State = EntityState.Modified;
+            _context.Entry<Promotion>(promotion).State = EntityState.Modified;      
             _context.SaveChanges();
         }
 
@@ -299,7 +298,26 @@ namespace InventoryPOSApp.Core.Repositories
 
         public SaleInvoice GetSale(int saleId)
         {
-            throw new NotImplementedException();
+            return _context.SalesInvoices.Find(saleId);
         }
+
+        public void DeleteSalePayments(int saleId)
+        {
+            var payments = from p in _context.Payments
+                           where p.SaleInvoiceId == saleId
+                           select p;
+            _context.RemoveRange(payments);
+            SaveChanges();
+        }
+
+        public void EditSalePayment(Payment payment)
+        {
+            //check this works
+            var p = _context.Entry<Payment> (payment);
+            _context.Remove(p);
+            SaveChanges();
+        }
+
+
     }
 }
