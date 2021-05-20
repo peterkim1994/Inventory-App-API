@@ -171,7 +171,7 @@ namespace InventoryPOS.api.Controllers
             dynamic reqBody = JObject.Parse(jsonResult.ToString());       
        //     List<int> productIds = reqBody.productIds.ToObject<IList<int>>();
             List<Product> products = _inventoryService.GetProducts(reqBody.productIds.ToObject<IList<int>>());
-            var promos = _saleService.ApplyPromotions(1,products);
+            var promos = _saleService.ApplyPromotionsToSale(1,products);
             var dtos = _mapper.Map<IList<ProductSale>, IList<ProductSaleDto>>(promos);
             return Ok(dtos);
         }

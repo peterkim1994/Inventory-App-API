@@ -71,19 +71,44 @@ namespace InventoryPOS.api.Helpers
                     d => d.PromotionPrice,
                     o => o.MapFrom(s => Convert.ToInt32(s.PromotionPrice * 100.0))
                 );
-                
+
 
             CreateMap<ProductSale, ProductSaleDto>()
                 .ForMember
                 (
                     d => d.Product,
                     o => o.MapFrom(s => String.Format("{0} {1} {2} {3}", s.Product.Brand.Value, s.Product.ItemCategory.Value, s.Product.Colour.Value, s.Product.Size.Value))
-                )           
+                )
                 .ForMember
                 (
                     d => d.PromotionName,
                     o => o.MapFrom(s => s.Promotion.PromotionName)
+                )
+                .ForMember(
+                    d => d.PriceSold,
+                    o => o.MapFrom(s => (s.PriceSold / 100.0))
+                )
+                .ForMember(
+                    d => d.PromotionPrice,
+                    o => o.MapFrom(s => Convert.ToInt32(s.Promotion.PromotionPrice / 100.0))
                 );
+
+            CreateMap<Payment, PaymentDto>()
+              .ForMember(
+                d => d.Amount,
+                o => o.MapFrom(s => (s.Amount / 100.0))
+              )
+              .ForMember(
+                d => d.PaymentMethod,
+                o => o.MapFrom(s => s.PaymentMethod.Method)
+              );
+
+
+            CreateMap<PaymentDto, Payment>()
+             .ForMember(
+               d => d.Amount,
+               o => o.MapFrom(s => Convert.ToInt32(s.Amount * 100.0))
+             );
         }
     }
 }

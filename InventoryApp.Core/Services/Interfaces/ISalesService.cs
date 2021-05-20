@@ -8,7 +8,7 @@ namespace InventoryPOSApp.Core.Services
     public interface ISalesService
     {
 
-        IList<ProductSale> ApplyPromotions(int saleId, List<Product> products);
+        IList<ProductSale> ApplyPromotionsToSale(int saleId, List<Product> products);
 
         int CalculateTotal(int saleInvoiceId);
 
@@ -16,11 +16,10 @@ namespace InventoryPOSApp.Core.Services
 
         bool ValidateSalePayments(SaleInvoice sale);
 
-        SaleInvoice StartSaleTransaction();
+        SaleInvoice StartNewSaleTransaction();
 
-        void CancelSale();
-
-        bool AddProductToSale(int SaleId, int productId);
+        bool CancelSale(int saleId);
+        
 
     }
 }

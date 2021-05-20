@@ -17,11 +17,6 @@ namespace Inventory.api.Controllers
     [Route("[controller]")]
     public class InventoryController : ControllerBase
     {
-        private static readonly string[] Summaries = new[]
-        {
-            "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-        };
-
         private readonly ILogger<InventoryController> _logger;
         private IInventoryRepo _inventory { get; set; }
         private IInventoryService _service { get; set; }

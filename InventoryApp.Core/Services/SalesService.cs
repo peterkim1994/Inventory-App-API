@@ -14,42 +14,35 @@ namespace InventoryPOSApp.Core.Services
         private readonly ISalesRepository _salesRepo;
         private readonly IPromotionsRepository _promoRepo;
 
-        public SalesService(ISalesRepository salesRepo, IPromotionsRepository  promoRepo)
+        public SalesService(ISalesRepository salesRepo, IPromotionsRepository promoRepo)
         {
             _salesRepo = salesRepo;
             _promoRepo = promoRepo;
         }
 
-
-
-        public SaleInvoice StartSaleTransaction()
+        public SaleInvoice StartNewSaleTransaction()
         {
-            var sale = _salesRepo.GetPreviousSale();
-            if (sale.Finalised == true)
-                return _salesRepo.CreateNewSaleInvoice();
-            else
+            return _salesRepo.CreateNewSaleInvoice();
+        }
+
+        public bool CancelSale(int saleId)
+        {
+            var sale = _salesRepo.GetSale(saleId);
+            if (sale != null || sale.Finalised == false)
             {
-                _salesRepo.ClearProductSales(sale.Id);
-                return _salesRepo.CreateNewSaleInvoice();
+                _salesRepo.ClearProductSales(saleId);
+                _salesRepo.DeleteSalePayments(saleId);
+                _salesRepo.DeleteSaleInvoice(saleId);
+                return true;
             }
-        }
-
-        public void CancelSale()
-        {
-            var sale = _salesRepo.GetPreviousSale();
-            if (sale.Finalised == false)
-                _salesRepo.ClearProductSales(sale.Id);
-        }
-
-        public bool AddProductToSale(int SaleId, int productId)
-        {         
             return false;
         }
 
+
         // looks like a lot of for loops but must of them will only iterate 1-3 times at most
         //Optimise later, use hashsets
-        public IList<ProductSale> ApplyPromotions(int saleId, List<Product> products)
-        {          
+        public IList<ProductSale> ApplyPromotionsToSale(int saleId, List<Product> products)
+        {
             Dictionary<int, IList<Promotion>> productPromos = _promoRepo.GetProductActivePromotions();
             List<ProductSale> productSales = new List<ProductSale>();
 
@@ -65,33 +58,32 @@ namespace InventoryPOSApp.Core.Services
                     bool promotionApplied = false; // cheapest promotion offer applicable will be selected 
 
                     foreach (var promo in promos)
-                    {                       
+                    {
                         int qtyNeeded = promo.Quantity; //Counter to check if sale includes the min qty required for promotion offer
                         List<Product> productList = new List<Product>(products); // new list as, a productId will be removed once counted
                         HashSet<int> promoProductList = new HashSet<int>(promo.ProductPromotions.Select(p => p.ProductId));
-                      //  List<int> promoProductList = new List<int>(promo.ProductPromotions.Select(p => p.ProductId));
                         List<ProductSale> pontentialPromos = new List<ProductSale>();
 
                         for (int j = p; j < productList.Count; j++)
-                        {                            
-                            if (productList[j] !=null && promoProductList.Contains(productList[j].Id))
+                        {
+                            if (productList[j] != null && promoProductList.Contains(productList[j].Id))
                             {
                                 qtyNeeded--;
-                                pontentialPromos.Add(ProcessProductSale(saleId, productList[j], promotion : promo ));
-                                productList[j] = null;                        
+                                pontentialPromos.Add(ProcessProductSale(saleId, productList[j], promotion: promo));
+                                productList[j] = null;
                             }
                             if (qtyNeeded == 0)
                             {
                                 promotionApplied = true;
-                                productSales.AddRange(pontentialPromos);            
+                                productSales.AddRange(pontentialPromos);
                                 //All products included in this promotion will no longer be included in the productId list                                
                                 products = productList;
                                 break;
-                            }                           
+                            }
                         }
                         if (promotionApplied) break;
-                    }                    
-                    if(!promotionApplied) productSales.Add(ProcessProductSale(saleId, products[p]));
+                    }
+                    if (!promotionApplied) productSales.Add(ProcessProductSale(saleId, products[p]));
                 }
                 else
                 {
@@ -116,9 +108,9 @@ namespace InventoryPOSApp.Core.Services
                 Product = product,
                 PriceSold = product.Price,
                 PromotionApplied = false,
-                PromotionId = 0,     
+                PromotionId = 0,
             };
-            if(promotion != null)
+            if (promotion != null)
             {
                 productSale.PriceSold = promotion.PromotionPrice / promotion.Quantity;
                 productSale.PromotionApplied = true;
