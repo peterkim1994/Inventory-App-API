@@ -8,13 +8,10 @@ namespace InventoryPOS.DataStore.Models
 {
     public class Payment
     {
-
         public int SaleInvoiceId { get; set; }
         public SaleInvoice SaleInvoice { get; set; }
-
         public int PaymentMethodId{ get; set; }
         public PaymentMethod PaymentMethod { get; set; }
-
         [Required]
         public int Amount { get; set; }
     }

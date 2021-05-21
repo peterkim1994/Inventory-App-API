@@ -8,7 +8,6 @@ namespace InventoryPOS.DataStore.Models
 {
     public class ProductPromotion
     {
-
         public  int PromotionId { get; set; }
         public virtual Promotion Promotion { get; set; }  
         public int ProductId { get; set; }

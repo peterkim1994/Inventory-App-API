@@ -14,7 +14,8 @@ namespace InventoryPOSApp.Core.Dtos
         public bool PromotionApplied { get; set; }
         public int PromotionId { get; set; }        
         public string PromotionName { get; set; }
+        public double PromotionPrice{ get; set; }
         public int PromotionQuantity { get; set; }
-        public int PriceSold { get; set; }
+        public double PriceSold { get; set; }
     }
 }
