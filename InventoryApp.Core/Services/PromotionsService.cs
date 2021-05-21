@@ -44,7 +44,6 @@ namespace InventoryPOSApp.Core.Services
             return _repo.GetActivePromotions();
         }
 
-
         public void EditPromotion(Promotion promotion)
         {
             promotion.PromotionName = TextProcessor.ToTitleCase(promotion.PromotionName);

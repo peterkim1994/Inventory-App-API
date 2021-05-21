@@ -18,6 +18,7 @@ namespace InventoryPOSApp.Core.Services.Interfaces
         IList<Promotion> GetActivePromotions();
 
         ICollection<ProductPromotion> GetProductPromotions();
+
         void DeletePromotion(int promotionId);
 
         IList<Product> GetPromotionsProducts(int promotionId);

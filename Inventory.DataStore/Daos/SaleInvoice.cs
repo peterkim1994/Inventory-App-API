@@ -12,6 +12,7 @@ namespace InventoryPOS.DataStore.Models
         public DateTime InvoiceDate { get; set; }
         public virtual IList<ProductSale> ProductSales { get; set; }
         public virtual IList<Payment> Payments { get; set; }
+        public int Total { get; set; }
         public bool Finalised { get; set; }
 
     }
