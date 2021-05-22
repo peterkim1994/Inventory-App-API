@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using InventoryPOS.DataStore.Daos;
-using InventoryPOS.DataStore.Models;
+using InventoryPOS.DataStore.Daos;
 using Microsoft.EntityFrameworkCore;
 
 namespace InventoryPOS.DataStore
@@ -58,7 +58,7 @@ namespace InventoryPOS.DataStore
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseSqlServer(
-                @"Server = (localdb)\mssqllocaldb;Database=InventoryPOS;Integrated Security= True");
+                @"Server = (localdb)\mssqllocaldb;Database=InventoryPOS-V2;Integrated Security= True");
         }
     }
 }
