@@ -34,7 +34,7 @@ namespace InventoryPOS.api.Controllers
             ILogger<SalesController> logger,
             ISalesRepository repo,
             ISalesService salesService,
-            IPromotionsService  promoService,
+            IPromotionsService promoService,
             IInventoryService inventoryService,
             IMapper mapper
         )
@@ -53,6 +53,10 @@ namespace InventoryPOS.api.Controllers
             if (ModelState.IsValid)
             {
                 var promotion = _mapper.Map<PromotionDto, Promotion>(promotionDto);
+                if (promotion.Start > promotion.End)
+                {
+                    return BadRequest("The promotions start date must be prior to the end date");
+                }
                 if (_promoService.AddPromotion(promotion))
                 {
                     return Ok(promotionDto);
@@ -155,11 +159,11 @@ namespace InventoryPOS.api.Controllers
                 var promoDto = _mapper.Map<Promotion, PromotionDto>(promo);
                 return Ok(promoDto);
             }
-            if(String.IsNullOrEmpty(promotionDto.PromotionName)) 
+            if (String.IsNullOrEmpty(promotionDto.PromotionName))
                 return BadRequest("You must provide a name for the promotion");
-            if (promotionDto.Quantity <= 0) 
+            if (promotionDto.Quantity <= 0)
                 return BadRequest("You must provide a min quantity for the promotion");
-            if(promotionDto.PromotionPrice <= 0)
+            if (promotionDto.PromotionPrice <= 0)
                 return BadRequest("You must provide a price offer for the promotion");
             return BadRequest("Please provide valid promotion details");
         }
@@ -168,13 +172,48 @@ namespace InventoryPOS.api.Controllers
         [HttpPost("test")]
         public IActionResult Test(Object jsonResult)
         {
-            dynamic reqBody = JObject.Parse(jsonResult.ToString());       
-       //     List<int> productIds = reqBody.productIds.ToObject<IList<int>>();
+            dynamic reqBody = JObject.Parse(jsonResult.ToString());
+            //     List<int> productIds = reqBody.productIds.ToObject<IList<int>>();
             List<Product> products = _inventoryService.GetProducts(reqBody.productIds.ToObject<IList<int>>());
-            var promos = _saleService.ApplyPromotionsToSale(1,products);
+            var promos = _saleService.ApplyPromotionsToSale(1, products);
             var dtos = _mapper.Map<IList<ProductSale>, IList<ProductSaleDto>>(promos);
             return Ok(dtos);
         }
+
+        [HttpGet("StartNewSale")]
+        public SaleInvoiceDto StartNewSale()
+        {
+            var sale = _saleService.StartNewSaleTransaction();
+            return _mapper.Map<SaleInvoice, SaleInvoiceDto>(sale);
+        }
+
+        [HttpPost("AddProductsSales")]
+        public IActionResult AddProductSales(Object jsonResult)
+        {
+            dynamic reqBody = JObject.Parse(jsonResult.ToString());
+            var productDtos = _inventoryService.GetProducts(reqBody.productIds.ToObject<List<ProductDto>>());
+            var saleProducts = _mapper.Map<List<ProductDto>, List<Product>>(productDtos);
+            SaleInvoice sale = _saleService.GetSale(reqBody.saleId);
+
+            if (sale == null)
+                return BadRequest("This sale does not exist");
+            else if (sale.Finalised == true) 
+                return BadRequest("This Sale Has Already Been Finalised");            
+            else if (sale != null && saleProducts.Count > 0)
+            {
+                var productSales = _saleService.ApplyPromotionsToSale(sale.Id, saleProducts);
+                _saleService.ProcessProductSales(sale, productSales);
+                SaleInvoiceDto invoice = _mapper.Map<SaleInvoice, SaleInvoiceDto>(sale);
+                sale.ProductSales = productSales;
+                return Ok(productSales);
+            }
+            else
+            {
+                return BadRequest("There are no products to add");
+            }
+
+        }
+
     }
-        
+
 }
