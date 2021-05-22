@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Inventory.api.Controllers;
 using InventoryPOS.Core.Dtos;
-using InventoryPOS.DataStore.Models;
+using InventoryPOS.DataStore.Daos;
 using InventoryPOSApp.Core.Dtos;
 using InventoryPOSApp.Core.Repositories;
 using InventoryPOSApp.Core.Services;
@@ -59,7 +59,8 @@ namespace InventoryPOS.api.Controllers
                 }
                 if (_promoService.AddPromotion(promotion))
                 {
-                    return Ok(promotionDto);
+                     return Ok(promotionDto);
+             //     return CreatedAtAction(nameof())
                 }
                 return BadRequest("that promtion already exists");
             }

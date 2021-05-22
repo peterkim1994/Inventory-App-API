@@ -1,16 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 using Microsoft.EntityFrameworkCore;
 
-namespace InventoryPOS.DataStore.Models
+namespace InventoryPOS.DataStore.Daos
 {
     [Index(nameof(PromotionName), IsUnique = true)]
     public class Promotion
     {
         [Key]
         public int Id { get; set; }
+        [ForeignKey("Store")]
+        public int StoreId { get; set; }
         [Required]
         [MinLength(1)]
         [MaxLength(50)]

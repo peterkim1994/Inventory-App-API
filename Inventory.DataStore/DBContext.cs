@@ -30,6 +30,9 @@ namespace InventoryPOS.DataStore
                .HasDefaultValue(true);
 
             modelBuilder.Entity<Product>()
+             .HasIndex(p => new { p.Barcode, p.StoreId }).IsUnique();
+
+            modelBuilder.Entity<Product>()
               .Property(b => b.Qty)
               .HasDefaultValue(0);
 
@@ -38,8 +41,8 @@ namespace InventoryPOS.DataStore
               .HasDefaultValue(0);
 
             modelBuilder.Entity<Payment>()
-                .HasKey(p => new { p.SaleInvoiceId, p.PaymentMethodId});
-           
+                .HasKey(p => new { p.SaleInvoiceId, p.PaymentMethodId });
+
             //modelBuilder.Entity<ProductSale>()
             //    .HasKey(ps => new { ps.SalesInvoiceId, ps.ProductId });
 
@@ -49,6 +52,15 @@ namespace InventoryPOS.DataStore
             modelBuilder.Entity<SaleInvoice>()
                 .Property(s => s.Finalised)
                 .HasDefaultValue(false);
+
+            modelBuilder.Entity<Colour>()
+                 .HasIndex(p => new { p.Value, p.StoreId }).IsUnique();
+            modelBuilder.Entity<Brand>()
+                .HasIndex(p => new { p.Value, p.StoreId }).IsUnique();
+            modelBuilder.Entity<ItemCategory>()  
+                .HasIndex(p => new { p.Value, p.StoreId }).IsUnique();
+            modelBuilder.Entity<Size>()
+                .HasIndex(p => new { p.Value, p.StoreId }).IsUnique();
 
             modelBuilder.Entity<Promotion>()
               .Property(b => b.Active)

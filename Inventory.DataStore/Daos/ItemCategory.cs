@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
-using InventoryPOS.DataStore.Models.Interfaces;
+using InventoryPOS.DataStore.Daos.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
-namespace InventoryPOS.DataStore.Models
+namespace InventoryPOS.DataStore.Daos
 {
     [Index(nameof(Value), IsUnique = true)]
     public class ItemCategory : ProductAttribute
@@ -15,6 +16,8 @@ namespace InventoryPOS.DataStore.Models
         [Required]
         [MaxLength(50)]
         public override string Value { get; set; }
+        [ForeignKey("Store")]
+        public override int StoreId { get; set; }
         public virtual IList<Product> Products { get; set; }
     }
 }

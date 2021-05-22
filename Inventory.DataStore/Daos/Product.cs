@@ -1,20 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 using Microsoft.EntityFrameworkCore;
 
-namespace InventoryPOS.DataStore.Models
+namespace InventoryPOS.DataStore.Daos
 {
     [Index(nameof(Barcode), IsUnique = true)]
     public class Product
     {
         [Key]
         public int Id { get; set; }
+
+        [ForeignKey("Store")]
+        public int StoreId { get; set; }
         public long Barcode { get; set; }
         [MaxLength(50)]
         public string ManufactureCode { get; set; }
-
         [Required]
         [MinLength(5),MaxLength(100)]
         public string Description { get; set; }

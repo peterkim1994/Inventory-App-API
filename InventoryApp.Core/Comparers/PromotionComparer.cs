@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
-using InventoryPOS.DataStore.Models;
+using InventoryPOS.DataStore.Daos;
 
 namespace InventoryPOSApp.Core.Comparers
 {

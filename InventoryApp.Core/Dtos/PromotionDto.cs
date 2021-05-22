@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
 using InventoryPOS.Core.Dtos;
-using InventoryPOS.DataStore.Models;
+using InventoryPOS.DataStore.Daos;
 
 namespace InventoryPOSApp.Core.Dtos
 {

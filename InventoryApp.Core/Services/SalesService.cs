@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Linq;
-using InventoryPOS.DataStore.Models;
+using InventoryPOS.DataStore.Daos;
 using InventoryPOSApp.Core.Comparers;
 using InventoryPOSApp.Core.Repositories;
 using InventoryPOSApp.Core.Utils;
@@ -69,8 +69,7 @@ namespace InventoryPOSApp.Core.Services
         {
             _salesRepo.AddProductSales(productSales);
             sale.Total = ProcessSaleTotalAmount(productSales);
-            _salesRepo.UpdateSale(sale);
-            
+            _salesRepo.UpdateSale(sale);            
         }
 
         public void DeleteSale(int saleId)
@@ -200,20 +199,6 @@ namespace InventoryPOSApp.Core.Services
 
         //delete
 
-        public int CalculateTotal(IList<ProductSale> productSales)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Payment ProcessPayement(Payment payment, SaleInvoice sale)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool ValidateSalePayments(SaleInvoice sale)
-        {
-            throw new NotImplementedException();
-        }
 
 
 
