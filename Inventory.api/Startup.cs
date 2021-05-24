@@ -15,6 +15,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Http;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace Inventory.api
 {
@@ -30,6 +34,14 @@ namespace Inventory.api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            //services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            //    .AddJwtBearer(opt =>
+            //    {
+            //        //whos the audience for this / reasourceId in appSettings
+            //        opt.Audience = Configuration["AAD:ResourceId"];
+            //        //whos giving web tokens on our behalf
+            //        opt.Authority = $"{Configuration["AAD:InstanceId"]}{Configuration["AAD:TentantId"]}";
+            //    });
             services.AddControllers();
             services.AddDbContext<DBContext>();
             services.AddScoped<IInventoryService, InventoryService>();
@@ -49,6 +61,37 @@ namespace Inventory.api
                         .AllowAnyMethod();
                 });
             });
+
+            var secretBytes = Encoding.UTF8.GetBytes(Configuration["SecretKey"]);
+            var key = new SymmetricSecurityKey(secretBytes);
+          
+       
+            //cookie hander -- implementation of IAuthenticationHandler, which will be injected in app.useAthenicateion()
+            services.AddAuthentication("OAuth")//checking if token recieved is valid
+                .AddJwtBearer("OAuth", config =>
+                {
+                    config.TokenValidationParameters = new TokenValidationParameters()
+                    {
+                        ValidIssuer = Configuration["JwtTokenParam:Issuer"], 
+                        ValidAudience = Configuration["JwtTokenParam:Audience"],
+                        IssuerSigningKey = key
+                    };
+                });//action for config and authentication scheme
+
+
+                //.AddCookie("CookieAuth", config => //cookie schema config
+                //{
+                //    config.Cookie.Name = "ShopOwner";                
+                //    config.LoginPath = "/login";
+                ////    config.ReturnUrlParameter = "http://localhost:5001/inventory";
+                //    config.Events.OnRedirectToLogin = (context) =>
+                //    {
+                //       context.HttpContext.Response.Redirect("http://localhost:3000/login");
+                //       return Task.CompletedTask;
+                //    };
+                    
+
+                //});
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -65,7 +108,9 @@ namespace Inventory.api
 
             app.UseCors("InventoryPosPolicy");
 
-            app.UseAuthorization();
+            app.UseAuthentication();
+
+            app.UseAuthorization();          
 
             app.UseEndpoints(endpoints =>
             {
