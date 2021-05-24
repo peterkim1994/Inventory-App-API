@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace InventoryPOS.DataStore
 {
-    public class DBContext : DbContext
+    public class DBContext : IdentityDbContext
     {
         public virtual DbSet<Product> Products { get; set; }
         public DbSet<Brand> Brands { get; set; }
@@ -19,8 +19,7 @@ namespace InventoryPOS.DataStore
         public DbSet<Payment> Payments { get; set; }
         public DbSet<PaymentMethod> PaymentMethods { get; set; }
         public DbSet<ProductPromotion> ProductPromotions { get; set; }
-
-
+        public DbSet<Store> Store { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Product>()
