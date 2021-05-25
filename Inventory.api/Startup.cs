@@ -19,6 +19,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Inventory.api
 {
@@ -34,16 +36,19 @@ namespace Inventory.api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            //services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-            //    .AddJwtBearer(opt =>
-            //    {
-            //        //whos the audience for this / reasourceId in appSettings
-            //        opt.Audience = Configuration["AAD:ResourceId"];
-            //        //whos giving web tokens on our behalf
-            //        opt.Authority = $"{Configuration["AAD:InstanceId"]}{Configuration["AAD:TentantId"]}";
-            //    });
             services.AddControllers();
+
+            services.AddIdentity<IdentityUser,IdentityRole>()
+                .AddEntityFrameworkStores<DBContext>();
             services.AddDbContext<DBContext>();
+            services.Configure<IdentityOptions>(opt =>
+            {
+                opt.Password.RequiredLength = 5;
+                opt.Password.RequireDigit = false;
+                opt.Password.RequireUppercase = false;
+                opt.Password.RequireNonAlphanumeric = false;
+            });
+
             services.AddScoped<IInventoryService, InventoryService>();
             services.AddScoped<IInventoryRepo, InventoryRepo>();
             services.AddScoped<IPromotionsRepository, PromotionRepository>();
@@ -67,8 +72,8 @@ namespace Inventory.api
           
        
             //cookie hander -- implementation of IAuthenticationHandler, which will be injected in app.useAthenicateion()
-            services.AddAuthentication("OAuth")//checking if token recieved is valid
-                .AddJwtBearer("OAuth", config =>
+            services.AddAuthentication("Bearer")//checking if token recieved is valid
+                .AddJwtBearer("Bearer", config =>
                 {
                     config.TokenValidationParameters = new TokenValidationParameters()
                     {
@@ -76,22 +81,22 @@ namespace Inventory.api
                         ValidAudience = Configuration["JwtTokenParam:Audience"],
                         IssuerSigningKey = key
                     };
-                });//action for config and authentication scheme
+                    config.ForwardAuthenticate = "CookieAuth";
+                    config.ForwardSignIn = "CookieAuth";
+                    config.ForwardDefault = "CookieAuth";   
 
+                });
 
-                //.AddCookie("CookieAuth", config => //cookie schema config
-                //{
-                //    config.Cookie.Name = "ShopOwner";                
-                //    config.LoginPath = "/login";
-                ////    config.ReturnUrlParameter = "http://localhost:5001/inventory";
-                //    config.Events.OnRedirectToLogin = (context) =>
-                //    {
-                //       context.HttpContext.Response.Redirect("http://localhost:3000/login");
-                //       return Task.CompletedTask;
-                //    };
-                    
-
-                //});
+            //action for config and authentication scheme
+            services.AddAuthentication("CookieAuth")
+                .AddCookie("CookieAuth", config => //cookie schema config
+            {
+                config.Cookie.Name = "ShopOwner";                       
+                config.Events.OnRedirectToLogin = (context) =>                {
+                    context.HttpContext.Response.Redirect("http://localhost:3000/login");
+                    return Task.CompletedTask;
+                };
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -110,7 +115,18 @@ namespace Inventory.api
 
             app.UseAuthentication();
 
-            app.UseAuthorization();          
+            app.UseAuthorization();
+
+            //app.UseStatusCodePages( context => {
+            //    var request =  context.HttpContext.Request;
+            //    var response =  context.HttpContext.Response;
+
+            //    if (response.StatusCode == 401)
+            //    {
+            //       response.Redirect("/Home/Login?returnUrl=" + request.Path);
+            //    }
+            //     return  Task.CompletedTask;
+            //});
 
             app.UseEndpoints(endpoints =>
             {
