@@ -47,7 +47,7 @@ namespace Inventory.api.Controllers
         }
 
         [HttpGet]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [Authorize(Roles="shopAdmin")]
         public IActionResult GetProducts()
         {            
             var productDtos = _mapper.Map<List<Product>, List<ProductDto>>(_service.GetAllProducts());
