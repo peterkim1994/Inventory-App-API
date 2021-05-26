@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using InventoryPOS.DataStore.Daos;
+using InventoryPOS.DataStore.Models;
 
 namespace InventoryPOSApp.Core.Services
 {

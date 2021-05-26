@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using InventoryPOS.Core.Dtos;
-using InventoryPOS.DataStore.Daos;
+using InventoryPOS.DataStore.Models;
 using InventoryPOSApp.Core.Dtos;
 
 namespace InventoryPOS.api.Helpers

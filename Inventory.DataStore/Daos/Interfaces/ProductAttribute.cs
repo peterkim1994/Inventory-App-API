@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace InventoryPOS.DataStore.Daos.Interfaces
+namespace InventoryPOS.DataStore.Models.Interfaces
 {
     public abstract class ProductAttribute
     {

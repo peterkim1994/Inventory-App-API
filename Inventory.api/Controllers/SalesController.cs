@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Inventory.api.Controllers;
 using InventoryPOS.Core.Dtos;
-using InventoryPOS.DataStore.Daos;
+using InventoryPOS.DataStore.Models;
 using InventoryPOSApp.Core.Dtos;
 using InventoryPOSApp.Core.Repositories;
 using InventoryPOSApp.Core.Services;

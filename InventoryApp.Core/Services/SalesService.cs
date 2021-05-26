@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Linq;
-using InventoryPOS.DataStore.Daos;
+using InventoryPOS.DataStore.Models;
 using InventoryPOSApp.Core.Comparers;
 using InventoryPOSApp.Core.Repositories;
 using InventoryPOSApp.Core.Utils;

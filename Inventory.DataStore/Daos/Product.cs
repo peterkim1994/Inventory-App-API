@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Text;
 using Microsoft.EntityFrameworkCore;
 
-namespace InventoryPOS.DataStore.Daos
+namespace InventoryPOS.DataStore.Models
 {
     [Index(nameof(Barcode), IsUnique = true)]
     public class Product

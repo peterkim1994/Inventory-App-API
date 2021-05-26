@@ -4,7 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using InventoryPOS.DataStore.Daos;
+using InventoryPOS.DataStore.Models;
 
 namespace InventoryPOSApp.Core
 {

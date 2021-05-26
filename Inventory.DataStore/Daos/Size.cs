@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
-using InventoryPOS.DataStore.Daos.Interfaces;
+using InventoryPOS.DataStore.Models.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
-namespace InventoryPOS.DataStore.Daos
+namespace InventoryPOS.DataStore.Models
 {
     [Index(nameof(Value), IsUnique = true)]
     public class Size : ProductAttribute

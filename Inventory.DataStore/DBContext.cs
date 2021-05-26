@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using InventoryPOS.DataStore.Daos;
+using InventoryPOS.DataStore.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace InventoryPOS.DataStore
 {
     public class DBContext : IdentityDbContext
     {
-        public virtual DbSet<Product> Products { get; set; }
+        public  DbSet<Product> Products { get; set; }
         public DbSet<Brand> Brands { get; set; }
         public DbSet<Size> Sizes { get; set; }
         public DbSet<Colour> Colours { get; set; }
@@ -19,9 +20,15 @@ namespace InventoryPOS.DataStore
         public DbSet<Payment> Payments { get; set; }
         public DbSet<PaymentMethod> PaymentMethods { get; set; }
         public DbSet<ProductPromotion> ProductPromotions { get; set; }
-        public DbSet<Store> Store { get; set; }
+
+        public DBContext (DbContextOptions<DBContext> options) : base(options)
+        {
+
+        }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
+
             modelBuilder.Entity<Product>()
                .Property(b => b.Active)
                .HasDefaultValue(true);

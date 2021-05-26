@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
 
-namespace InventoryPOS.DataStore.Daos
+namespace InventoryPOS.DataStore.Models
 {
     public class SaleInvoice
     {

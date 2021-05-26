@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Text;
 using InventoryPOS.DataStore;
-using InventoryPOS.DataStore.Daos;
-using InventoryPOS.DataStore.Daos.Interfaces;
+using InventoryPOS.DataStore.Models;
+using InventoryPOS.DataStore.Models.Interfaces;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 

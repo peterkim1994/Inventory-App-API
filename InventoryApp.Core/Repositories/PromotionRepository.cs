@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using InventoryPOS.DataStore;
-using InventoryPOS.DataStore.Daos;
+using InventoryPOS.DataStore.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace InventoryPOSApp.Core.Repositories

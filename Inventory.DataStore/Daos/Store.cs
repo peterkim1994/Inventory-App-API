@@ -13,5 +13,6 @@ namespace InventoryPOS.DataStore.Daos
         public string StoreName { get; set; }
         public string Address { get; set; }
         public string Contact { get; set; }
+
     }
 }

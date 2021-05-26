@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using InventoryPOS.DataStore.Daos;
+using InventoryPOS.DataStore.Models;
 using InventoryPOSApp.Core.Repositories;
 using InventoryPOSApp.Core.Services.Interfaces;
 using InventoryPOSApp.Core.Utils;
