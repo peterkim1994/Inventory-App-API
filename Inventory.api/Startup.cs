@@ -38,7 +38,7 @@ namespace Inventory.api
         {
             services.AddControllers();
 
-            services.AddIdentity<IdentityUser,IdentityRole>()
+            services.AddIdentity<IdentityUser, IdentityRole>()
                 .AddEntityFrameworkStores<DBContext>();
             services.AddDbContext<DBContext>();
             services.Configure<IdentityOptions>(opt =>
@@ -69,30 +69,35 @@ namespace Inventory.api
 
             var secretBytes = Encoding.UTF8.GetBytes(Configuration["SecretKey"]);
             var key = new SymmetricSecurityKey(secretBytes);
-          
-       
-            //cookie hander -- implementation of IAuthenticationHandler, which will be injected in app.useAthenicateion()
-            services.AddAuthentication("Bearer")//checking if token recieved is valid
-                .AddJwtBearer("Bearer", config =>
-                {
-                    config.TokenValidationParameters = new TokenValidationParameters()
-                    {
-                        ValidIssuer = Configuration["JwtTokenParam:Issuer"], 
-                        ValidAudience = Configuration["JwtTokenParam:Audience"],
-                        IssuerSigningKey = key
-                    };
-                    config.ForwardAuthenticate = "CookieAuth";
-                    config.ForwardSignIn = "CookieAuth";
-                    config.ForwardDefault = "CookieAuth";   
 
-                });
+            //cookie hander -- implementation of IAuthenticationHandler, which will be injected in app.useAthenicateion()
+            services.AddAuthentication(opts =>
+            {
+                opts.DefaultAuthenticateScheme = "Bearer";
+                opts.DefaultChallengeScheme = "Bearer";
+            }).AddJwtBearer("Bearer", config =>
+            {
+                config.SaveToken = true;
+                config.TokenValidationParameters = new TokenValidationParameters()
+                {
+                    ValidIssuer = Configuration["JwtTokenParam:Issuer"],
+                    ValidAudience = Configuration["JwtTokenParam:Audience"],
+                    IssuerSigningKey = key,
+                    ValidateLifetime = true,
+                    ClockSkew = TimeSpan.FromMinutes(2)
+                };                
+                config.ForwardAuthenticate = "CookieAuth";
+                config.ForwardSignIn = "CookieAuth";
+                config.ForwardDefault = "CookieAuth";
+            });
 
             //action for config and authentication scheme
             services.AddAuthentication("CookieAuth")
                 .AddCookie("CookieAuth", config => //cookie schema config
             {
-                config.Cookie.Name = "ShopOwner";                       
-                config.Events.OnRedirectToLogin = (context) =>                {
+                config.Cookie.Name = "ShopOwner";
+                config.Events.OnRedirectToLogin = (context) =>
+                {
                     context.HttpContext.Response.Redirect("http://localhost:3000/login");
                     return Task.CompletedTask;
                 };
