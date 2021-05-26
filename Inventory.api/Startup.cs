@@ -70,7 +70,7 @@ namespace Inventory.api
             var secretBytes = Encoding.UTF8.GetBytes(Configuration["SecretKey"]);
             var key = new SymmetricSecurityKey(secretBytes);
 
-            //cookie hander -- implementation of IAuthenticationHandler, which will be injected in app.useAthenicateion()
+           
             services.AddAuthentication(opts =>
             {
                 opts.DefaultAuthenticateScheme = "Bearer";
