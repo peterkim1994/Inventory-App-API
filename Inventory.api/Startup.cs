@@ -80,20 +80,19 @@ namespace Inventory.api
                 config.SaveToken = true;
                 config.TokenValidationParameters = new TokenValidationParameters()
                 {
-                    ValidIssuer = Configuration["JwtTokenParam:Issuer"],
-                    ValidAudience = Configuration["JwtTokenParam:Audience"],
+                 //   ValidIssuer = Configuration["JwtTokenParam:Issuer"],
+                    //     ValidAudience = Configuration["JwtTokenParam:Audience"],
+                    ValidAudience = "https://localhost:5001", // for postman
+                   // ValidIssuer = "https://localhost:5001",
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
                     IssuerSigningKey = key,
                     ValidateLifetime = true,
-                    ClockSkew = TimeSpan.FromMinutes(2)
+                    ClockSkew = TimeSpan.FromMinutes(5)
                 };                
-                config.ForwardAuthenticate = "CookieAuth";
-                config.ForwardSignIn = "CookieAuth";
-                config.ForwardDefault = "CookieAuth";
-            });
-
-            //action for config and authentication scheme
-            services.AddAuthentication("CookieAuth")
-                .AddCookie("CookieAuth", config => //cookie schema config
+                config.ForwardSignIn = "CookieAuth";            
+                config.ForwardChallenge = "CookieAuth";
+            }).AddCookie("CookieAuth", config => //cookie schema config
             {
                 config.Cookie.Name = "ShopOwner";
                 config.Events.OnRedirectToLogin = (context) =>
@@ -101,8 +100,8 @@ namespace Inventory.api
                     context.HttpContext.Response.Redirect("http://localhost:3000/login");
                     return Task.CompletedTask;
                 };
-            });
-        }
+            }); 
+        } 
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -121,17 +120,6 @@ namespace Inventory.api
             app.UseAuthentication();
 
             app.UseAuthorization();
-
-            //app.UseStatusCodePages( context => {
-            //    var request =  context.HttpContext.Request;
-            //    var response =  context.HttpContext.Response;
-
-            //    if (response.StatusCode == 401)
-            //    {
-            //       response.Redirect("/Home/Login?returnUrl=" + request.Path);
-            //    }
-            //     return  Task.CompletedTask;
-            //});
 
             app.UseEndpoints(endpoints =>
             {
