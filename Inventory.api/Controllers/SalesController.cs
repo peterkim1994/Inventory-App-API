@@ -5,7 +5,8 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Inventory.api.Controllers;
 using InventoryPOS.Core.Dtos;
-using InventoryPOS.DataStore.Models;
+using InventoryPOS.DataStore.Daos;
+using InventoryPOS.DataStore.Daos;
 using InventoryPOSApp.Core.Dtos;
 using InventoryPOSApp.Core.Repositories;
 using InventoryPOSApp.Core.Services;
@@ -168,7 +169,6 @@ namespace InventoryPOS.api.Controllers
             return BadRequest("Please provide valid promotion details");
         }
 
-
         [HttpPost("test")]
         public IActionResult Test(Object jsonResult)
         {
@@ -182,7 +182,7 @@ namespace InventoryPOS.api.Controllers
 
         [HttpGet("StartNewSale")]
         public SaleInvoiceDto StartNewSale()
-        {
+        {                       
             var sale = _saleService.StartNewSaleTransaction();
             return _mapper.Map<SaleInvoice, SaleInvoiceDto>(sale);
         }

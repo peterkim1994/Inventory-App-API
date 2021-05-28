@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using InventoryPOS.Core.Dtos;
-using InventoryPOS.DataStore.Models;
+using InventoryPOS.DataStore.Daos;
 using InventoryPOSApp.Core.Dtos;
 using InventoryPOSApp.Core.Repositories;
 using InventoryPOSApp.Core.Services;
@@ -41,6 +41,7 @@ namespace Inventory.api.Controllers
 
 
         [HttpGet("ProductAttributes")]
+        [Authorize(Roles="shopAdmin")]
         public IActionResult GetAttributes()
         {
             return Ok(_service.GetProductAttributes());

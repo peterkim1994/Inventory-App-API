@@ -69,33 +69,33 @@ namespace InventoryPOS.api.Controllers
             return BadRequest("password and username must be 5 characters or longer");
         }
 
-        [HttpPost("Login")]
+        [HttpPost("Login")]       
         public async Task<IActionResult> Login(Object jsonObj)
         {
             dynamic reqBody = JObject.Parse(jsonObj.ToString());
             string userName = reqBody.userName;
             string password = reqBody.password;
             IdentityUser user = await _userManager.FindByNameAsync(userName);
-           
+
             if (user == null)
             {
                 return BadRequest("Username is invalid");
-            }           
-            else if(await _signInManager.CanSignInAsync(user))
+            }
+            else if (await _signInManager.CanSignInAsync(user))
             {
-               var signInResult = await _signInManager.CheckPasswordSignInAsync(user, password, false);
+                var signInResult = await _signInManager.CheckPasswordSignInAsync(user, password, false);
                 if (signInResult.Succeeded)
                 {
                     return new ObjectResult(await GenerateToken(userName));
                 }
             }
             return BadRequest("Incorrect Password");
-      //      await _signInManager.SignInAsync(user, isPersistent: false);
-        //    var claimsPrincipal = await _signInManager.CreateUserPrincipalAsync(user);
-
+            //      await _signInManager.SignInAsync(user, isPersistent: false);
+            //    var claimsPrincipal = await _signInManager.CreateUserPrincipalAsync(user);
         }
 
         [Authorize]
+        [HttpPost("Logout")]
         public async Task Logout()
         {
             await _signInManager.SignOutAsync();
@@ -108,7 +108,7 @@ namespace InventoryPOS.api.Controllers
             //normall when u sign in it grabs all this stuff from db 
             var shopClaims = new List<Claim>()
             {
-                new Claim(ClaimTypes.Name, "high")               
+                new Claim(ClaimTypes.Name, "high")
             };
 
             var familyClaims = new List<Claim>()
@@ -152,13 +152,18 @@ namespace InventoryPOS.api.Controllers
             return BadRequest();
         }
 
-        public async Task<IActionResult> CreateWokerRole()
+
+        [HttpPost("createStaffRole")]
+        public async Task<IActionResult> CreateWokerRole([FromBody]string userName)
         {
-            IdentityRole role = new IdentityRole { Name = "worker" };
-            var result = await _roleManager.CreateAsync(role);
-            if (result.Succeeded)
-            {
-                return Ok();
+            IdentityRole role = new IdentityRole { Name = "staff" };
+            var user = await _userManager.FindByNameAsync(userName);
+            var roleCreated = await _roleManager.CreateAsync(role);
+
+            var roleAdded = await _userManager.AddToRoleAsync(user, role.Name);
+            if (roleCreated.Succeeded && user!=null)
+            {               
+                return Ok(roleAdded.Succeeded);
             }
             return BadRequest("somthing went wrong");
         }
@@ -166,14 +171,16 @@ namespace InventoryPOS.api.Controllers
         [HttpGet]
         public async Task AddUserPositionClaim([FromBody] string userName)
         {
-           
             var user = await _userManager.FindByNameAsync(userName);
             var c1 = new Claim(ClaimTypes.Name, userName);
-            var c2 =  new Claim(ClaimTypes.Role, "shopAdmin");
+            var c2 = new Claim(ClaimTypes.Role, "shopAdmin");
             await _userManager.RemoveClaimAsync(user, c2);
-            await  _userManager.AddClaimAsync(user, c1);
+            await _userManager.AddClaimAsync(user, c1);
             await _userManager.AddClaimAsync(user, c2);
         }
+
+
+        
 
         public async Task<dynamic> GenerateToken(string userName)
         {
@@ -188,7 +195,7 @@ namespace InventoryPOS.api.Controllers
                 new Claim(ClaimTypes.Name, userName),
                 new Claim(ClaimTypes.NameIdentifier, user.Id),
                 new Claim(JwtRegisteredClaimNames.Nbf,  new DateTimeOffset(DateTime.Now).ToUnixTimeSeconds().ToString()),
-                new Claim(JwtRegisteredClaimNames.Exp,  new DateTimeOffset(DateTime.Now.AddDays(1)).ToUnixTimeSeconds().ToString()),
+
             };
 
             foreach (var role in roles)
@@ -196,14 +203,27 @@ namespace InventoryPOS.api.Controllers
                 claims.Add(new Claim(ClaimTypes.Role, role.Name));
             }
 
+            var adminRole = claims.FirstOrDefault(c => c.Value.Equals("adminRole"));
+            var defaultExpire = new Claim(JwtRegisteredClaimNames.Exp, new DateTimeOffset(DateTime.Now.AddDays(1)).ToUnixTimeSeconds().ToString());
+            var twoHourExpire = new Claim(JwtRegisteredClaimNames.Exp, new DateTimeOffset(DateTime.Now.AddHours(2)).ToUnixTimeSeconds().ToString());
+
+            if (adminRole != null)
+            {
+                claims.Add(twoHourExpire);
+            }
+            else
+            {
+                claims.Add(defaultExpire);
+            }
+
             var secretBytes = Encoding.UTF8.GetBytes(_config["SecretKey"]);
             var key = new SymmetricSecurityKey(secretBytes);
             var algorithm = SecurityAlgorithms.HmacSha256;
             SigningCredentials signingCredentials = new SigningCredentials(key, algorithm);
-            var token = new JwtSecurityToken(new JwtHeader(signingCredentials),new JwtPayload(claims));
+            var token = new JwtSecurityToken(new JwtHeader(signingCredentials), new JwtPayload(claims));
             var output = new
             {
-                Access_Token = new JwtSecurityTokenHandler().WriteToken(token),
+                AccessToken = "Bearer " + new JwtSecurityTokenHandler().WriteToken(token),
                 UserName = userName
             };
             return output;

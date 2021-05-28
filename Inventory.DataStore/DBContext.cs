@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using InventoryPOS.DataStore.Daos;
-using InventoryPOS.DataStore.Models;
+using InventoryPOS.DataStore.Daos;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 

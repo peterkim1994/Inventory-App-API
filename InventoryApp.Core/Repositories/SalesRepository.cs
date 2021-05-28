@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Text;
 using System.Linq;
 using InventoryPOS.DataStore;
-using InventoryPOS.DataStore.Models;
+using InventoryPOS.DataStore.Daos;
 using Microsoft.EntityFrameworkCore;
 using InventoryPOSApp.Core.Dtos;
+using InventoryPOS.DataStore.Daos;
 
 namespace InventoryPOSApp.Core.Repositories
 {
@@ -33,7 +34,9 @@ namespace InventoryPOSApp.Core.Repositories
         {
             SaleInvoice newSale = new SaleInvoice();
             _context.SalesInvoices.Add(newSale);
-            _context.SaveChanges();
+            Store store = new Store { StoreName = "Procamp", Address = "Hamilton", GstNum = "123-234432-332", Contact = "07-801-2345" };
+            _context.Store.Add(store);
+            _context.SaveChanges();          
             return newSale;
         }
 

@@ -4,7 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using InventoryPOS.Core.Dtos;
-using InventoryPOS.DataStore.Models;
+using InventoryPOS.DataStore.Daos;
+using InventoryPOS.DataStore.Daos;
 using InventoryPOSApp.Core.Dtos;
 
 namespace InventoryPOS.api.Helpers
@@ -26,6 +27,7 @@ namespace InventoryPOS.api.Helpers
                     d => d.Price,
                     o => o.MapFrom(s => Convert.ToInt32(s.Price * 100.0))
                 );
+            CreateMap<Store, StoreDto>();
 
             CreateMap<Colour, ColourDto>();
 

@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Text;
 using InventoryPOS.DataStore.Daos;
 
-namespace InventoryPOS.DataStore.Models
+namespace InventoryPOS.DataStore.Daos
 {
     public class SaleInvoice
     {
