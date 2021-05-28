@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using InventoryPOS.DataStore.Daos;
 using InventoryPOS.DataStore.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -20,6 +21,8 @@ namespace InventoryPOS.DataStore
         public DbSet<Payment> Payments { get; set; }
         public DbSet<PaymentMethod> PaymentMethods { get; set; }
         public DbSet<ProductPromotion> ProductPromotions { get; set; }
+        public DbSet<Store> Store { get; set; }
+
 
         public DBContext (DbContextOptions<DBContext> options) : base(options)
         {

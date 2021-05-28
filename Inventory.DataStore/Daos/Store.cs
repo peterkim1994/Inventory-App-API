@@ -9,9 +9,13 @@ namespace InventoryPOS.DataStore.Daos
     {
         [Key]
         public int Id { get; set; }
-        public int GstNum { get; set; }
+        [MaxLength(20)]
+        public string GstNum { get; set; }
+        [MaxLength(30)]
         public string StoreName { get; set; }
+        [MaxLength(50)]
         public string Address { get; set; }
+        [MaxLength(50)]
         public string Contact { get; set; }
 
     }
