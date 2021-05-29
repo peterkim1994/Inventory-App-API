@@ -6,7 +6,7 @@ using InventoryPOS.DataStore;
 using InventoryPOS.DataStore.Daos;
 using Microsoft.EntityFrameworkCore;
 using InventoryPOSApp.Core.Dtos;
-using InventoryPOS.DataStore.Daos;
+
 
 namespace InventoryPOSApp.Core.Repositories
 {
@@ -25,6 +25,11 @@ namespace InventoryPOSApp.Core.Repositories
             _context.SaveChanges();
         }
 
+        public Store GetStore()
+        {
+            return _context.Store.Find(1);
+        }
+
         public SaleInvoice GetSaleByInvoiceNumber(int invoiceNumber)
         {
             return _context.SalesInvoices.Find(invoiceNumber);
@@ -32,10 +37,10 @@ namespace InventoryPOSApp.Core.Repositories
 
         public SaleInvoice CreateNewSaleInvoice()
         {
-            SaleInvoice newSale = new SaleInvoice();
+            SaleInvoice newSale = new SaleInvoice { InvoiceDate = DateTime.Now};
             _context.SalesInvoices.Add(newSale);
-            Store store = new Store { StoreName = "Procamp", Address = "Hamilton", GstNum = "123-234432-332", Contact = "07-801-2345" };
-            _context.Store.Add(store);
+      //      Store store = new Store { StoreName = "Procamp", Address = "Hamilton", GstNum = "123-234432-332", Contact = "07-801-2345" };
+       //     _context.Store.Add(store);
             _context.SaveChanges();          
             return newSale;
         }
@@ -65,7 +70,8 @@ namespace InventoryPOSApp.Core.Repositories
 
         public void AddProductSales(ICollection<ProductSale> productSales)
         {
-            _context.ProductSales.AddRange(productSales);
+            _context.ProductSales.AddRange(productSales.ToList());
+             var x =  _context.ProductSales;
             _context.SaveChanges();
         }
 

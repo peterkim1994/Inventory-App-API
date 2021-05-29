@@ -14,7 +14,6 @@ namespace InventoryPOS.DataStore.Daos
         public long Barcode { get; set; }
         [MaxLength(50)]
         public string ManufactureCode { get; set; }
-
         [Required]
         [MinLength(5),MaxLength(100)]
         public string Description { get; set; }
@@ -33,7 +32,7 @@ namespace InventoryPOS.DataStore.Daos
         public int Price { get; set; }        
         public int Qty { get; set; }
         public bool Active { get; set; }
+        public virtual IList<ProductPromotion> ProductPromotions { get; set; }
         public virtual IList<ProductSale> ProductSales { get; set; }
-        public virtual IList<ProductPromotion> Promotions { get; set; }
     }
 }

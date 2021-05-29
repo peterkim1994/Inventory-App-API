@@ -4,14 +4,16 @@ using InventoryPOS.DataStore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace InventoryPOS.DataStore.Migrations
 {
     [DbContext(typeof(DBContext))]
-    partial class DBContextModelSnapshot : ModelSnapshot
+    [Migration("20210528033732_updated-promotions-with-many-relationship-to-productSales")]
+    partial class updatedpromotionswithmanyrelationshiptoproductSales
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -210,7 +212,7 @@ namespace InventoryPOS.DataStore.Migrations
                     b.Property<bool>("PromotionApplied")
                         .HasColumnType("bit");
 
-                    b.Property<int?>("PromotionId")
+                    b.Property<int>("PromotionId")
                         .HasColumnType("int");
 
                     b.Property<int?>("SaleInvoiceId")
@@ -591,7 +593,7 @@ namespace InventoryPOS.DataStore.Migrations
             modelBuilder.Entity("InventoryPOS.DataStore.Daos.ProductPromotion", b =>
                 {
                     b.HasOne("InventoryPOS.DataStore.Daos.Product", "Product")
-                        .WithMany("ProductPromotions")
+                        .WithMany("Promotions")
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -617,7 +619,9 @@ namespace InventoryPOS.DataStore.Migrations
 
                     b.HasOne("InventoryPOS.DataStore.Daos.Promotion", "Promotion")
                         .WithMany("ProductSales")
-                        .HasForeignKey("PromotionId");
+                        .HasForeignKey("PromotionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("InventoryPOS.DataStore.Daos.SaleInvoice", "SaleInvoice")
                         .WithMany("ProductSales")
@@ -703,9 +707,9 @@ namespace InventoryPOS.DataStore.Migrations
 
             modelBuilder.Entity("InventoryPOS.DataStore.Daos.Product", b =>
                 {
-                    b.Navigation("ProductPromotions");
-
                     b.Navigation("ProductSales");
+
+                    b.Navigation("Promotions");
                 });
 
             modelBuilder.Entity("InventoryPOS.DataStore.Daos.Promotion", b =>

@@ -8,6 +8,7 @@ namespace InventoryPOSApp.Core.Repositories
     public interface ISalesRepository
     {
         void SaveChanges();
+        Store GetStore();
         SaleInvoice GetSaleByInvoiceNumber(int invoiceNumber);
         SaleInvoice CreateNewSaleInvoice();
         void CompleteTransaction(int saleId);
@@ -28,6 +29,6 @@ namespace InventoryPOSApp.Core.Repositories
         void DeleteSalePayments(int saleId);
         void EditSalePayment(Payment payment);
 
-
+        
     }
 }

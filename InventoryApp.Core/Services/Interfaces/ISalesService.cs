@@ -7,6 +7,7 @@ namespace InventoryPOSApp.Core.Services
 {
     public interface ISalesService
     {
+        Store GetStore();
         IList<ProductSale> ApplyPromotionsToSale(int saleId, List<Product> products);
 
         SaleInvoice GetSale(int saleId);

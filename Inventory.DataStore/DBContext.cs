@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Text;
 using InventoryPOS.DataStore.Daos;
-using InventoryPOS.DataStore.Daos;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,7 +9,7 @@ namespace InventoryPOS.DataStore
 {
     public class DBContext : IdentityDbContext
     {
-        public  DbSet<Product> Products { get; set; }
+        public DbSet<Product> Products { get; set; }
         public DbSet<Brand> Brands { get; set; }
         public DbSet<Size> Sizes { get; set; }
         public DbSet<Colour> Colours { get; set; }
@@ -24,7 +23,7 @@ namespace InventoryPOS.DataStore
         public DbSet<Store> Store { get; set; }
 
 
-        public DBContext (DbContextOptions<DBContext> options) : base(options)
+        public DBContext(DbContextOptions<DBContext> options) : base(options)
         {
 
         }
@@ -45,8 +44,8 @@ namespace InventoryPOS.DataStore
               .HasDefaultValue(0);
 
             modelBuilder.Entity<Payment>()
-                .HasKey(p => new { p.SaleInvoiceId, p.PaymentMethodId});
-           
+                .HasKey(p => new { p.SaleInvoiceId, p.PaymentMethodId });
+
             //modelBuilder.Entity<ProductSale>()
             //    .HasKey(ps => new { ps.SalesInvoiceId, ps.ProductId });
 
@@ -60,6 +59,9 @@ namespace InventoryPOS.DataStore
             modelBuilder.Entity<Promotion>()
               .Property(b => b.Active)
               .HasDefaultValue(true);
+
+
+
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

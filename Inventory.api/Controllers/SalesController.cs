@@ -6,7 +6,6 @@ using AutoMapper;
 using Inventory.api.Controllers;
 using InventoryPOS.Core.Dtos;
 using InventoryPOS.DataStore.Daos;
-using InventoryPOS.DataStore.Daos;
 using InventoryPOSApp.Core.Dtos;
 using InventoryPOSApp.Core.Repositories;
 using InventoryPOSApp.Core.Services;
@@ -46,6 +45,12 @@ namespace InventoryPOS.api.Controllers
             _repo = repo;
             _mapper = mapper;
             _inventoryService = inventoryService;
+        }
+
+        [HttpGet("GetStore")]
+        public Store GetStore()
+        {
+            return _saleService.GetStore();
         }
 
         [HttpPost("AddPromotion")]
@@ -180,20 +185,33 @@ namespace InventoryPOS.api.Controllers
             return Ok(dtos);
         }
 
-        [HttpGet("StartNewSale")]
+        [HttpPost("StartNewSale")]
         public SaleInvoiceDto StartNewSale()
         {                       
             var sale = _saleService.StartNewSaleTransaction();
             return _mapper.Map<SaleInvoice, SaleInvoiceDto>(sale);
         }
 
-        [HttpPost("AddProductsSales")]
+        [HttpGet("GetSale")]
+        public IActionResult GetSale([FromBody] int saleId)
+        {
+            var sale = _saleService.GetSale(saleId);
+            if(sale == null)
+            {
+                return BadRequest("The sale for the invoice number you provided is invalid");
+            }
+            return Ok(_mapper.Map<SaleInvoice, SaleInvoiceDto>(sale));
+        }
+
+        [HttpPost("AddProductSales")]
         public IActionResult AddProductSales(Object jsonResult)
         {
             dynamic reqBody = JObject.Parse(jsonResult.ToString());
-            var productDtos = _inventoryService.GetProducts(reqBody.productIds.ToObject<List<ProductDto>>());
-            var saleProducts = _mapper.Map<List<ProductDto>, List<Product>>(productDtos);
-            SaleInvoice sale = _saleService.GetSale(reqBody.saleId);
+            //var productDtos = _inventoryService.GetProducts(reqBody.productIds.ToObject<List<int>>());
+            //var saleProducts = _mapper.Map<List<ProductDto>, List<Product>>(productDtos);
+            var saleProducts = _inventoryService.GetProducts(reqBody.productIds.ToObject<List<int>>());
+            int saleId = reqBody.saleId;
+            SaleInvoice sale = _saleService.GetSale(saleId);
 
             if (sale == null)
                 return BadRequest("This sale does not exist");
@@ -204,8 +222,8 @@ namespace InventoryPOS.api.Controllers
                 var productSales = _saleService.ApplyPromotionsToSale(sale.Id, saleProducts);
                 _saleService.ProcessProductSales(sale, productSales);
                 SaleInvoiceDto invoice = _mapper.Map<SaleInvoice, SaleInvoiceDto>(sale);
-                sale.ProductSales = productSales;
-                return Ok(productSales);
+                invoice.Products = _mapper.Map<IList<ProductSale>,IList<ProductSaleDto>>(productSales);
+                return Ok(invoice);
             }
             else
             {

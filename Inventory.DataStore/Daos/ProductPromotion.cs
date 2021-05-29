@@ -9,8 +9,8 @@ namespace InventoryPOS.DataStore.Daos
     public class ProductPromotion
     {
         public  int PromotionId { get; set; }
-        public virtual Promotion Promotion { get; set; }  
+        public Promotion Promotion { get; set; }  
         public int ProductId { get; set; }
-        public virtual Product Product { get; set; }
+        public Product Product { get; set; }
     }
 }

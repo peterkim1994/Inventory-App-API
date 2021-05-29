@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 using Microsoft.EntityFrameworkCore;
 
@@ -23,6 +24,8 @@ namespace InventoryPOS.DataStore.Daos
         [Required]
         public int PromotionPrice { get; set; }
         public virtual List<ProductPromotion> ProductPromotions { get; set; }       
+        public virtual List<ProductSale> ProductSales { get; set; }
         public bool Active { get; set; }
     }
 }
+ 

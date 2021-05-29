@@ -5,7 +5,8 @@ using System.Text;
 namespace InventoryPOSApp.Core.Dtos
 {
     public class StoreDto
-    {      
+    {   
+        public int Id { get; set; }  
         public string GstNum { get; set; }    
         public string StoreName { get; set; }       
         public string Address { get; set; }       

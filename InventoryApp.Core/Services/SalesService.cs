@@ -27,6 +27,11 @@ namespace InventoryPOSApp.Core.Services
             _inventoryRepo = inventoryRepo;
         }
 
+        public Store GetStore()
+        {
+           return _salesRepo.GetStore();
+        }
+
         public SaleInvoice StartNewSaleTransaction()
         {
            var sale = _salesRepo.CreateNewSaleInvoice();
@@ -161,8 +166,7 @@ namespace InventoryPOSApp.Core.Services
                 ProductId = product.Id,
                 Product = product,
                 PriceSold = product.Price,
-                PromotionApplied = false,
-                PromotionId = 0,
+                PromotionApplied = false     
             };
             if (promotion != null)
             {
