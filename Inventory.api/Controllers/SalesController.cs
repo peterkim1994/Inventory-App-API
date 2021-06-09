@@ -229,8 +229,33 @@ namespace InventoryPOS.api.Controllers
             {
                 return BadRequest("There are no products to add");
             }
-
         }
+
+        [HttpPost("AddSalePayments")]
+        public IActionResult AddSalePayments(ICollection<PaymentDto> paymentDtos)
+        {
+          //  dynamic req = JObject.Parse(json.ToString());
+        //    ICollection<PaymentDto> paymentDtos = req.payments.ToObject<ICollection<PaymentDto>>();
+            ICollection<Payment> payments = _mapper.Map<ICollection<PaymentDto>, ICollection<Payment>>(paymentDtos);
+            bool paymentSuccess = _saleService.ProcessPayments(payments);
+
+            if (paymentDtos == null || paymentDtos.Count() < 1)
+            { 
+                return BadRequest("The payments for sale was not completeted,.Please provide valid payments for the sale");
+            }
+            else if (paymentSuccess)
+            {
+                int saleId = payments.First().SaleInvoiceId;
+                var finalInvoice = _saleService.GetSale(saleId);
+                var finalInvoiceDto = _mapper.Map<SaleInvoice, SaleInvoiceDto>(finalInvoice);
+                return Ok(finalInvoiceDto);
+            }
+            else
+            {
+                return BadRequest("Please make sure the payment totals equals exactly the same as the sale amount total");
+            }
+        }
+
 
     }
 

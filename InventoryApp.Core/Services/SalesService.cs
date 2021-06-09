@@ -74,8 +74,7 @@ namespace InventoryPOSApp.Core.Services
         {
             _salesRepo.AddProductSales(productSales);
             sale.Total = ProcessSaleTotalAmount(productSales);
-            _salesRepo.UpdateSale(sale);
-            
+            _salesRepo.UpdateSale(sale);            
         }
 
         public void DeleteSale(int saleId)
@@ -89,7 +88,8 @@ namespace InventoryPOSApp.Core.Services
             }
         }
 
-        // looks like a lot of for loops but must of them will only iterate 1-3 times        
+        // looks like a lot of for loops but must of them will only iterate 1-3 times      
+        // note: clean up smelly code
         public IList<ProductSale> ApplyPromotionsToSale(int saleId, List<Product> products)
         {
             Dictionary<int, IList<Promotion>> productPromos = _promoRepo.GetProductActivePromotions();
@@ -131,7 +131,7 @@ namespace InventoryPOSApp.Core.Services
                             {
                                 promotionApplied = true;
                                 productSales.AddRange(pontentialPromos);
-                                //All products included in this promotion will no longer be included in the productId list                                
+                                //All products included in this promotion will no longer be included in the productId list 
                                 products = productList;
                                 break;
                             }
@@ -158,11 +158,12 @@ namespace InventoryPOSApp.Core.Services
            return _salesRepo.GetProductSalesInTransaction(saleId);
         }
 
+        //helper func which returns a productSale obj
         public ProductSale CreateProductSale(int saleId, Product product, Promotion promotion = null, int  sellingPrice = 0)
         {
             ProductSale productSale = new ProductSale
             {
-                SalesInvoiceId = saleId,
+                SaleInvoiceId = saleId,
                 ProductId = product.Id,
                 Product = product,
                 PriceSold = product.Price,
@@ -170,7 +171,7 @@ namespace InventoryPOSApp.Core.Services
             };
             if (promotion != null)
             {
-                productSale.PriceSold = sellingPrice; // promotion.PromotionPrice / promotion.Quantity;
+                productSale.PriceSold = sellingPrice;
                 productSale.PromotionApplied = true;
                 productSale.PromotionId = promotion.Id;
                 productSale.Promotion = promotion;
@@ -189,6 +190,7 @@ namespace InventoryPOSApp.Core.Services
             else if (ValidatePaymentAmount(sale.Total, payments))
             {
                 _salesRepo.AddSalesPayments(payments);
+                FinaliseSale(sale);
                 return true;
             }
             return false;
@@ -200,7 +202,15 @@ namespace InventoryPOSApp.Core.Services
             return (paymentTotal == totalOwing);
         }
 
-
+        public void FinaliseSale(SaleInvoice sale)
+        {
+            sale.Finalised = true;            
+            _salesRepo.UpdateSale(sale);
+            foreach(var productSale in sale.ProductSales)
+            {
+                _inventoryRepo.DecreaseProductQty(productSale.ProductId, 1);
+            }
+        }
 
         //delete
 
@@ -218,6 +228,7 @@ namespace InventoryPOSApp.Core.Services
         {
             throw new NotImplementedException();
         }
+
 
 
 

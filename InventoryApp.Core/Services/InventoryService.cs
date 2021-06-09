@@ -42,10 +42,9 @@ namespace InventoryPOSApp.Core.Services
             IEnumerable<ProductAttribute> categories = _repo.GetProductAttributes<ItemCategory>();
             SizeComparer sc = new SizeComparer();
             List<Size> sizeList =  _repo.GetProductAttributes<Size>();
-            sizeList.Sort(sc);
- 
+            sizeList.Sort(sc); 
             IEnumerable<ProductAttribute> sizes = sizeList;
-            allAttributes.Add(colours);
+            allAttributes.Add(colours); 
             allAttributes.Add(brands);
             allAttributes.Add(categories);
             allAttributes.Add(sizes);
@@ -80,6 +79,7 @@ namespace InventoryPOSApp.Core.Services
 
         public bool AddBrand(Brand brand)
         {
+
             brand.Value = TextProcessor.ToPronounCasing(brand.Value);
             if (_repo.ContainsAtt(brand))
             {
@@ -152,6 +152,11 @@ namespace InventoryPOSApp.Core.Services
 
         public bool EditBrand(Brand brand)
         {
+            // note for later: validation needs to improve for product attributes,,
+            if (ProductAttributeNotNull(brand) == false)
+            {
+                return false;
+            }
             brand.Value = TextProcessor.ToPronounCasing(brand.Value);
             var existingBrand = _repo.GetBrandByName(brand.Value);
             if (existingBrand == null)
@@ -167,6 +172,10 @@ namespace InventoryPOSApp.Core.Services
 
         public bool EditColour(Colour colour)
         {
+            if(ProductAttributeNotNull(colour) == false)
+            {
+                return false;
+            }
             colour.Value = TextProcessor.ToPronounCasing(colour.Value);
             var existingBrand = _repo.GetColourByName(colour.Value);
             if (existingBrand == null)
@@ -182,6 +191,8 @@ namespace InventoryPOSApp.Core.Services
 
         public bool EditCategory(ItemCategory category)
         {
+            if (category == null || String.IsNullOrEmpty(category.Value))
+                return false;
             category.Value = TextProcessor.ToPronounCasing(category.Value);
             var existingCategory = _repo.GetItemCategoryByName(category.Value);
             if (existingCategory == null)
@@ -197,6 +208,8 @@ namespace InventoryPOSApp.Core.Services
 
         public bool EditSize(Size size)
         {
+            if (size == null || String.IsNullOrEmpty(size.Value))
+                return false;
             size.Value = TextProcessor.ToPronounCasing(size.Value);
             var existingSize = _repo.GetSizeByName(size.Value);
             if (existingSize == null)
@@ -219,6 +232,15 @@ namespace InventoryPOSApp.Core.Services
                 productList.Add(products.First(p=> p.Id == prod));
             }
             return productList;
+        }
+
+        
+        //helper func to check if product attribute is null or has an empty value
+        public bool ProductAttributeNotNull(ProductAttribute att)
+        {
+            if (att == null || String.IsNullOrEmpty(att.Value))
+                return false;
+            return true;
         }
     }
 }
