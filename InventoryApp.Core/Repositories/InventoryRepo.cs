@@ -77,13 +77,18 @@ namespace InventoryPOSApp.Core.Repositories
 
         public bool ContainsProduct(Product product)
         {
-            var prod = _context.Products.Where(pr =>
-               pr.ManufactureCode == product.ManufactureCode
-               && pr.BrandId == product.BrandId
-               && pr.Description == product.Description
-               && pr.ColourId == product.ColourId
-               && pr.SizeId == product.SizeId
-               && pr.ItemCategoryId == product.ItemCategoryId
+            var prod = _context.Products.Where(pr =>                           
+               pr.Barcode == product.Barcode ||
+               (
+                  pr.ManufactureCode == product.ManufactureCode ||
+                  (
+                      pr.BrandId == product.BrandId &&
+                      pr.Description == product.Description &&
+                      pr.ColourId == product.ColourId &&
+                      pr.SizeId == product.SizeId &&
+                      pr.ItemCategoryId == product.ItemCategoryId
+                  )
+               )
             );
             bool s = prod.Count() > 0;
             return (s);
@@ -104,7 +109,7 @@ namespace InventoryPOSApp.Core.Repositories
               .Include(pr => pr.Colour)
               .Include(pr => pr.Size)
               .Include(pr => pr.ItemCategory)
-              .First(pr => pr.Id == id);
+              .FirstOrDefault(pr => pr.Id == id);
         }
 
         public List<Product> GetProducts(List<int> productIds)
@@ -195,11 +200,33 @@ namespace InventoryPOSApp.Core.Repositories
             _context.Entry<ItemCategory>(category).State = EntityState.Modified;
             _context.SaveChanges();
         }
+
         public void EditSize(Size size)
         {
             _context.Entry<Size>(size).State = EntityState.Modified;
             _context.SaveChanges();
         }
+
+        public bool IncreaseProductQty(int productId, int qty)
+        {
+            var product = _context.Products.Find(productId);
+            if (product != null || qty > 0)
+            {
+                product.Qty += qty;
+            }
+            return false;
+        }
+
+        public bool DecreaseProductQty(int productId, int qty)
+        {
+            var product = _context.Products.Find(productId);
+            if (product != null || qty > 0)
+            {
+                product.Qty -= qty;
+            }
+            return false;
+        }
+
 
     }
 }

@@ -32,13 +32,13 @@ namespace InventoryPOSApp.Core.Repositories
 
         public SaleInvoice GetSaleByInvoiceNumber(int invoiceNumber)
         {
-            return _context.SalesInvoices.Find(invoiceNumber);
+            return _context.SaleInvoices.Find(invoiceNumber);
         }
 
         public SaleInvoice CreateNewSaleInvoice()
         {
             SaleInvoice newSale = new SaleInvoice { InvoiceDate = DateTime.Now};
-            _context.SalesInvoices.Add(newSale);
+            _context.SaleInvoices.Add(newSale);
       //      Store store = new Store { StoreName = "Procamp", Address = "Hamilton", GstNum = "123-234432-332", Contact = "07-801-2345" };
        //     _context.Store.Add(store);
             _context.SaveChanges();          
@@ -48,7 +48,7 @@ namespace InventoryPOSApp.Core.Repositories
         public ICollection<Product> GetProductsInTransaction(int saleId)
         {
             var products = from sale in _context.ProductSales
-                           where sale.SalesInvoiceId == saleId
+                           where sale.SaleInvoiceId == saleId
                            join p in _context.Products
                            on sale.ProductId equals p.Id
                            select p;
@@ -59,13 +59,13 @@ namespace InventoryPOSApp.Core.Repositories
         {
             var productSales = _context.ProductSales
                                     .Include(ps => ps.Product)
-                                    .Select(ps => ps.SalesInvoiceId == saleId);
+                                    .Select(ps => ps.SaleInvoiceId == saleId);
             return (ICollection<ProductSale>) productSales;                               
         }
 
         public SaleInvoice GetPreviousSale()
         {
-            return _context.SalesInvoices.Last();
+            return _context.SaleInvoices.Last();
         }
 
         public void AddProductSales(ICollection<ProductSale> productSales)
@@ -84,7 +84,7 @@ namespace InventoryPOSApp.Core.Repositories
         public void DeleteProductSale(ProductSale productSale)
         {
             ProductSale product = _context.ProductSales.FirstOrDefault(p =>
-                                                             p.SalesInvoiceId == productSale.SalesInvoiceId &&
+                                                             p.SaleInvoiceId == productSale.SaleInvoiceId &&
                                                              p.ProductId == productSale.ProductId);
             if (product != null)
             {
@@ -96,7 +96,7 @@ namespace InventoryPOSApp.Core.Repositories
         public void ClearProductSales(int saleId)
         {
             var productSales = from ps in _context.ProductSales
-                               where ps.SalesInvoiceId == saleId
+                               where ps.SaleInvoiceId == saleId
                                select ps;
             if (productSales.Count() == 0)
                 return;
@@ -114,13 +114,13 @@ namespace InventoryPOSApp.Core.Repositories
 
         public ICollection<Payment> GetSalesPayments(int saleId)
         {
-            var payments = from sale in _context.SalesInvoices
+            var payments = from sale in _context.SaleInvoices
                            where sale.Id == saleId
                            join payment in _context.Payments
                            on sale.Id equals payment.SaleInvoiceId
                            select payment;
 
-            var salePayments = from sale in _context.SalesInvoices
+            var salePayments = from sale in _context.SaleInvoices
                                from payment in _context.Payments
                                where sale.Id == saleId && sale.Id == payment.SaleInvoiceId
                                join paymentMethod in _context.PaymentMethods
@@ -147,32 +147,39 @@ namespace InventoryPOSApp.Core.Repositories
 
         public bool IsInvoiceFinalised(int saleId)
         {
-            var sale = _context.SalesInvoices.Find(saleId);
+            var sale = _context.SaleInvoices.Find(saleId);
             return (sale.Finalised == true);
         }
 
-
         public void CompleteTransaction(int saleInvoiceId)
         {
-            SaleInvoice sale = _context.SalesInvoices.Find(saleInvoiceId);
+            SaleInvoice sale = _context.SaleInvoices.Find(saleInvoiceId);
             sale.Finalised = true;
             _context.Entry(sale).State = EntityState.Modified;
             _context.SaveChanges();
         }
 
 
-
         public void DeleteSaleInvoice(int saleInvoiceId)
         {
-            SaleInvoice sale = _context.SalesInvoices.Find(saleInvoiceId);
+            SaleInvoice sale = _context.SaleInvoices.Find(saleInvoiceId);
             //Delete ProductSales?
-            _context.SalesInvoices.Remove(sale);
+            _context.SaleInvoices.Remove(sale);
             _context.SaveChanges();
         }
 
         public SaleInvoice GetSale(int saleId)
         {
-            return _context.SalesInvoices.Find(saleId);
+            var sale = _context.SaleInvoices
+                .Include(s => s.ProductSales)
+                .Include(s => s.Payments)
+                .FirstOrDefault(s=> s.Id == saleId);
+            foreach(var payment in sale.Payments)
+            {
+                _context.Entry(payment).Reference(p => p.PaymentMethod).Load();
+            }
+            return sale;
+
         }
 
         public void DeleteSalePayments(int saleId)

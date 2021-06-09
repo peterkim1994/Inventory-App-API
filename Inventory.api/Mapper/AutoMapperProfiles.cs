@@ -85,8 +85,13 @@ namespace InventoryPOS.api.Helpers
                 )
                 .ForMember
                 (
+                    d=> d.Products,
+                    o => o.MapFrom(s => s.ProductSales)
+                )
+                .ForMember
+                (
                     d => d.InvoiceNumber,
-                    o => o.MapFrom(s => s.Id.ToString().PadLeft(14,'0'))
+                    o => o.MapFrom(s => s.Id.ToString().PadLeft(9,'0'))
                 );
 
             CreateMap<ProductSale, ProductSaleDto>()
@@ -97,10 +102,10 @@ namespace InventoryPOS.api.Helpers
                         String.Format
                         (
                             "{0} {1} {2} {3}",
-                            s.Product.Brand.Value.PadRight(20),
-                            s.Product.ItemCategory.Value.PadRight(20),
-                            s.Product.Colour.Value.PadRight(20),
-                            s.Product.Size.Value.PadRight(20)
+                            s.Product.Brand.Value.PadRight(15),
+                            s.Product.ItemCategory.Value.PadRight(15),
+                            s.Product.Colour.Value.PadRight(15),
+                            s.Product.Size.Value.PadRight(15)
                         )
                     )
                 )

@@ -14,7 +14,7 @@ namespace InventoryPOS.DataStore
         public DbSet<Size> Sizes { get; set; }
         public DbSet<Colour> Colours { get; set; }
         public DbSet<ItemCategory> ItemCategories { get; set; }
-        public DbSet<SaleInvoice> SalesInvoices { get; set; }
+        public DbSet<SaleInvoice> SaleInvoices { get; set; }
         public DbSet<ProductSale> ProductSales { get; set; }
         public DbSet<Promotion> Promotions { get; set; }
         public DbSet<Payment> Payments { get; set; }

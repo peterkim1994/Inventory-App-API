@@ -10,7 +10,7 @@ namespace InventoryPOS.DataStore.Daos
     {    
         [Key]
         public int Id { get; set; }
-        public int SalesInvoiceId { get; set; }
+        public int SaleInvoiceId { get; set; }
         public SaleInvoice SaleInvoice { get; set; }
         public int ProductId { get; set; }
         public Product Product { get; set; }

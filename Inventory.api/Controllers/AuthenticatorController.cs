@@ -179,8 +179,7 @@ namespace InventoryPOS.api.Controllers
             await _userManager.AddClaimAsync(user, c2);
         }
 
-
-        
+       
 
         public async Task<dynamic> GenerateToken(string userName)
         {

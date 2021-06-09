@@ -62,6 +62,10 @@ namespace InventoryPOSApp.Core.Repositories
 
         List<Product> GetProducts(List<int> productIds);
 
+        bool IncreaseProductQty(int productId, int qty);
+
+        bool DecreaseProductQty(int productId, int qty);
+
 
     }
 }
