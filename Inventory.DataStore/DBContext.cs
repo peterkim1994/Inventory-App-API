@@ -21,7 +21,7 @@ namespace InventoryPOS.DataStore
         public DbSet<PaymentMethod> PaymentMethods { get; set; }
         public DbSet<ProductPromotion> ProductPromotions { get; set; }
         public DbSet<Store> Store { get; set; }
-
+        public DbSet<Refund> Refunds { get; set; }
 
         public DBContext(DbContextOptions<DBContext> options) : base(options)
         {

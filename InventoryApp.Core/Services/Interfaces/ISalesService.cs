@@ -24,6 +24,7 @@ namespace InventoryPOSApp.Core.Services
 
         void ProcessProductSales(SaleInvoice sale, IList<ProductSale> productSales);
 
+        
     //    ProductSale ProcessProductSale(int saleId, Product product, Promotion promotion, int sellingPrice);
 
  

@@ -192,9 +192,13 @@ namespace InventoryPOS.api.Controllers
             return _mapper.Map<SaleInvoice, SaleInvoiceDto>(sale);
         }
 
-        [HttpGet("GetSale")]
-        public IActionResult GetSale([FromBody] int saleId)
+        [HttpGet("GetSale/{saleId}")]
+        public IActionResult GetSale(int saleId)
         {
+            if(saleId == 0)
+            {
+                return BadRequest("0 is not a valid saleId number");
+            }
             var sale = _saleService.GetSale(saleId);
             if(sale == null)
             {
