@@ -104,6 +104,7 @@ namespace InventoryPOSApp.Core.Services
             return newBarcode;
         }
 
+        //TERRIBLE LOGIC FLOW
         public bool AddProduct(Product product)
         {
             if (_repo.ContainsProduct(product))            
@@ -114,13 +115,13 @@ namespace InventoryPOSApp.Core.Services
                 {                   
                     product.Barcode = GenerateBarcode();
                 }
-                else if(IsValidBarcode(product.Barcode))
-                {
-                    return false;
+                else if(BarcodeIsAvailable(product.Barcode))
+                {                    
+                    _repo.AddNewProduct(product);
+                    _repo.SaveChanges();
+                    return true;
                 }
-                _repo.AddNewProduct(product);
-                _repo.SaveChanges();
-                return true;
+                return false;
             }
         }
 
@@ -140,14 +141,9 @@ namespace InventoryPOSApp.Core.Services
         }
 
 
-        public bool IsValidBarcode(long barcode)
+        public bool BarcodeIsAvailable(long barcode)
         {
-            if (_repo.GetProductByBarcode(barcode) != null)
-            {
-                return false;
-            }                
-            else
-                return true;
+            return _repo.GetProductByBarcode(barcode) == null;           
         }
 
         public bool EditBrand(Brand brand)

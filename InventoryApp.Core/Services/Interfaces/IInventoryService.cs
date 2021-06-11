@@ -33,7 +33,7 @@ namespace InventoryPOSApp.Core.Services
 
         List<Product> GetProducts(List<int> productIds);
 
-        bool IsValidBarcode(long barcode);
+        bool BarcodeIsAvailable(long barcode);
 
         Product EditProduct(Product product);
     }

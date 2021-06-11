@@ -75,23 +75,21 @@ namespace InventoryPOSApp.Core.Repositories
             return (attribute.Count() == 1);
         }
 
+
         public bool ContainsProduct(Product product)
         {
-            var prod = _context.Products.Where(pr =>                           
+            bool emptyManuCode = !string.IsNullOrEmpty(product.ManufactureCode);
+            var prod = _context.Products.Where(pr =>
                pr.Barcode == product.Barcode ||
                (
-                  pr.ManufactureCode == product.ManufactureCode ||
-                  (
-                      pr.BrandId == product.BrandId &&
-                      pr.Description == product.Description &&
-                      pr.ColourId == product.ColourId &&
-                      pr.SizeId == product.SizeId &&
-                      pr.ItemCategoryId == product.ItemCategoryId
-                  )
+                  pr.BrandId == product.BrandId &&
+                  pr.Description == product.Description &&
+                  pr.ColourId == product.ColourId &&
+                  pr.SizeId == product.SizeId &&
+                  pr.ItemCategoryId == product.ItemCategoryId
                )
             );
-            bool s = prod.Count() > 0;
-            return (s);
+            return (prod.Count() > 0);       
         }
 
         public void EditProduct(Product editedProduct)
@@ -213,6 +211,8 @@ namespace InventoryPOSApp.Core.Repositories
             if (product != null || qty > 0)
             {
                 product.Qty += qty;
+                _context.SaveChanges();
+                return true;
             }
             return false;
         }
@@ -223,6 +223,8 @@ namespace InventoryPOSApp.Core.Repositories
             if (product != null || qty > 0)
             {
                 product.Qty -= qty;
+                _context.SaveChanges();
+                return true;
             }
             return false;
         }
