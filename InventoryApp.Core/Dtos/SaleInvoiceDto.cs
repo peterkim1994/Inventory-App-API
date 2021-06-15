@@ -11,5 +11,7 @@ namespace InventoryPOSApp.Core.Dtos
         public ICollection<ProductSaleDto> Products {get; set; }
         public ICollection<PaymentDto> Payments { get; set; }
         public double Total { get; set; }
+
+        public bool Finalised { get; set; }
     }
 }

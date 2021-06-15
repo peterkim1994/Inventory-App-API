@@ -85,20 +85,20 @@ namespace InventoryPOS.api.Helpers
                 )
                 .ForMember
                 (
-                    d=> d.Products,
+                    d => d.Products,
                     o => o.MapFrom(s => s.ProductSales)
                 )
                 .ForMember
                 (
                     d => d.InvoiceNumber,
-                    o => o.MapFrom(s => s.Id.ToString().PadLeft(9,'0'))
+                    o => o.MapFrom(s => s.Id.ToString().PadLeft(9, '0'))
                 );
 
             CreateMap<ProductSale, ProductSaleDto>()
                 .ForMember
                 (
                     d => d.Product,
-                    o => o.MapFrom(s => 
+                    o => o.MapFrom(s =>
                         String.Format
                         (
                             "{0} {1} {2} {3}",
@@ -133,12 +133,24 @@ namespace InventoryPOS.api.Helpers
                 o => o.MapFrom(s => s.PaymentMethod.Method)
               );
 
-
             CreateMap<PaymentDto, Payment>()
              .ForMember(
                d => d.Amount,
                o => o.MapFrom(s => Convert.ToInt32(s.Amount * 100.0))
              );
+
+            CreateMap<Refund, RefundDto>()
+             .ForMember
+             (
+                d => d.Amount,
+                o => o.MapFrom(s => (s.Amount / 100.0))
+             );
+
+            CreateMap<RefundDto, Refund>()
+                .ForMember(
+                      d => d.Amount,
+                      o => o.MapFrom(s => Convert.ToInt32(s.Amount * 100.0))
+                );
         }
     }
 }

@@ -24,5 +24,7 @@ namespace InventoryPOS.Core.Dtos
         public string SizeValue { get; set; }
         public double Price { get; set; }
         public int Qty { get; set; }
+
+        public bool Active { get; set; }
     }
 }

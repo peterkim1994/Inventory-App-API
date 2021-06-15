@@ -260,7 +260,38 @@ namespace InventoryPOS.api.Controllers
             }
         }
 
-
+        [HttpPost("ProcessRefund")]
+        public IActionResult ProcessRefund(RefundDto refundDto)
+        {
+            var sale = _saleService.GetSale(refundDto.SaleInvoiceId);
+            var refund = _mapper.Map<RefundDto, Refund>(refundDto);
+            if(sale == null)
+            {
+                return BadRequest("That invoice number does not exist");
+            }
+            else if(refund.Amount > sale.Total)
+            {
+                return BadRequest("The refund amount can not be more than the amount paid for the sale");
+            }
+            else if (refund.Amount <= 0)
+            {
+                return BadRequest("The refund amount can not less or equal to zero");
+            }
+            else if (string.IsNullOrWhiteSpace(refund.Reason))
+            {
+                return BadRequest("You must provide a reason for the refund");
+            }
+            else if(refund.Reason.Length > 99)
+            {
+                return BadRequest("The reason must be under 100 characters");
+            }
+            else
+            {
+                refund.RefundDate = DateTime.Now;
+                _repo.AddRefund(refund);
+                return Ok("refund successfully processed");
+            }
+        }
     }
 
 }

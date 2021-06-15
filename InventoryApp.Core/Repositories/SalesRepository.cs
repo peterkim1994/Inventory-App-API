@@ -18,7 +18,7 @@ namespace InventoryPOSApp.Core.Repositories
         public SalesRepository(DBContext context)
         {
             _context = context;
-        }       
+        }
 
         public void SaveChanges()
         {
@@ -32,16 +32,20 @@ namespace InventoryPOSApp.Core.Repositories
 
         public SaleInvoice GetSaleByInvoiceNumber(int invoiceNumber)
         {
-            return _context.SaleInvoices.Find(invoiceNumber);
+            return _context.SaleInvoices
+                .Include(s => s.ProductSales)
+                .Include(s => s.Payments)
+                .Include(s => s.Refunds)
+                .FirstOrDefault(s => s.Id == invoiceNumber);
         }
 
         public SaleInvoice CreateNewSaleInvoice()
         {
-            SaleInvoice newSale = new SaleInvoice { InvoiceDate = DateTime.Now};
+            SaleInvoice newSale = new SaleInvoice { InvoiceDate = DateTime.Now };
             _context.SaleInvoices.Add(newSale);
-      //      Store store = new Store { StoreName = "Procamp", Address = "Hamilton", GstNum = "123-234432-332", Contact = "07-801-2345" };
-       //     _context.Store.Add(store);
-            _context.SaveChanges();          
+            //      Store store = new Store { StoreName = "Procamp", Address = "Hamilton", GstNum = "123-234432-332", Contact = "07-801-2345" };
+            //     _context.Store.Add(store);
+            _context.SaveChanges();
             return newSale;
         }
 
@@ -60,7 +64,7 @@ namespace InventoryPOSApp.Core.Repositories
             var productSales = _context.ProductSales
                                     .Include(ps => ps.Product)
                                     .Select(ps => ps.SaleInvoiceId == saleId);
-            return (ICollection<ProductSale>) productSales;                               
+            return (ICollection<ProductSale>)productSales;
         }
 
         public SaleInvoice GetPreviousSale()
@@ -71,7 +75,7 @@ namespace InventoryPOSApp.Core.Repositories
         public void AddProductSales(ICollection<ProductSale> productSales)
         {
             _context.ProductSales.AddRange(productSales.ToList());
-             var x =  _context.ProductSales;
+            var x = _context.ProductSales;
             _context.SaveChanges();
         }
 
@@ -100,7 +104,7 @@ namespace InventoryPOSApp.Core.Repositories
                                select ps;
             if (productSales.Count() == 0)
                 return;
-            else{
+            else {
                 _context.ProductSales.RemoveRange(productSales);
                 SaveChanges();
             }
@@ -109,7 +113,7 @@ namespace InventoryPOSApp.Core.Repositories
         public void UpdateSale(SaleInvoice sale)
         {
             _context.Entry<SaleInvoice>(sale).State = EntityState.Modified;
-            _context.SaveChanges();     
+            _context.SaveChanges();
         }
 
         public ICollection<Payment> GetSalesPayments(int saleId)
@@ -132,12 +136,12 @@ namespace InventoryPOSApp.Core.Repositories
         public bool RemovePayment(Payment payment)
         {
             Payment pay = _context.Payments
-                                    .FirstOrDefault(p=> 
-                                        p.SaleInvoiceId == payment.SaleInvoiceId && 
+                                    .FirstOrDefault(p =>
+                                        p.SaleInvoiceId == payment.SaleInvoiceId &&
                                         p.PaymentMethodId == payment.PaymentMethodId &&
-                                        p.Amount == payment.Amount                                       
+                                        p.Amount == payment.Amount
                                     );
-            if (pay == null)  return false;           
+            if (pay == null) return false;
 
             _context.Payments.Remove(pay);
             _context.SaveChanges();
@@ -173,8 +177,10 @@ namespace InventoryPOSApp.Core.Repositories
             var sale = _context.SaleInvoices
                 .Include(s => s.ProductSales)
                 .Include(s => s.Payments)
-                .FirstOrDefault(s=> s.Id == saleId);
-            foreach(var payment in sale.Payments)
+                .FirstOrDefault(s => s.Id == saleId);
+            if (sale == null)
+                return sale;
+            foreach (var payment in sale.Payments)
             {
                 _context.Entry(payment).Reference(p => p.PaymentMethod).Load();
             }
@@ -194,7 +200,7 @@ namespace InventoryPOSApp.Core.Repositories
         public void EditSalePayment(Payment payment)
         {
             //check this works
-            var p = _context.Entry<Payment> (payment);
+            var p = _context.Entry<Payment>(payment);
             _context.Remove(p);
             SaveChanges();
         }
@@ -210,5 +216,18 @@ namespace InventoryPOSApp.Core.Repositories
             _context.Payments.AddRange(payments);
             _context.SaveChanges();
         }
+
+
+        public void AddRefund(Refund refund)
+        {
+            _context.Refunds.Add(refund);
+            _context.SaveChanges();
+        }
+
+        public Refund GetRefund(int refundId)
+        {
+           return _context.Refunds.Find(refundId);
+        }
+
     }
 }
