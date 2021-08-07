@@ -47,14 +47,18 @@ namespace InventoryPOSApp.Core.Services
                 return false;
             }
             else
-            {
-                _salesRepo.ClearProductSales(saleId);
-                _salesRepo.DeleteSalePayments(saleId);
+            {               
                 //   _salesRepo.DeleteSaleInvoice(saleId);
                 if (sale.Finalised == true)
                 {
-                    //UPDATE INVENTORY STOCK QTY
+                   var saleItems = _salesRepo.GetProductSalesInTransaction(saleId);
+                    foreach (ProductSale item in saleItems)
+                    {
+                        _inventoryRepo.IncreaseProductQty(item.Id, 1);
+                    }
                 }
+                _salesRepo.ClearProductSales(saleId);
+                _salesRepo.DeleteSalePayments(saleId);
                 return true;
             }
         }

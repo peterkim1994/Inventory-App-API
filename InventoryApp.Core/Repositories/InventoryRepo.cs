@@ -131,6 +131,38 @@ namespace InventoryPOSApp.Core.Repositories
             return _context.ItemCategories.OrderBy(c => c.Value).ToList();
         }
 
+        public List<Product> SearchProducts(string searchWord)
+        {
+            var ignoreCase= System.StringComparison.CurrentCultureIgnoreCase;
+            var products = from pr in _context.Products
+                           join b in _context.Brands
+                                on pr.BrandId equals b.Id
+                           join ic in _context.ItemCategories
+                                on pr.ItemCategoryId equals ic.Id
+                           join c in _context.Colours
+                                on pr.ColourId equals c.Id
+                           where
+                                pr.Description.Contains(searchWord) ||
+                                b.Value.Contains(searchWord, ignoreCase) ||
+                                ic.Value.Contains(searchWord, ignoreCase) ||
+                                b.Value.Contains(searchWord, ignoreCase)
+                           select pr;
+
+            var matches =
+                _context.Products
+               .Include(p => p.Brand)
+               .Include(p => p.ItemCategory)
+               .Include(p => p.Colour)
+               .Include(p => p.Size)
+               .Where(p =>
+                     p.Description.Contains(searchWord) ||
+                     p.Brand.Value.Contains(searchWord, ignoreCase) ||
+                     p.ItemCategory.Value.Contains(searchWord, ignoreCase) ||
+                     p.Colour.Value.Contains(searchWord, ignoreCase)
+               ).ToList();
+            return matches;
+        }
+
 
         public List<Product> GetProducts()
         {
@@ -205,7 +237,7 @@ namespace InventoryPOSApp.Core.Repositories
             _context.SaveChanges();
         }
 
-        public bool IncreaseProductQty(int productId, int qty)
+        public bool IncreaseProductQty(int productId, int qty = 1)
         {
             var product = _context.Products.Find(productId);
             if (product != null || qty > 0)
@@ -217,7 +249,7 @@ namespace InventoryPOSApp.Core.Repositories
             return false;
         }
 
-        public bool DecreaseProductQty(int productId, int qty)
+        public bool DecreaseProductQty(int productId, int qty = 1)
         {
             var product = _context.Products.Find(productId);
             if (product != null || qty > 0)

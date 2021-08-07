@@ -107,6 +107,7 @@ namespace Inventory.api.Controllers
             return BadRequest("Product Details are not valid");
         }
 
+
         [HttpPost("AddSize")]
         public IActionResult AddSize(Size size)
         {

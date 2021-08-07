@@ -49,7 +49,7 @@ namespace InventoryPOSApp.Core.Repositories
         List<T> GetProductAttributes<T>() where T : ProductAttribute;
 
         Product GetProductByBarcode(long code);
-
+        List<Product> SearchProducts(string searchWord);
         void SaveChanges();
 
         Brand GetBrandByName(string brandName);
@@ -66,6 +66,6 @@ namespace InventoryPOSApp.Core.Repositories
 
         bool DecreaseProductQty(int productId, int qty);
 
-
+       
     }
 }

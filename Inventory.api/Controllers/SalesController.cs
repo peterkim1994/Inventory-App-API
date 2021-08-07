@@ -72,6 +72,7 @@ namespace InventoryPOS.api.Controllers
             return BadRequest("Invalid promotion settings");
         }
 
+        
 
         [HttpPost("AddProductPromotion")]
         public IActionResult AddProductPromotion(int productId, int promotionId)
@@ -205,6 +206,22 @@ namespace InventoryPOS.api.Controllers
                 return BadRequest("The sale for the invoice number you provided is invalid");
             }
             return Ok(_mapper.Map<SaleInvoice, SaleInvoiceDto>(sale));
+        }
+
+        [HttpPost("CancelSale")]
+        public IActionResult CancelSale(int saleId)
+        {
+            if (saleId == 0)
+            {
+                return BadRequest("0 is not a valid saleId number");
+            }
+            var sale = _saleService.GetSale(saleId);
+            if (sale != null)
+            {
+                _saleService.CancelSale(saleId);
+                return Ok();
+            }
+            return BadRequest();
         }
 
         [HttpPost("AddProductSales")]

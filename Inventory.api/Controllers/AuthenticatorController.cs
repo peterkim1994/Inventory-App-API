@@ -6,8 +6,6 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using InventoryPOS.DataStore;
-using InventoryPOS.DataStore.Daos;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -177,9 +175,7 @@ namespace InventoryPOS.api.Controllers
             await _userManager.RemoveClaimAsync(user, c2);
             await _userManager.AddClaimAsync(user, c1);
             await _userManager.AddClaimAsync(user, c2);
-        }
-
-       
+        }       
 
         public async Task<dynamic> GenerateToken(string userName)
         {
