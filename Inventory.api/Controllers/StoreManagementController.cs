@@ -44,7 +44,7 @@ namespace InventoryPOS.api.Controllers
         }
 
 
-        [HttpGet("GetTransactions/{}")]
+        [HttpGet("GetTransactions")]
         public IActionResult GetTransactions([FromQuery(Name = "from")] string from, [FromQuery(Name = "to")] string to)
         {
             //add some validation
