@@ -55,7 +55,9 @@ namespace Inventory.api
             services.AddScoped<IPromotionsService, PromotionsService>();
             services.AddScoped<ISalesRepository, SalesRepository>();
             services.AddScoped<ISalesService, SalesService>();
+            services.AddScoped<IStoreManagementService, StoreManagementService>();
             services.AddAutoMapper(typeof(AutoMapperProfiles));
+
             services.AddCors(options =>
             {
                 options.AddPolicy("InventoryPosPolicy",

@@ -14,7 +14,7 @@ namespace InventoryPOS.DataStore.Daos
         public string Reason { get; set; }
         public int SaleInvoiceId { get; set; }
         public virtual SaleInvoice SaleInvoice {get;set;}
-  //      public int ProductId { get; set; }
+        public int ProductId { get; set; }
         public int Amount { get; set; }
 
     }

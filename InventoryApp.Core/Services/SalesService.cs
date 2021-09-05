@@ -57,8 +57,9 @@ namespace InventoryPOSApp.Core.Services
                         _inventoryRepo.IncreaseProductQty(item.Id, 1);
                     }
                 }
-                _salesRepo.ClearProductSales(saleId);
-                _salesRepo.DeleteSalePayments(saleId);
+           //     _salesRepo.ClearProductSales(saleId);
+                _salesRepo.CancelSale(sale);
+             //   _salesRepo.DeleteSalePayments(saleId);
                 return true;
             }
         }

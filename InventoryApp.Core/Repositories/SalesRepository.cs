@@ -42,7 +42,7 @@ namespace InventoryPOSApp.Core.Repositories
         public SaleInvoice CreateNewSaleInvoice()
         {
             SaleInvoice newSale = new SaleInvoice { InvoiceDate = DateTime.Now };
-            _context.SaleInvoices.Add(newSale);
+            _context.SaleInvoices.Add(newSale);           
             //      Store store = new Store { StoreName = "Procamp", Address = "Hamilton", GstNum = "123-234432-332", Contact = "07-801-2345" };
             //     _context.Store.Add(store);
             _context.SaveChanges();
@@ -79,6 +79,18 @@ namespace InventoryPOSApp.Core.Repositories
             _context.SaveChanges();
         }
 
+        public void CancelSale(SaleInvoice sale)
+        {
+            var theSale = _context.SaleInvoices.Find(new SaleInvoice { Id = sale.Id });
+            if(theSale == null)
+            {
+                return;
+            }
+            theSale.Canceled = true;
+            _context.Entry(theSale).State = EntityState.Modified;
+            _context.SaveChanges();
+        }
+
         public void AddProductSale(ProductSale productSale)
         {
             _context.ProductSales.Add(productSale);
@@ -87,9 +99,10 @@ namespace InventoryPOSApp.Core.Repositories
 
         public void DeleteProductSale(ProductSale productSale)
         {
-            ProductSale product = _context.ProductSales.FirstOrDefault(p =>
-                                                             p.SaleInvoiceId == productSale.SaleInvoiceId &&
-                                                             p.ProductId == productSale.ProductId);
+            ProductSale product = _context.ProductSales.Find(productSale);
+           //     (p =>
+             //                                                p.SaleInvoiceId == productSale.SaleInvoiceId &&
+              //                                               p.ProductId == productSale.ProductId);
             if (product != null)
             {
                 _context.ProductSales.Remove(product);
@@ -227,6 +240,29 @@ namespace InventoryPOSApp.Core.Repositories
         public Refund GetRefund(int refundId)
         {
            return _context.Refunds.Find(refundId);
+        }
+
+        public IList<SaleInvoice> GetSales(DateTime from, DateTime to)
+        {
+            from = from == null ? DateTime.MinValue : from;
+            to = to == null ? DateTime.MaxValue : to;
+            var saleInvoices = _context.SaleInvoices.Include(s => s.ProductSales)  
+                                                    .Include(s => s.Refunds)
+                                                    .Where(s => s.Finalised == true &&
+                                                                 s.InvoiceDate > from &&
+                                                                 s.InvoiceDate < to
+                                                            );
+            return saleInvoices.ToList();
+        }
+
+        public IList<Refund> GetRefunds(DateTime from, DateTime to)
+        {
+            from = from == null ? DateTime.MinValue : from;
+            to = to == null ? DateTime.MaxValue : to;
+            var refunds = _context.Refunds.Where(r =>  r.RefundDate > from &&
+                                                       r.RefundDate < to
+                                                );
+            return refunds.ToList();
         }
 
     }

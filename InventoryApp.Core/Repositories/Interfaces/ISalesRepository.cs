@@ -25,10 +25,13 @@ namespace InventoryPOSApp.Core.Repositories
         void DeleteProductSale(ProductSale productSale);
         void DeleteSaleInvoice(int saleInvoiceId);
         SaleInvoice GetSale(int saleId);
+        void CancelSale(SaleInvoice sale);
         void ClearProductSales(int saleId);
         void DeleteSalePayments(int saleId);
         void EditSalePayment(Payment payment);
         void AddRefund(Refund refund);
-        Refund GetRefund(int refundId);     
+        Refund GetRefund(int refundId);
+        IList<Refund> GetRefunds(DateTime from, DateTime to);
+        IList<SaleInvoice> GetSales(DateTime from, DateTime to);
     }
 }

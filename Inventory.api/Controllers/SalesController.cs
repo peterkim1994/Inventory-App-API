@@ -255,8 +255,8 @@ namespace InventoryPOS.api.Controllers
         [HttpPost("AddSalePayments")]
         public IActionResult AddSalePayments(ICollection<PaymentDto> paymentDtos)
         {
-          //  dynamic req = JObject.Parse(json.ToString());
-        //    ICollection<PaymentDto> paymentDtos = req.payments.ToObject<ICollection<PaymentDto>>();
+            //dynamic req = JObject.Parse(json.ToString());
+            //ICollection<PaymentDto> paymentDtos = req.payments.ToObject<ICollection<PaymentDto>>();
             ICollection<Payment> payments = _mapper.Map<ICollection<PaymentDto>, ICollection<Payment>>(paymentDtos);
             bool paymentSuccess = _saleService.ProcessPayments(payments);
 

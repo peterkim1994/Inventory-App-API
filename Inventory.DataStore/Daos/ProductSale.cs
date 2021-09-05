@@ -19,6 +19,6 @@ namespace InventoryPOS.DataStore.Daos
         public Promotion Promotion { get; set; }
         [Required]
         public int PriceSold { get; set; }
-
+        
     }
 }

@@ -56,6 +56,10 @@ namespace InventoryPOS.DataStore
                 .Property(s => s.Finalised)
                 .HasDefaultValue(false);
 
+            modelBuilder.Entity<SaleInvoice>()
+                .Property(s => s.Canceled)
+                .HasDefaultValue(false);
+
             modelBuilder.Entity<Promotion>()
               .Property(b => b.Active)
               .HasDefaultValue(true);
