@@ -87,12 +87,17 @@ namespace InventoryPOS.api.Helpers
                 (
                     d => d.Products,
                     o => o.MapFrom(s => s.ProductSales)
+                ).ForMember
+                (
+                    d => d.Payments,
+                    o => o.MapFrom(s => s.Payments)
                 )
                 .ForMember
                 (
                     d => d.InvoiceNumber,
                     o => o.MapFrom(s => s.Id.ToString().PadLeft(9, '0'))
                 );
+               // .AfterMap((dao, dto) => this.Map(dao.Payments, dto.Payments);
 
             CreateMap<ProductSale, ProductSaleDto>()
                 .ForMember

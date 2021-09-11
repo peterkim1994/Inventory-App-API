@@ -246,12 +246,27 @@ namespace InventoryPOSApp.Core.Repositories
         {
             from = from == null ? DateTime.MinValue : from;
             to = to == null ? DateTime.MaxValue : to;
-            var saleInvoices = _context.SaleInvoices.Include(s => s.ProductSales)  
+            var saleInvoices = _context.SaleInvoices.Include(s => s.ProductSales)
+                                                    .ThenInclude(p => p.Product)                                                   
                                                     .Include(s => s.Refunds)
+                                                    .Include(s => s.Payments)
                                                     .Where(s => s.Finalised == true &&
                                                                  s.InvoiceDate > from &&
                                                                  s.InvoiceDate < to
-                                                            );
+                                                            )
+                                                    .OrderBy(s => s.Id);
+            //ohwell
+            var products = saleInvoices.SelectMany(s => s.ProductSales).Select(p => p.Product).ToList();
+          
+            foreach(var p in products)
+            {
+                 
+               _context.Entry<Product>(p).Reference(pr => pr.Brand).Load();
+               _context.Entry<Product>(p).Reference(pr => pr.ItemCategory).Load();
+               _context.Entry<Product>(p).Reference(pr => pr.Size).Load();
+               _context.Entry<Product>(p).Reference(pr => pr.Colour).Load();
+            }         
+
             return saleInvoices.ToList();
         }
 

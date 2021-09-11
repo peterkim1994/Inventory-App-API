@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using InventoryPOS.DataStore.Daos;
+using InventoryPOSApp.Core.Dtos;
 using InventoryPOSApp.Core.Repositories;
 using InventoryPOSApp.Core.Services;
 using InventoryPOSApp.Core.Services.Interfaces;
@@ -50,9 +52,24 @@ namespace InventoryPOS.api.Controllers
             //add some validation
             DateTime fromDate = DateTime.Parse(from);
             DateTime toDate = DateTime.Parse(to);
-            var transactions = _mangementService.GetPreviousSales(fromDate, toDate);
-            return Ok(transactions);
+            var transactions = _repo.GetSales(fromDate, toDate);
+            var transactionDtos = _mapper.Map<IList<SaleInvoice>, IList<SaleInvoiceDto>>(transactions);
 
+            var productSales = transactionDtos.SelectMany(s => s.Products);
+            for(var j = 0; j < transactionDtos.Count(); j++)
+            {
+                var sale = transactionDtos[j];
+                for(var i = 0; i< sale.Products.Count(); i++)
+                {
+                    var product = sale.Products[i].Product;
+                    sale.Products[i].Product = sale.DateTime + "  " + product;
+                }
+            }
+
+            if (transactions != null)
+                 return Ok(transactionDtos);
+
+            return BadRequest("error getting transactions with those dates");
         }
     }
 }
