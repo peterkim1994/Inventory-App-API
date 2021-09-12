@@ -111,11 +111,10 @@ namespace InventoryPOSApp.Core.Services
                 return false;            
             else
             {
-                if(product.Barcode == 0)
-                {                   
-                    product.Barcode = GenerateBarcode();
-                }
-                else if(BarcodeIsAvailable(product.Barcode))
+                if(product.Barcode == 0)                                   
+                    product.Barcode = GenerateBarcode();                
+
+                if(BarcodeIsAvailable(product.Barcode))
                 {                    
                     _repo.AddNewProduct(product);
                     _repo.SaveChanges();

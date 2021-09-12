@@ -258,6 +258,15 @@ namespace InventoryPOS.api.Controllers
             //dynamic req = JObject.Parse(json.ToString());
             //ICollection<PaymentDto> paymentDtos = req.payments.ToObject<ICollection<PaymentDto>>();
             ICollection<Payment> payments = _mapper.Map<ICollection<PaymentDto>, ICollection<Payment>>(paymentDtos);
+
+            if(payments == null || payments.Count() == 0)
+                return BadRequest("error refresh the page");
+
+            if (payments.Any(p=> p.Amount < 0.0m))
+            {
+                return BadRequest("You cant have negative payments. Please provide valid payments for the sale");
+            }
+
             bool paymentSuccess = _saleService.ProcessPayments(payments);
 
             if (paymentDtos == null || paymentDtos.Count() < 1)

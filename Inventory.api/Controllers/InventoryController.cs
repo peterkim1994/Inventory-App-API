@@ -80,8 +80,8 @@ namespace Inventory.api.Controllers
             if (_service.AddProduct(product))
             {
                 productDto = _mapper.Map<Product, ProductDto>(product);
-                return CreatedAtRoute("AddProduct", new { productDto.Id }, productDto);
-             //   return Ok(productDto);
+             //   return CreatedAtRoute("AddProduct", new { productDto.Id }, productDto);
+                return Ok(productDto);
             }
             else if (product.Barcode != 0 && _service.BarcodeIsAvailable(product.Barcode))
             {

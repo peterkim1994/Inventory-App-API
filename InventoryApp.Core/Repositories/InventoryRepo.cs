@@ -78,8 +78,8 @@ namespace InventoryPOSApp.Core.Repositories
 
         public bool ContainsProduct(Product product)
         {
-            bool emptyManuCode = !string.IsNullOrEmpty(product.ManufactureCode);
-            var prod = _context.Products.Where(pr =>
+            //bool emptyManuCode = !string.IsNullOrEmpty(product.ManufactureCode);
+            var prod = _context.Products.FirstOrDefault(pr =>
                pr.Barcode == product.Barcode ||
                (
                   pr.BrandId == product.BrandId &&
@@ -89,7 +89,7 @@ namespace InventoryPOSApp.Core.Repositories
                   pr.ItemCategoryId == product.ItemCategoryId
                )
             );
-            return (prod.Count() > 0);       
+            return (prod == null);       
         }
 
         public void EditProduct(Product editedProduct)

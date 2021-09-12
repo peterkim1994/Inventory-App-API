@@ -250,6 +250,7 @@ namespace InventoryPOSApp.Core.Repositories
                                                     .ThenInclude(p => p.Product)                                                   
                                                     .Include(s => s.Refunds)
                                                     .Include(s => s.Payments)
+                                                    .ThenInclude(p=> p.PaymentMethod)
                                                     .Where(s => s.Finalised == true &&
                                                                  s.InvoiceDate > from &&
                                                                  s.InvoiceDate < to
@@ -259,8 +260,7 @@ namespace InventoryPOSApp.Core.Repositories
             var products = saleInvoices.SelectMany(s => s.ProductSales).Select(p => p.Product).ToList();
           
             foreach(var p in products)
-            {
-                 
+            {                 
                _context.Entry<Product>(p).Reference(pr => pr.Brand).Load();
                _context.Entry<Product>(p).Reference(pr => pr.ItemCategory).Load();
                _context.Entry<Product>(p).Reference(pr => pr.Size).Load();
