@@ -64,8 +64,9 @@ namespace InventoryPOS.DataStore
               .Property(b => b.Active)
               .HasDefaultValue(true);
 
-
-
+            modelBuilder.Entity<ProductSale>()
+                .Property(s => s.Canceled)
+                .HasDefaultValue(false);
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

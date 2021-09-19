@@ -97,15 +97,14 @@ namespace InventoryPOSApp.Core.Repositories
             _context.SaveChanges();
         }
 
-        public void DeleteProductSale(ProductSale productSale)
+        public void CancelProductSale(ProductSale productSale)
         {
-            ProductSale product = _context.ProductSales.Find(productSale);
-           //     (p =>
-             //                                                p.SaleInvoiceId == productSale.SaleInvoiceId &&
-              //                                               p.ProductId == productSale.ProductId);
-            if (product != null)
+            ProductSale product = _context.ProductSales.Find(productSale.Id);            
+
+            if (product != null && product.Canceled == false)
             {
-                _context.ProductSales.Remove(product);
+                product.Canceled = true;
+                _context.Entry(product).State = EntityState.Modified;
                 _context.SaveChanges();
             }
         }
@@ -143,6 +142,7 @@ namespace InventoryPOSApp.Core.Repositories
                                join paymentMethod in _context.PaymentMethods
                                     on payment.PaymentMethodId equals paymentMethod.Id
                                select new Payment { PaymentMethod = paymentMethod, Amount = payment.Amount };
+
             return salePayments.ToList();
 
         }
@@ -213,8 +213,7 @@ namespace InventoryPOSApp.Core.Repositories
         public void EditSalePayment(Payment payment)
         {
             //check this works
-            var p = _context.Entry<Payment>(payment);
-            _context.Remove(p);
+            var p = _context.Entry<Payment>(payment).State = EntityState.Modified;
             SaveChanges();
         }
 
@@ -246,14 +245,14 @@ namespace InventoryPOSApp.Core.Repositories
         {
             from = from == null ? DateTime.MinValue : from;
             to = to == null ? DateTime.MaxValue : to;
-            var saleInvoices = _context.SaleInvoices.Include(s => s.ProductSales)
+            var saleInvoices = _context.SaleInvoices.Include(s => s.ProductSales.Where(p => p.Canceled == false))
                                                     .ThenInclude(p => p.Product)                                                   
                                                     .Include(s => s.Refunds)
                                                     .Include(s => s.Payments)
                                                     .ThenInclude(p=> p.PaymentMethod)
                                                     .Where(s => s.Finalised == true &&
-                                                                 s.InvoiceDate > from &&
-                                                                 s.InvoiceDate < to
+                                                                 s.InvoiceDate >= from &&
+                                                                 s.InvoiceDate <= to
                                                             )
                                                     .OrderBy(s => s.Id);
             //ohwell
@@ -270,12 +269,28 @@ namespace InventoryPOSApp.Core.Repositories
             return saleInvoices.ToList();
         }
 
+        public IList<SaleInvoice> GetInvoicePayments(DateTime from, DateTime to)
+        {
+            from = from == null ? DateTime.MinValue : from;
+            to = to == null ? DateTime.MaxValue : to;
+            var saleInvoices = _context.SaleInvoices.Include(s => s.ProductSales.Where(p=>p.Canceled == false))                                                   
+                                                    .Include(s => s.Refunds)
+                                                    .Include(s => s.Payments)
+                                                    .ThenInclude(p => p.PaymentMethod)
+                                                    .Where(s => s.Finalised == true &&
+                                                                 s.InvoiceDate >= from &&
+                                                                 s.InvoiceDate <= to
+                                                            ).ToList();          
+
+            return saleInvoices;
+        }
+
         public IList<Refund> GetRefunds(DateTime from, DateTime to)
         {
             from = from == null ? DateTime.MinValue : from;
             to = to == null ? DateTime.MaxValue : to;
-            var refunds = _context.Refunds.Where(r =>  r.RefundDate > from &&
-                                                       r.RefundDate < to
+            var refunds = _context.Refunds.Where(r =>  r.RefundDate >= from &&
+                                                       r.RefundDate <= to
                                                 );
             return refunds.ToList();
         }

@@ -16,8 +16,6 @@ namespace InventoryPOS.DataStore.Daos
         public virtual IList<ProductSale> ProductSales { get; set; }
         public virtual IList<Payment> Payments { get; set; }
         public virtual IList<Refund> Refunds { get; set; }
-
         public bool Canceled { get; set; }
-
     }
 }

@@ -51,7 +51,7 @@ namespace InventoryPOSApp.Core.Services
                 //   _salesRepo.DeleteSaleInvoice(saleId);
                 if (sale.Finalised == true)
                 {
-                   var saleItems = _salesRepo.GetProductSalesInTransaction(saleId);
+                    var saleItems = _salesRepo.GetProductSalesInTransaction(saleId);
                     foreach (ProductSale item in saleItems)
                     {
                         _inventoryRepo.IncreaseProductQty(item.Id, 1);

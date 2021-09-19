@@ -77,8 +77,13 @@ namespace Inventory.api.Controllers
                 return BadRequest("Product Details are invalid");
             }
             var product = _mapper.Map<ProductDto, Product>(productDto);
-            if (_service.AddProduct(product))
+
+            if (_inventory.ContainsProduct(product))
             {
+                return BadRequest("there is already a product with the same size, description, colour, category as this one");
+            }
+            if (_service.AddProduct(product))
+            {               
                 productDto = _mapper.Map<Product, ProductDto>(product);
              //   return CreatedAtRoute("AddProduct", new { productDto.Id }, productDto);
                 return Ok(productDto);

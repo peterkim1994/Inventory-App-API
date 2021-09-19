@@ -22,7 +22,7 @@ namespace InventoryPOSApp.Core.Repositories
         void AddProductSale(ProductSale productSale);
         void AddProductSales(ICollection<ProductSale> productSales);
         void UpdateSale(SaleInvoice sale);
-        void DeleteProductSale(ProductSale productSale);
+        void CancelProductSale(ProductSale productSale);
         void DeleteSaleInvoice(int saleInvoiceId);
         SaleInvoice GetSale(int saleId);
         void CancelSale(SaleInvoice sale);
@@ -33,5 +33,6 @@ namespace InventoryPOSApp.Core.Repositories
         Refund GetRefund(int refundId);
         IList<Refund> GetRefunds(DateTime from, DateTime to);
         IList<SaleInvoice> GetSales(DateTime from, DateTime to);
+        IList<SaleInvoice> GetInvoicePayments(DateTime from, DateTime to);
     }
 }

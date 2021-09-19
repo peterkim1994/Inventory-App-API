@@ -10,6 +10,7 @@ using InventoryPOSApp.Core.Services;
 using InventoryPOSApp.Core.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json.Linq;
 
 namespace InventoryPOS.api.Controllers
 {
@@ -70,6 +71,40 @@ namespace InventoryPOS.api.Controllers
                  return Ok(transactionDtos);
 
             return BadRequest("error getting transactions with those dates");
+        }
+
+        [HttpGet("GetReport")]
+        public IActionResult GetReport([FromQuery(Name = "from")] string from, [FromQuery(Name = "to")] string to)
+        {
+            //add some validation
+            DateTime fromDate = DateTime.Parse(from);
+            DateTime toDate = DateTime.Parse(to);
+            SalesReportDto report = _mangementService.GetSalesReport(fromDate, toDate);
+            if(report == null)
+            {
+                return BadRequest("system error report couldnt be generated");
+            }
+
+            return Ok(report);
+        }
+
+        [HttpPost("VoidProductSale")]
+        public IActionResult DeleteProductSale(Object jsonResult)
+        {
+            dynamic reqBody = JObject.Parse(jsonResult.ToString());
+            int saleId = reqBody.saleId;
+            int productSaleId = reqBody.productSaleId;
+            bool productSaleDeleted = _mangementService.VoidSale(saleId, productSaleId);
+
+            if (productSaleDeleted)
+            {
+                var sale = _saleService.GetSale(saleId);
+                return Ok(sale);
+            }
+            else
+            {
+                return BadRequest();
+            }
         }
     }
 }

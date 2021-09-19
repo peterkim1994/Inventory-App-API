@@ -148,6 +148,7 @@ namespace InventoryPOS.api.Controllers
             {
                 return BadRequest("promotion doesnt exist");
             }
+
             foreach (var productId in productIds)
             {
                 _promoService.RemoveProductPromotion(productId, promotionId);
@@ -166,12 +167,16 @@ namespace InventoryPOS.api.Controllers
                 var promoDto = _mapper.Map<Promotion, PromotionDto>(promo);
                 return Ok(promoDto);
             }
+
             if (String.IsNullOrEmpty(promotionDto.PromotionName))
                 return BadRequest("You must provide a name for the promotion");
+
             if (promotionDto.Quantity <= 0)
                 return BadRequest("You must provide a min quantity for the promotion");
+
             if (promotionDto.PromotionPrice <= 0)
                 return BadRequest("You must provide a price offer for the promotion");
+
             return BadRequest("Please provide valid promotion details");
         }
 
@@ -200,6 +205,7 @@ namespace InventoryPOS.api.Controllers
             {
                 return BadRequest("0 is not a valid saleId number");
             }
+
             var sale = _saleService.GetSale(saleId);
             if(sale == null)
             {
@@ -208,6 +214,12 @@ namespace InventoryPOS.api.Controllers
             return Ok(_mapper.Map<SaleInvoice, SaleInvoiceDto>(sale));
         }
 
+
+        //!!!!!!!!!!!
+        //!!!!!!!!!!!
+        //!!!!!!!!!!!
+        //!!!!!!!!!!!
+        //Note: Check to sure this isnt being called by front end when the sale hasnt been finalised, as it increases stock of the product sales!
         [HttpPost("CancelSale")]
         public IActionResult CancelSale(int saleId)
         {
@@ -215,12 +227,15 @@ namespace InventoryPOS.api.Controllers
             {
                 return BadRequest("0 is not a valid saleId number");
             }
+
             var sale = _saleService.GetSale(saleId);
+
             if (sale != null)
             {
                 _saleService.CancelSale(saleId);
                 return Ok();
             }
+
             return BadRequest();
         }
 

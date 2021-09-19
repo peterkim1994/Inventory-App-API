@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using InventoryPOS.DataStore.Daos;
+using InventoryPOSApp.Core.Dtos;
 
 namespace InventoryPOSApp.Core.Services
 {
@@ -9,13 +10,10 @@ namespace InventoryPOSApp.Core.Services
     {
         IList<SaleInvoice> GetPreviousSales(DateTime from, DateTime to);
 
-        Decimal GetTotalRevenue(DateTime from, DateTime to);
+        SalesReportDto GetSalesReport(DateTime from, DateTime to);
 
-        SaleInvoice GetRefunds(DateTime from, DateTime to);
+        bool VoidSale(int saleId, int productSaleId);
 
-        bool VoidSales(IList<SaleInvoice> sale);
-
-        ProductSale GetProductsSold(DateTime from, DateTime to);
-        
+        ProductSale GetProductsSold(DateTime from, DateTime to);        
     }
 }

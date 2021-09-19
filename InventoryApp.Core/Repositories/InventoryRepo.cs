@@ -89,7 +89,7 @@ namespace InventoryPOSApp.Core.Repositories
                   pr.ItemCategoryId == product.ItemCategoryId
                )
             );
-            return (prod == null);       
+            return (prod != null);       
         }
 
         public void EditProduct(Product editedProduct)
