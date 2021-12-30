@@ -5,9 +5,11 @@ using System.Threading.Tasks;
 using AutoMapper;
 using InventoryPOS.Core.Dtos;
 using InventoryPOS.DataStore.Daos;
+using InventoryPOS.DataStore.Daos.Interfaces;
 using InventoryPOSApp.Core.Dtos;
 using InventoryPOSApp.Core.Repositories;
 using InventoryPOSApp.Core.Services;
+using InventoryPOSApp.Core.Utils;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -41,22 +43,34 @@ namespace Inventory.api.Controllers
 
 
         [HttpGet("ProductAttributes")]
-        [Authorize(Roles="shopAdmin")]
+        [Authorize(Roles = "shopAdmin")]
         public IActionResult GetAttributes()
         {
             return Ok(_service.GetProductAttributes());
         }
 
         [HttpGet]
-        [Authorize(Roles="shopAdmin")]
+        [Authorize(Roles = "shopAdmin")]
         public IActionResult GetProducts()
-        {            
+        {
             var productDtos = _mapper.Map<List<Product>, List<ProductDto>>(_service.GetAllProducts());
             return Ok(productDtos);
         }
 
+        [HttpPost("GetTheseProducts")]
+        public IActionResult GetProductsForPrinting(ICollection<int> productIds)
+        {
+            if (productIds != null || productIds.Count > 0)
+            {
+                var productDtos = _mapper.Map<List<Product>, List<ProductDto>>(_service.GetAllProducts())
+                                    .Where(p => productIds.Contains(p.Id)).ToList();
+                return Ok(productDtos);
+            }
 
-        [HttpPost("AddColour", Name ="AddColour")]
+            return BadRequest();
+        }
+
+        [HttpPost("AddColour", Name = "AddColour")]
         [Route("[controller]/[action]")]
         public IActionResult AddColour(Colour colour)
         {
@@ -65,7 +79,7 @@ namespace Inventory.api.Controllers
                 var colourDto = _mapper.Map<Colour, ColourDto>(colour);
                 return Ok(colourDto);
             }
-            return BadRequest("Colour Already Exists");               
+            return BadRequest("Colour Already Exists");
         }
 
 
@@ -83,9 +97,9 @@ namespace Inventory.api.Controllers
                 return BadRequest("there is already a product with the same size, description, colour, category as this one");
             }
             if (_service.AddProduct(product))
-            {               
+            {
                 productDto = _mapper.Map<Product, ProductDto>(product);
-             //   return CreatedAtRoute("AddProduct", new { productDto.Id }, productDto);
+                //   return CreatedAtRoute("AddProduct", new { productDto.Id }, productDto);
                 return Ok(productDto);
             }
             else if (product.Barcode != 0 && _service.BarcodeIsAvailable(product.Barcode))
@@ -99,14 +113,17 @@ namespace Inventory.api.Controllers
         [HttpPut("EditProduct")]
         public IActionResult EditProduct(ProductDto productDto)
         {
-            //  var Product product = _mapper.Map<ProductDto, Product>(productDto);
-            var product = _mapper.Map<ProductDto, Product>(productDto);
             if (ModelState.IsValid)
-            {                
+            {
+                Product productToUpdate = _inventory.GetProduct(productDto.Id);
+                if (productDto.Barcode != productToUpdate.Barcode)
+                {
+                    return BadRequest("A product's barcode can not be changed");
+                }
+                var product = _mapper.Map<ProductDto, Product>(productDto);
                 _service.EditProduct(product);
-                Product updatedProduct = _inventory.GetProduct(product.Id);
-           //       var productDtos = _mapper.Map<Product, ProductDto>(updatedProduct);
-                productDto = _mapper.Map<Product, ProductDto>(updatedProduct);
+                productToUpdate = _inventory.GetProduct(product.Id);
+                productDto = _mapper.Map<Product, ProductDto>(productToUpdate);
                 return Ok(productDto);
             }
             return BadRequest("Product Details are not valid");
@@ -148,11 +165,11 @@ namespace Inventory.api.Controllers
         public IActionResult EditBrand(Brand brand)
         {
             if (ModelState.IsValid)
-            {             
-                if(_service.EditBrand(brand))
-                  return Ok(brand);
+            {
+                if (_service.EditBrand(brand))
+                    return Ok(brand);
                 else
-                  return BadRequest("This brand already exists");
+                    return BadRequest("This brand already exists");
             }
             else
             {
@@ -191,5 +208,79 @@ namespace Inventory.api.Controllers
                 return BadRequest("Improper size name format");
             }
         }
+
+        [HttpPost("import")]
+        public IActionResult ImportExcelSheet()
+        {
+            var lines = System.IO.File.ReadAllLines(@"C:\Users\peter\rand\inventory.csv").ToList();
+
+            foreach (var item in lines.Skip(1))
+            {
+                var details = item.Split(",");
+                List<IEnumerable<InventoryPOS.DataStore.Daos.Interfaces.ProductAttribute>> atts = _service.GetProductAttributes();
+
+                var brandVal = TextProcessor.ToTitleCase(details[1]);
+                Brand brand = GetAttribute(atts, brandVal) as Brand;              
+                if (brand == null)
+                {
+                   var newBrand = new Brand { Value = brandVal };
+                   _service.AddBrand(newBrand);
+                    brand = newBrand;
+                                      
+                }
+
+                var colourVal = TextProcessor.ToTitleCase(details[2]);
+                Colour colour = (Colour)GetAttribute(atts, colourVal);
+                if(colour == null)
+                {
+                    var newColour = new Colour() { Value = colourVal };
+                    _service.AddColour(newColour);
+                    colour = newColour;
+                }
+
+                var sizeVal = details[3].ToUpper();
+                Size size = (Size)GetAttribute(atts, sizeVal);
+                if(size == null)
+                {
+                    var newSize = new Size() { Value = sizeVal };
+                    _service.AddSize(newSize);
+                    size = newSize;
+                }
+
+                var categoryVal = TextProcessor.ToTitleCase(details[4]);
+                ItemCategory category = (ItemCategory)GetAttribute(atts, categoryVal);
+
+                if(category == null)
+                {
+                    var newCategory = new ItemCategory() { Value = categoryVal };
+                    _service.AddItemCategory(newCategory);
+                    category = newCategory;
+                }
+
+                var newProduct = new ProductDto()
+                {
+                    Active = true,
+                    BrandId = brand.Id,
+                    ColourId = colour.Id,
+                    ItemCategoryId = category.Id,
+                    SizeId = size.Id,
+                    Description = details[5],
+                    ManufactureCode = details[0],
+                    Barcode = 0,
+                    Qty = 50,
+                    Price = Double.Parse(details[7])
+                };
+                AddProduct(newProduct);
+            }
+
+            return Ok();
+        }
+
+        private ProductAttribute GetAttribute(List<IEnumerable<InventoryPOS.DataStore.Daos.Interfaces.ProductAttribute>> atts, string val)
+        {
+           var attss = atts.SelectMany(a => a);
+           return attss.FirstOrDefault(a => a.Value.Equals(val)); // atts.FirstOrDefault(att => attss.FirstOrDefault(a => a.Value.Equals(val));
+        }
+ 
     }
 }

@@ -24,7 +24,7 @@ namespace InventoryPOSApp.Core.Services
 
         public bool AddColour(Colour colour)
         {
-            colour.Value = TextProcessor.ToPronounCasing(colour.Value);
+            colour.Value = TextProcessor.ToTitleCase(colour.Value);
             if (_repo.ContainsAtt(colour))
             {
                 return false;
@@ -54,7 +54,7 @@ namespace InventoryPOSApp.Core.Services
 
         public bool AddItemCategory(ItemCategory category)
         {
-            category.Value = TextProcessor.ToPronounCasing(category.Value);
+            category.Value = TextProcessor.ToTitleCase(category.Value);
             if (_repo.ContainsAtt(category))
             {
                 return false;
@@ -80,7 +80,7 @@ namespace InventoryPOSApp.Core.Services
         public bool AddBrand(Brand brand)
         {
 
-            brand.Value = TextProcessor.ToPronounCasing(brand.Value);
+            brand.Value = TextProcessor.ToTitleCase(brand.Value);
             if (_repo.ContainsAtt(brand))
             {
                 return false;
@@ -97,10 +97,10 @@ namespace InventoryPOSApp.Core.Services
             do
             {
                 string code = string.Empty;
-                for (int i = 0; i < 12; i++)
+                for (int i = 0; i < 9; i++)
                     code = String.Concat(code, random.Next(10).ToString());
                 newBarcode = long.Parse(code);
-            } while (_repo.GetProductByBarcode(newBarcode) != null);
+            } while (_repo.GetProductByBarcode(newBarcode) != null && newBarcode < 500);
             return newBarcode;
         }
 

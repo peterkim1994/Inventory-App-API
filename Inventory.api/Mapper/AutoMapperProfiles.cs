@@ -97,7 +97,7 @@ namespace InventoryPOS.api.Helpers
                     d => d.InvoiceNumber,
                     o => o.MapFrom(s => s.Id.ToString().PadLeft(9, '0'))
                 );
-               // .AfterMap((dao, dto) => this.Map(dao.Payments, dto.Payments);
+            // .AfterMap((dao, dto) => this.Map(dao.Payments, dto.Payments);
 
             CreateMap<ProductSale, ProductSaleDto>()
                 .ForMember
@@ -106,11 +106,12 @@ namespace InventoryPOS.api.Helpers
                     o => o.MapFrom(s =>
                         String.Format
                         (
-                            "{0} {1} {2} {3}",
-                            s.Product.Brand.Value.PadRight(15),
-                            s.Product.ItemCategory.Value.PadRight(15),
-                            s.Product.Colour.Value.PadRight(15),
-                            s.Product.Size.Value.PadRight(15)
+                            "{0}  {1}  {2}  {3}",
+                            s.Product.Brand.Value,//.PadRight(14),
+                            s.Product.ItemCategory.Value,//.PadRight(14),
+                            s.Product.Description,
+                            s.Product.Colour.Value,//.PadRight(14),
+                            s.Product.Size.Value//.PadRight(8)
                         )
                     )
                 )

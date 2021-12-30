@@ -220,9 +220,12 @@ namespace InventoryPOS.api.Controllers
         //!!!!!!!!!!!
         //!!!!!!!!!!!
         //Note: Check to sure this isnt being called by front end when the sale hasnt been finalised, as it increases stock of the product sales!
+        //added check for canceld status 
         [HttpPost("CancelSale")]
-        public IActionResult CancelSale(int saleId)
+        public IActionResult CancelSale(SaleInvoiceDto saleDto)
         {
+            int saleId = saleDto.Id;
+
             if (saleId == 0)
             {
                 return BadRequest("0 is not a valid saleId number");

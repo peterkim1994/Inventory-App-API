@@ -81,13 +81,8 @@ namespace InventoryPOSApp.Core.Repositories
 
         public void CancelSale(SaleInvoice sale)
         {
-            var theSale = _context.SaleInvoices.Find(new SaleInvoice { Id = sale.Id });
-            if(theSale == null)
-            {
-                return;
-            }
-            theSale.Canceled = true;
-            _context.Entry(theSale).State = EntityState.Modified;
+            sale.Canceled = true;
+            _context.Entry(sale).State = EntityState.Modified;
             _context.SaveChanges();
         }
 
@@ -295,5 +290,15 @@ namespace InventoryPOSApp.Core.Repositories
             return refunds.ToList();
         }
 
+        public IList<ProductSale> GetProductSales(ICollection<int> ids)
+        {
+           return _context.ProductSales.Where(ps => ids.Contains(ps.Id)).ToList();
+        }
+
+        public void UpdateProductSales(IList<ProductSale> productSales)
+        {
+            _context.UpdateRange(productSales);
+            _context.SaveChanges();
+        }
     }
 }

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Text;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace InventoryPOS.DataStore.Daos
 {
@@ -16,9 +12,13 @@ namespace InventoryPOS.DataStore.Daos
         public Product Product { get; set; }
         public bool PromotionApplied{get;set;}
         public int ? PromotionId { get; set; }
+
+        [MaxLength(50)]
+        public string PromotionName { get; set; }
         public Promotion Promotion { get; set; }
         [Required]
         public int PriceSold { get; set; }
         public bool Canceled { get; set; }
+        public bool Restocked { get; set; }
     }
 }

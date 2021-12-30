@@ -17,5 +17,11 @@ namespace InventoryPOS.DataStore.Daos
         public virtual IList<Payment> Payments { get; set; }
         public virtual IList<Refund> Refunds { get; set; }
         public bool Canceled { get; set; }
+
+        [Range(0.00, 50000)]
+        public double TotalCashRecieved { get; set; }
+
+        [Range(0.00, 50000)]
+        public decimal ChangeGiven { get; set; }
     }
 }

@@ -22,6 +22,7 @@ namespace InventoryPOS.DataStore
         public DbSet<ProductPromotion> ProductPromotions { get; set; }
         public DbSet<Store> Store { get; set; }
         public DbSet<Refund> Refunds { get; set; }
+       // public DbSet<ProductToRestock> ProductsToRestock { get; set; }
 
         public DBContext(DbContextOptions<DBContext> options) : base(options)
         {
@@ -73,6 +74,7 @@ namespace InventoryPOS.DataStore
         {
             optionsBuilder.UseSqlServer(
                 @"Server = (localdb)\mssqllocaldb;Database=InventoryPOS;Integrated Security= True");
+
         }
     }
 }

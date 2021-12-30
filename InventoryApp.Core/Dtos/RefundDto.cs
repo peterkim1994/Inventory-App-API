@@ -12,6 +12,7 @@ namespace InventoryPOSApp.Core.Dtos
         [MaxLength(100)]
         public string Reason { get; set; }
         public int SaleInvoiceId { get; set; }
+        public int ProductSaleId { get; set; }
         public double Amount { get; set; }
     }
 }

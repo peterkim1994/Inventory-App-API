@@ -131,13 +131,13 @@ namespace InventoryPOSApp.Core.Services
             return false;
         }
 
-        private Decimal ToDecimal2dp(int amount)
+        private Decimal ToDecimal2dp(int amount, int dp=2)
         {
             if (amount == 0)
                 return 0.00m;
 
-            Decimal value = (amount / 100);
-            return Decimal.Round(value, 2);
+            Decimal value = (amount / 100.0m);
+            return Decimal.Round(value, dp,MidpointRounding.ToPositiveInfinity);
         }
     }
 }

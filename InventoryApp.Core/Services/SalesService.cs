@@ -52,12 +52,16 @@ namespace InventoryPOSApp.Core.Services
                 if (sale.Finalised == true)
                 {
                     var saleItems = _salesRepo.GetProductSalesInTransaction(saleId);
-                    foreach (ProductSale item in saleItems)
+                    if(sale.Canceled == false)
                     {
-                        _inventoryRepo.IncreaseProductQty(item.Id, 1);
-                    }
+                        foreach (ProductSale item in saleItems)
+                        {
+                            _inventoryRepo.IncreaseProductQty(item.Id, 1);
+                        }
+                    }                    
                 }
-           //     _salesRepo.ClearProductSales(saleId);
+                sale.Canceled = true;
+                //     _salesRepo.ClearProductSales(saleId);
                 _salesRepo.CancelSale(sale);
              //   _salesRepo.DeleteSalePayments(saleId);
                 return true;
@@ -124,7 +128,7 @@ namespace InventoryPOSApp.Core.Services
                             {
                                 qtyNeeded--;
                                 int unitPrice = promo.PromotionPrice / promo.Quantity;
-                                int remainder = (unitPrice % promo.PromotionPrice);
+                                int remainder = (promo.PromotionPrice % unitPrice );
                                 int firstUnitPrice = unitPrice + remainder;
                                 if(j == p)
                                     pontentialPromos.Add(CreateProductSale(saleId, productList[j], promotion: promo, sellingPrice: firstUnitPrice));

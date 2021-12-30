@@ -34,5 +34,9 @@ namespace InventoryPOSApp.Core.Repositories
         IList<Refund> GetRefunds(DateTime from, DateTime to);
         IList<SaleInvoice> GetSales(DateTime from, DateTime to);
         IList<SaleInvoice> GetInvoicePayments(DateTime from, DateTime to);
+
+        IList<ProductSale> GetProductSales(ICollection<int> ids);
+
+        void UpdateProductSales(IList<ProductSale> productSales);
     }
 }

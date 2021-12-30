@@ -17,6 +17,5 @@ namespace InventoryPOS.DataStore.Daos
         public string Address { get; set; }
         [MaxLength(50)]
         public string Contact { get; set; }
-
     }
 }

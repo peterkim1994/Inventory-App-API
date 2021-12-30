@@ -4,14 +4,16 @@ using InventoryPOS.DataStore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace InventoryPOS.DataStore.Migrations
 {
     [DbContext(typeof(DBContext))]
-    partial class DBContextModelSnapshot : ModelSnapshot
+    [Migration("20211120230551_added-promoName-to-productsale")]
+    partial class addedpromoNametoproductsale
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -318,9 +320,6 @@ namespace InventoryPOS.DataStore.Migrations
                         .HasColumnType("bit")
                         .HasDefaultValue(false);
 
-                    b.Property<decimal>("ChangeGiven")
-                        .HasColumnType("decimal(18,2)");
-
                     b.Property<bool>("Finalised")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
@@ -331,9 +330,6 @@ namespace InventoryPOS.DataStore.Migrations
 
                     b.Property<int>("Total")
                         .HasColumnType("int");
-
-                    b.Property<double>("TotalCashRecieved")
-                        .HasColumnType("float");
 
                     b.HasKey("Id");
 

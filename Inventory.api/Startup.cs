@@ -65,7 +65,8 @@ namespace Inventory.api
                 {
                     builder.WithOrigins("*")
                         .AllowAnyHeader()
-                        .AllowAnyMethod();
+                        .AllowAnyMethod()
+                        .AllowAnyOrigin();
                 });
             });
 
