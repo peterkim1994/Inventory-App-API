@@ -74,7 +74,6 @@ namespace InventoryPOS.DataStore
         {
             optionsBuilder.UseSqlServer(
                 @"Server = (localdb)\mssqllocaldb;Database=InventoryPOS;Integrated Security= True");
-
         }
     }
 }

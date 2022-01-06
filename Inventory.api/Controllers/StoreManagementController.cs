@@ -56,17 +56,6 @@ namespace InventoryPOS.api.Controllers
             var transactions = _repo.GetSales(fromDate, toDate);
             var transactionDtos = _mapper.Map<IList<SaleInvoice>, IList<SaleInvoiceDto>>(transactions);
 
-            //var productSales = transactionDtos.SelectMany(s => s.Products);
-            //for(var j = 0; j < transactionDtos.Count(); j++)
-            //{
-            //    var sale = transactionDtos[j];
-            //    for(var i = 0; i< sale.Products.Count(); i++)
-            //    {
-            //        var product = sale.Products[i].Product;
-            //        sale.Products[i].Product = sale.DateTime + "  " + product;
-            //    }
-            //}
-
             if (transactions != null)
                  return Ok(transactionDtos);
 
@@ -89,6 +78,7 @@ namespace InventoryPOS.api.Controllers
         }
 
         [HttpPost("VoidProductSale")]
+        [Microsoft.AspNetCore.Authorization.Authorize(Roles = "shopAdmin")]
         public IActionResult DeleteProductSale(Object jsonResult)
         {
             dynamic reqBody = JObject.Parse(jsonResult.ToString());

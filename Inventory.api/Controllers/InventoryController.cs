@@ -50,7 +50,6 @@ namespace Inventory.api.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "shopAdmin")]
         public IActionResult GetProducts()
         {
             var productDtos = _mapper.Map<List<Product>, List<ProductDto>>(_service.GetAllProducts());
@@ -111,6 +110,7 @@ namespace Inventory.api.Controllers
         }
 
         [HttpPut("EditProduct")]
+        [Authorize(Roles = "shopAdmin")]
         public IActionResult EditProduct(ProductDto productDto)
         {
             if (ModelState.IsValid)

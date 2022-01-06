@@ -106,10 +106,9 @@ namespace InventoryPOS.api.Helpers
                     o => o.MapFrom(s =>
                         String.Format
                         (
-                            "{0}  {1}  {2}  {3}",
+                            "[{0}][{1}][{2}][{3}]",
                             s.Product.Brand.Value,//.PadRight(14),
                             s.Product.ItemCategory.Value,//.PadRight(14),
-                            s.Product.Description,
                             s.Product.Colour.Value,//.PadRight(14),
                             s.Product.Size.Value//.PadRight(8)
                         )
