@@ -64,7 +64,7 @@ namespace Inventory.api
                 builder =>
                 {
                     builder.WithOrigins("*")
-                        .AllowAnyHeader()
+                        .AllowAnyHeader()                     
                         .AllowAnyMethod()
                         .AllowAnyOrigin();
                 });
@@ -73,7 +73,7 @@ namespace Inventory.api
             var secretBytes = Encoding.UTF8.GetBytes(Configuration["SecretKey"]);
             var key = new SymmetricSecurityKey(secretBytes);
 
-           
+
             services.AddAuthentication(opts =>
             {
                 opts.DefaultAuthenticateScheme = "Bearer";
@@ -83,31 +83,34 @@ namespace Inventory.api
                 config.SaveToken = true;
                 config.TokenValidationParameters = new TokenValidationParameters()
                 {
-                 //   ValidIssuer = Configuration["JwtTokenParam:Issuer"],
+                    //   ValidIssuer = Configuration["JwtTokenParam:Issuer"],
                     //     ValidAudience = Configuration["JwtTokenParam:Audience"],
                     ValidAudience = "https://localhost:5001", // for postman
-                   // ValidIssuer = "https://localhost:5001",
+                                                             // ValidIssuer = "https://localhost:5001",
+
                     ValidateIssuer = false,
                     ValidateAudience = false,
                     IssuerSigningKey = key,
                     ValidateLifetime = true,
                     ClockSkew = TimeSpan.FromMinutes(5)
-                };                
-                config.ForwardSignIn = "CookieAuth";            
-                config.ForwardChallenge = "CookieAuth";
-            }).AddCookie("CookieAuth", config => //cookie schema config
+                };            
+                config.ForwardSignIn = null;//"CookieAuth";
+                config.ForwardChallenge = null;// "CookieAuth";// "CookieAuth";
+            })
+            .AddCookie("CookieAuth", config => //cookie schema config
             {
                 config.Cookie.Name = "ShopOwner";
+                config.LoginPath = "";
                 config.Events.OnRedirectToLogin = (context) =>
                 {
-                    context.HttpContext.Response.Redirect("http://localhost:3000/login");
+                   // context.HttpContext.Response.Redirect("http://localhost:3000/login");
                     return Task.CompletedTask;
                 };
-            }); 
-        } 
+            });
+        }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+            public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {

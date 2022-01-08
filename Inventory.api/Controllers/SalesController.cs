@@ -10,6 +10,7 @@ using InventoryPOSApp.Core.Dtos;
 using InventoryPOSApp.Core.Repositories;
 using InventoryPOSApp.Core.Services;
 using InventoryPOSApp.Core.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -54,6 +55,7 @@ namespace InventoryPOS.api.Controllers
         }
 
         [HttpPost("AddPromotion")]
+        [Authorize(Roles = "shopAdmin")]
         public IActionResult AddPromotion(PromotionDto promotionDto)
         {
             if (ModelState.IsValid)
@@ -75,6 +77,7 @@ namespace InventoryPOS.api.Controllers
         
 
         [HttpPost("AddProductPromotion")]
+        [Authorize(Roles = "shopAdmin")]
         public IActionResult AddProductPromotion(int productId, int promotionId)
         {
             if (_promoService.AddProductToPromotion(productId, promotionId))
@@ -158,6 +161,7 @@ namespace InventoryPOS.api.Controllers
         }
 
         [HttpPut("EditPromotion")]
+        [Authorize(Roles = "shopAdmin")]
         public IActionResult EditPromotion(PromotionDto promotionDto)
         {
             Promotion promo = _mapper.Map<PromotionDto, Promotion>(promotionDto);

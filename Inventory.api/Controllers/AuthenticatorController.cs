@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using InventoryPOS.DataStore;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -67,7 +68,7 @@ namespace InventoryPOS.api.Controllers
             return BadRequest("password and username must be 5 characters or longer");
         }
 
-        [HttpPost("Login")]       
+        [HttpPost("Login")]
         public async Task<IActionResult> Login(Object jsonObj)
         {
             dynamic reqBody = JObject.Parse(jsonObj.ToString());
@@ -84,7 +85,8 @@ namespace InventoryPOS.api.Controllers
                 var signInResult = await _signInManager.CheckPasswordSignInAsync(user, password, false);
                 if (signInResult.Succeeded)
                 {
-                    return new ObjectResult(await GenerateToken(userName));
+                    Response.Headers.Add("Access-Control-Allow-Origin", "*");
+                    return  Ok(await GenerateToken(userName));
                 }
             }
             return BadRequest("Incorrect Password");
@@ -123,8 +125,8 @@ namespace InventoryPOS.api.Controllers
 
             var token = new JwtSecurityToken
                 (
-                   _config["JwtTokenParam:Issuer"],
-                   _config["JwtTokenParam:Audience"],
+                  "http://inventoryapi.local",//_config["JwtTokenParam:Issuer"],
+                    "https://localhost:3000",//_config["JwtTokenParam:Audience"],
                    shopClaims,
                    notBefore: DateTime.Now,
                    expires: DateTime.Now.AddHours(1),

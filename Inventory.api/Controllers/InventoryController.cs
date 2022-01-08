@@ -152,6 +152,7 @@ namespace Inventory.api.Controllers
 
 
         [HttpPost("AddBrand")]
+        [Authorize(Roles = "shopAdmin")]
         public IActionResult AddBrand(Brand brand)
         {
             if (_service.AddBrand(brand))
@@ -162,6 +163,7 @@ namespace Inventory.api.Controllers
         }
 
         [HttpPut("EditBrand")]
+        [Authorize(Roles = "shopAdmin")]
         public IActionResult EditBrand(Brand brand)
         {
             if (ModelState.IsValid)
@@ -178,6 +180,7 @@ namespace Inventory.api.Controllers
         }
 
         [HttpPut("EditCategory")]
+        [Authorize(Roles = "shopAdmin")]
         public IActionResult EditItemCategory(ItemCategory category)
         {
             if (ModelState.IsValid)
@@ -193,6 +196,7 @@ namespace Inventory.api.Controllers
             }
         }
 
+        [Authorize(Roles = "shopAdmin")]
         [HttpPut("EditSize")]
         public IActionResult EditSize(Size size)
         {
