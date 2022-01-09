@@ -43,7 +43,6 @@ namespace Inventory.api.Controllers
 
 
         [HttpGet("ProductAttributes")]
-        [Authorize(Roles = "shopAdmin")]
         public IActionResult GetAttributes()
         {
             return Ok(_service.GetProductAttributes());
@@ -83,33 +82,47 @@ namespace Inventory.api.Controllers
 
 
         [HttpPost("AddProduct")]
-        public IActionResult AddProduct(ProductDto productDto)
+        public ProductDto AddProduct(ProductDto productDto)
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest("Product Details are invalid");
+                throw new Exception("asd");
+                //  return BadRequest("Product Details are invalid");
             }
             var product = _mapper.Map<ProductDto, Product>(productDto);
 
             if (_inventory.ContainsProduct(product))
-            {
-                return BadRequest("there is already a product with the same size, description, colour, category as this one");
+            {               
+                product.Description += "price: " + product.Price;
+                if (_inventory.ContainsProduct(product))
+                {
+                    throw new Exception("asd");
+                }
+                if (_service.AddProduct(product))
+                {
+                    productDto = _mapper.Map<Product, ProductDto>(product);
+                    //   return CreatedAtRoute("AddProduct", new { productDto.Id }, productDto);
+                    return productDto;
+                }                          
+           //     return BadRequest("there is already a product with the same size, description, colour, category as this one");
             }
             if (_service.AddProduct(product))
             {
                 productDto = _mapper.Map<Product, ProductDto>(product);
                 //   return CreatedAtRoute("AddProduct", new { productDto.Id }, productDto);
-                return Ok(productDto);
+                return productDto;
             }
             else if (product.Barcode != 0 && _service.BarcodeIsAvailable(product.Barcode))
             {
-                return BadRequest("That Barcode already exists");
+                throw new Exception("asd");
+                //        return BadRequest("That Barcode already exists");
             }
-            return BadRequest("That Product manufacture code already belongs to an exsiting product");
+            throw new Exception("asd");
+            //       return BadRequest("That Product manufacture code already belongs to an exsiting product");
 
         }
 
-        [HttpPut("EditProduct")]
+        [HttpPost("EditProduct")]
         [Authorize(Roles = "shopAdmin")]
         public IActionResult EditProduct(ProductDto productDto)
         {
@@ -131,6 +144,7 @@ namespace Inventory.api.Controllers
 
 
         [HttpPost("AddSize")]
+        [Authorize(Roles = "shopAdmin")]
         public IActionResult AddSize(Size size)
         {
             if (_service.AddSize(size))
@@ -152,7 +166,6 @@ namespace Inventory.api.Controllers
 
 
         [HttpPost("AddBrand")]
-        [Authorize(Roles = "shopAdmin")]
         public IActionResult AddBrand(Brand brand)
         {
             if (_service.AddBrand(brand))
@@ -162,7 +175,7 @@ namespace Inventory.api.Controllers
             return BadRequest("Brand already exists");
         }
 
-        [HttpPut("EditBrand")]
+        [HttpPost("EditBrand")]
         [Authorize(Roles = "shopAdmin")]
         public IActionResult EditBrand(Brand brand)
         {
@@ -179,7 +192,7 @@ namespace Inventory.api.Controllers
             }
         }
 
-        [HttpPut("EditCategory")]
+        [HttpPost("EditCategory")]
         [Authorize(Roles = "shopAdmin")]
         public IActionResult EditItemCategory(ItemCategory category)
         {
@@ -197,7 +210,7 @@ namespace Inventory.api.Controllers
         }
 
         [Authorize(Roles = "shopAdmin")]
-        [HttpPut("EditSize")]
+        [HttpPost("EditSize")]
         public IActionResult EditSize(Size size)
         {
             if (ModelState.IsValid)
@@ -216,14 +229,14 @@ namespace Inventory.api.Controllers
         [HttpPost("import")]
         public IActionResult ImportExcelSheet()
         {
-            var lines = System.IO.File.ReadAllLines(@"C:\Users\peter\rand\inventory.csv").ToList();
-
+            var lines = System.IO.File.ReadAllLines(@"C:\Users\peter\rand\inventory2.csv").ToList();
+            string newCsv = lines[0] + ",ID\n";
             foreach (var item in lines.Skip(1))
             {
                 var details = item.Split(",");
                 List<IEnumerable<InventoryPOS.DataStore.Daos.Interfaces.ProductAttribute>> atts = _service.GetProductAttributes();
 
-                var brandVal = TextProcessor.ToTitleCase(details[1]);
+                var brandVal = TextProcessor.ToTitleCase(details[1]).Trim();
                 Brand brand = GetAttribute(atts, brandVal) as Brand;              
                 if (brand == null)
                 {
@@ -233,7 +246,7 @@ namespace Inventory.api.Controllers
                                       
                 }
 
-                var colourVal = TextProcessor.ToTitleCase(details[2]);
+                var colourVal = TextProcessor.ToTitleCase(details[2]).Trim();
                 Colour colour = (Colour)GetAttribute(atts, colourVal);
                 if(colour == null)
                 {
@@ -242,7 +255,7 @@ namespace Inventory.api.Controllers
                     colour = newColour;
                 }
 
-                var sizeVal = details[3].ToUpper();
+                var sizeVal = details[3].ToUpper().Trim();
                 Size size = (Size)GetAttribute(atts, sizeVal);
                 if(size == null)
                 {
@@ -251,7 +264,7 @@ namespace Inventory.api.Controllers
                     size = newSize;
                 }
 
-                var categoryVal = TextProcessor.ToTitleCase(details[4]);
+                var categoryVal = TextProcessor.ToTitleCase(details[4]).Trim();
                 ItemCategory category = (ItemCategory)GetAttribute(atts, categoryVal);
 
                 if(category == null)
@@ -259,6 +272,13 @@ namespace Inventory.api.Controllers
                     var newCategory = new ItemCategory() { Value = categoryVal };
                     _service.AddItemCategory(newCategory);
                     category = newCategory;
+                }
+                string desc = (String.IsNullOrEmpty(details[0])) ? details[5] : (details[5] + " [" + details[0] + "]");
+                int qty;
+                bool successQty = int.TryParse(details[9], out qty);
+                if (!successQty)
+                {
+                    qty = 1000;
                 }
 
                 var newProduct = new ProductDto()
@@ -268,14 +288,16 @@ namespace Inventory.api.Controllers
                     ColourId = colour.Id,
                     ItemCategoryId = category.Id,
                     SizeId = size.Id,
-                    Description = details[5],
+                    Description = desc,
                     ManufactureCode = details[0],
                     Barcode = 0,
-                    Qty = 50,
+                    Qty = qty,
                     Price = Double.Parse(details[7])
                 };
-                AddProduct(newProduct);
+                string id = AddProduct(newProduct).Id.ToString();
+                newCsv += (item + ",,,, ID:" + id + ",\n");
             }
+            System.IO.File.WriteAllText(@"C:\Users\peter\rand\newInventory.csv", newCsv);
 
             return Ok();
         }

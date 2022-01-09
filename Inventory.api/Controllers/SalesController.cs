@@ -160,7 +160,7 @@ namespace InventoryPOS.api.Controllers
             return Ok(promoDto);
         }
 
-        [HttpPut("EditPromotion")]
+        [HttpPost("EditPromotion")]
         [Authorize(Roles = "shopAdmin")]
         public IActionResult EditPromotion(PromotionDto promotionDto)
         {

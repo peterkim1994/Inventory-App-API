@@ -54,12 +54,15 @@ namespace InventoryPOS.api.Controllers
             DateTime fromDate = DateTime.Parse(from);
             DateTime toDate = DateTime.Parse(to);
             var transactions = _repo.GetSales(fromDate, toDate);
+            if (transactions == null)
+            {
+                return Ok();
+            }
             var transactionDtos = _mapper.Map<IList<SaleInvoice>, IList<SaleInvoiceDto>>(transactions);
-
-            if (transactions != null)
+           // if (transactions != null)
                  return Ok(transactionDtos);
 
-            return BadRequest("error getting transactions with those dates");
+           
         }
 
         [HttpGet("GetReport")]
