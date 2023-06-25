@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
-using Inventory.api.Controllers;
 using InventoryPOS.Core.Dtos;
 using InventoryPOS.DataStore.Daos;
 using InventoryPOSApp.Core.Dtos;
@@ -10,10 +9,8 @@ using InventoryPOSApp.Core.Repositories;
 using InventoryPOSApp.Core.Services;
 using InventoryPOSApp.Core.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace InventoryPOS.api.Controllers
