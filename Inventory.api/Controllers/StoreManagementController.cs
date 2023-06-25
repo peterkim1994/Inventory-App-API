@@ -8,6 +8,7 @@ using InventoryPOSApp.Core.Dtos;
 using InventoryPOSApp.Core.Repositories;
 using InventoryPOSApp.Core.Services;
 using InventoryPOSApp.Core.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
@@ -50,19 +51,19 @@ namespace InventoryPOS.api.Controllers
         [HttpGet("GetTransactions")]
         public IActionResult GetTransactions([FromQuery(Name = "from")] string from, [FromQuery(Name = "to")] string to)
         {
-            //add some validation
+            //TODO: add some validation
             DateTime fromDate = DateTime.Parse(from);
             DateTime toDate = DateTime.Parse(to);
             var transactions = _repo.GetSales(fromDate, toDate);
+
             if (transactions == null)
             {
                 return Ok();
             }
-            var transactionDtos = _mapper.Map<IList<SaleInvoice>, IList<SaleInvoiceDto>>(transactions);
-           // if (transactions != null)
-                 return Ok(transactionDtos);
 
-           
+            var transactionDtos = _mapper.Map<IList<SaleInvoice>, IList<SaleInvoiceDto>>(transactions);
+
+            return Ok(transactionDtos); 
         }
 
         [HttpGet("GetReport")]
@@ -71,7 +72,9 @@ namespace InventoryPOS.api.Controllers
             //add some validation
             DateTime fromDate = DateTime.Parse(from);
             DateTime toDate = DateTime.Parse(to);
+
             SalesReportDto report = _mangementService.GetSalesReport(fromDate, toDate);
+
             if(report == null)
             {
                 return BadRequest("system error report couldnt be generated");
@@ -81,39 +84,41 @@ namespace InventoryPOS.api.Controllers
         }
 
         [HttpPost("VoidProductSale")]
-        [Microsoft.AspNetCore.Authorization.Authorize(Roles = "shopAdmin")]
+        [Authorize(Roles = "shopAdmin")]
         public IActionResult DeleteProductSale(Object jsonResult)
         {
             dynamic reqBody = JObject.Parse(jsonResult.ToString());
+
             int saleId = reqBody.saleId;
             int productSaleId = reqBody.productSaleId;
+
             bool productSaleDeleted = _mangementService.VoidSale(saleId, productSaleId);
 
             if (productSaleDeleted)
             {
-                var sale = _saleService.GetSale(saleId);
+                var sale = _mapper.Map<SaleInvoice, SaleInvoiceDto>(_saleService.GetSale(saleId));
                 return Ok(sale);
             }
-            else
-            {
-                return BadRequest();
-            }
+
+            return BadRequest("Product sale couldnt not be deleted");            
         }
 
         [HttpPost("RestockProductSales")]
         public IActionResult RestockProductSales(ICollection<int> productSaleIds)
         {
-            if(productSaleIds == null)
+            if (productSaleIds == null)
             {
                 return BadRequest();
             }
 
             var productSales = _repo.GetProductSales(productSaleIds);
-            foreach(var ps in productSales)
+            foreach (var ps in productSales)
             {
                 ps.Restocked = true; 
             }
+
             _repo.UpdateProductSales(productSales);
+
             return Ok();
         }
     }
