@@ -20,11 +20,17 @@ namespace InventoryPOS.api.Controllers
     public class StoreManagementController : ControllerBase
     {
         private readonly ILogger<SalesController> _logger;
+
         private readonly ISalesService _saleService;
+
         private readonly IPromotionsService _promoService;
-        private readonly ISalesRepository _repo;
+
+        private readonly ISalesRepository _salesRepo;
+
         private readonly IMapper _mapper;
+
         private readonly IInventoryService _inventoryService;
+
         private readonly IStoreManagementService _mangementService;
 
         public StoreManagementController
@@ -41,7 +47,7 @@ namespace InventoryPOS.api.Controllers
             _logger = logger;
             _saleService = salesService;
             _promoService = promoService;
-            _repo = repo;
+            _salesRepo = repo;
             _mapper = mapper;
             _inventoryService = inventoryService;
             _mangementService = managementService;
@@ -54,7 +60,7 @@ namespace InventoryPOS.api.Controllers
             //TODO: add some validation
             DateTime fromDate = DateTime.Parse(from);
             DateTime toDate = DateTime.Parse(to);
-            var transactions = _repo.GetSales(fromDate, toDate);
+            var transactions = _salesRepo.GetSales(fromDate, toDate);
 
             if (transactions == null)
             {
@@ -111,13 +117,13 @@ namespace InventoryPOS.api.Controllers
                 return BadRequest();
             }
 
-            var productSales = _repo.GetProductSales(productSaleIds);
+            var productSales = _salesRepo.GetProductSales(productSaleIds);
             foreach (var ps in productSales)
             {
                 ps.Restocked = true; 
             }
 
-            _repo.UpdateProductSales(productSales);
+            _salesRepo.UpdateProductSales(productSales);
 
             return Ok();
         }

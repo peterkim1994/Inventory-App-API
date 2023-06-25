@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using AutoMapper;
 using Inventory.api.Controllers;
 using InventoryPOS.Core.Dtos;
@@ -24,10 +23,15 @@ namespace InventoryPOS.api.Controllers
     public class SalesController : ControllerBase
     {
         private readonly ILogger<SalesController> _logger;
+
         private readonly ISalesService _saleService;
+
         private readonly IPromotionsService _promoService;
+
         private readonly ISalesRepository _repo;
+
         private readonly IMapper _mapper;
+
         private readonly IInventoryService _inventoryService;
 
         public SalesController
@@ -69,13 +73,13 @@ namespace InventoryPOS.api.Controllers
                 {
                     return Ok(promotionDto);
                 }
+
                 return BadRequest("that promtion already exists");
             }
+
             return BadRequest("Invalid promotion settings");
         }
-
         
-
         [HttpPost("AddProductPromotion")]
         [Authorize(Roles = "shopAdmin")]
         public IActionResult AddProductPromotion(int productId, int promotionId)
@@ -86,7 +90,6 @@ namespace InventoryPOS.api.Controllers
             }
             return BadRequest("This promotion already contains this product");
         }
-
 
         [HttpGet("GetActivePromotions")]
         public IActionResult GetActivePromotions()
@@ -218,7 +221,6 @@ namespace InventoryPOS.api.Controllers
             return Ok(_mapper.Map<SaleInvoice, SaleInvoiceDto>(sale));
         }
 
-
         //!!!!!!!!!!!
         //!!!!!!!!!!!
         //!!!!!!!!!!!
@@ -257,9 +259,13 @@ namespace InventoryPOS.api.Controllers
             SaleInvoice sale = _saleService.GetSale(saleId);
 
             if (sale == null)
+            {
                 return BadRequest("This sale does not exist");
-            else if (sale.Finalised == true) 
-                return BadRequest("This Sale Has Already Been Finalised");            
+            }                
+            else if (sale.Finalised == true)
+            {
+                return BadRequest("This Sale Has Already Been Finalised");
+            }                      
             else if (sale != null && saleProducts.Count > 0)
             {
                 var productSales = _saleService.ApplyPromotionsToSale(sale.Id, saleProducts);
@@ -268,10 +274,8 @@ namespace InventoryPOS.api.Controllers
                 invoice.Products = _mapper.Map<IList<ProductSale>,IList<ProductSaleDto>>(productSales);
                 return Ok(invoice);
             }
-            else
-            {
-                return BadRequest("There are no products to add");
-            }
+
+            return BadRequest("There are no products to add");            
         }
 
         [HttpPost("AddSalePayments")]
@@ -282,7 +286,9 @@ namespace InventoryPOS.api.Controllers
             ICollection<Payment> payments = _mapper.Map<ICollection<PaymentDto>, ICollection<Payment>>(paymentDtos);
 
             if(payments == null || payments.Count() == 0)
+            {
                 return BadRequest("error refresh the page");
+            }               
 
             if (payments.Any(p=> p.Amount < 0.0m))
             {
@@ -313,11 +319,12 @@ namespace InventoryPOS.api.Controllers
         {
             var sale = _saleService.GetSale(refundDto.SaleInvoiceId);
             var refund = _mapper.Map<RefundDto, Refund>(refundDto);
-            if(sale == null)
+
+            if (sale == null)
             {
                 return BadRequest("That invoice number does not exist");
             }
-            else if(refund.Amount > sale.Total)
+            else if (refund.Amount > sale.Total)
             {
                 return BadRequest("The refund amount can not be more than the amount paid for the sale");
             }
@@ -329,7 +336,7 @@ namespace InventoryPOS.api.Controllers
             {
                 return BadRequest("You must provide a reason for the refund");
             }
-            else if(refund.Reason.Length > 99)
+            else if (refund.Reason.Length > 99)
             {
                 return BadRequest("The reason must be under 100 characters");
             }
@@ -337,9 +344,9 @@ namespace InventoryPOS.api.Controllers
             {
                 refund.RefundDate = DateTime.Now;
                 _repo.AddRefund(refund);
+
                 return Ok("refund successfully processed");
             }
         }
     }
-
 }

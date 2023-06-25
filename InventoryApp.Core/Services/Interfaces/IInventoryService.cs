@@ -27,6 +27,7 @@ namespace InventoryPOSApp.Core.Services
         long GenerateBarcode();
 
         bool AddProduct(Product product);
+
         List<IEnumerable<ProductAttribute>> GetProductAttributes();
 
         List<Product> GetAllProducts();

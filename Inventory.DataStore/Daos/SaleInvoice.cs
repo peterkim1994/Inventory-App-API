@@ -10,12 +10,19 @@ namespace InventoryPOS.DataStore.Daos
     {
         [Key]        
         public int Id { get; set; }       
+
         public DateTime InvoiceDate { get; set; }
+
         public int Total { get; set; }
+
         public bool Finalised { get; set; }
+
         public virtual IList<ProductSale> ProductSales { get; set; }
+
         public virtual IList<Payment> Payments { get; set; }
+
         public virtual IList<Refund> Refunds { get; set; }
+
         public bool Canceled { get; set; }
 
         [Range(0.00, 50000)]

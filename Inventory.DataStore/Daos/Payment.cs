@@ -9,9 +9,13 @@ namespace InventoryPOS.DataStore.Daos
     public class Payment
     {
         public int SaleInvoiceId { get; set; }
+
         public virtual SaleInvoice SaleInvoice { get; set; }
+
         public int PaymentMethodId{ get; set; }
+
         public virtual PaymentMethod PaymentMethod { get; set; }
+
         [Required]
         public int Amount { get; set; }
     }

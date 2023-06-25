@@ -1,18 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Linq;
 using InventoryPOS.DataStore;
 using InventoryPOS.DataStore.Daos;
 using Microsoft.EntityFrameworkCore;
-using InventoryPOSApp.Core.Dtos;
-
 
 namespace InventoryPOSApp.Core.Repositories
 {
     public class SalesRepository : ISalesRepository
     {
-
         private readonly DBContext _context;
 
         public SalesRepository(DBContext context)
@@ -42,10 +38,10 @@ namespace InventoryPOSApp.Core.Repositories
         public SaleInvoice CreateNewSaleInvoice()
         {
             SaleInvoice newSale = new SaleInvoice { InvoiceDate = DateTime.Now };
+
             _context.SaleInvoices.Add(newSale);           
-            //      Store store = new Store { StoreName = "Procamp", Address = "Hamilton", GstNum = "123-234432-332", Contact = "07-801-2345" };
-            //     _context.Store.Add(store);
             _context.SaveChanges();
+
             return newSale;
         }
 
@@ -56,6 +52,7 @@ namespace InventoryPOSApp.Core.Repositories
                            join p in _context.Products
                            on sale.ProductId equals p.Id
                            select p;
+
             return products.ToList();
         }
 
@@ -192,8 +189,8 @@ namespace InventoryPOSApp.Core.Repositories
             {
                 _context.Entry(payment).Reference(p => p.PaymentMethod).Load();
             }
-            return sale;
 
+            return sale;
         }
 
         public void DeleteSalePayments(int saleId)

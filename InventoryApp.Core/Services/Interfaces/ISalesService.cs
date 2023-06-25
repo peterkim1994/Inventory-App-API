@@ -8,6 +8,7 @@ namespace InventoryPOSApp.Core.Services
     public interface ISalesService
     {
         Store GetStore();
+
         IList<ProductSale> ApplyPromotionsToSale(int saleId, List<Product> products);
 
         SaleInvoice GetSale(int saleId);
@@ -23,9 +24,5 @@ namespace InventoryPOSApp.Core.Services
         bool CancelSale(int saleId);
 
         void ProcessProductSales(SaleInvoice sale, IList<ProductSale> productSales);
-
-
-        //    ProductSale ProcessProductSale(int saleId, Product product, Promotion promotion, int sellingPrice);
-
     }
 }
