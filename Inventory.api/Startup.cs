@@ -33,14 +33,15 @@ namespace Inventory.api
 
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
 
             services.AddIdentity<IdentityUser, IdentityRole>()
                 .AddEntityFrameworkStores<DBContext>();
+
             services.AddDbContext<DBContext>();
+
             services.Configure<IdentityOptions>(opt =>
             {
                 opt.Password.RequiredLength = 5;
@@ -49,6 +50,7 @@ namespace Inventory.api
                 opt.Password.RequireNonAlphanumeric = false;
             });
 
+            //DI
             services.AddScoped<IInventoryService, InventoryService>();
             services.AddScoped<IInventoryRepo, InventoryRepo>();
             services.AddScoped<IPromotionsRepository, PromotionRepository>();
@@ -69,10 +71,9 @@ namespace Inventory.api
                         .AllowAnyOrigin();
                 });
             });
-
+            
             var secretBytes = Encoding.UTF8.GetBytes(Configuration["SecretKey"]);
             var key = new SymmetricSecurityKey(secretBytes);
-
 
             services.AddAuthentication(opts =>
             {
@@ -110,7 +111,7 @@ namespace Inventory.api
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-            public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
