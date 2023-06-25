@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using InventoryPOS.DataStore.Daos;
+﻿using InventoryPOS.DataStore.Daos;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,18 +7,31 @@ namespace InventoryPOS.DataStore
     public class DBContext : IdentityDbContext
     {
         public DbSet<Product> Products { get; set; }
+
         public DbSet<Brand> Brands { get; set; }
+
         public DbSet<Size> Sizes { get; set; }
+
         public DbSet<Colour> Colours { get; set; }
+
         public DbSet<ItemCategory> ItemCategories { get; set; }
+
         public DbSet<SaleInvoice> SaleInvoices { get; set; }
+
         public DbSet<ProductSale> ProductSales { get; set; }
+
         public DbSet<Promotion> Promotions { get; set; }
+
         public DbSet<Payment> Payments { get; set; }
+
         public DbSet<PaymentMethod> PaymentMethods { get; set; }
+
         public DbSet<ProductPromotion> ProductPromotions { get; set; }
+
         public DbSet<Store> Store { get; set; }
+
         public DbSet<Refund> Refunds { get; set; }
+
        // public DbSet<ProductToRestock> ProductsToRestock { get; set; }
 
         public DBContext(DbContextOptions<DBContext> options) : base(options)
@@ -72,8 +82,7 @@ namespace InventoryPOS.DataStore
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer(
-                @"Server = (localdb)\mssqllocaldb;Database=InventoryPOS;Integrated Security= True");
+            optionsBuilder.UseSqlServer(@"Server = localhost;Database=pos_dev_db;Integrated Security= True");
         }
     }
 }

@@ -127,6 +127,7 @@ namespace InventoryPOS.api.Controllers
             {
                 _promoService.AddProductToPromotion(productId, promotionId);
             }
+
             var promoDto = _mapper.Map<Promotion, PromotionDto>(promo);
             return Ok(promoDto);
         }
@@ -159,6 +160,7 @@ namespace InventoryPOS.api.Controllers
             {
                 _promoService.RemoveProductPromotion(productId, promotionId);
             }
+
             var promoDto = _mapper.Map<Promotion, PromotionDto>(promo);
             return Ok(promoDto);
         }

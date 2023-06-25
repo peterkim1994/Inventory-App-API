@@ -18,14 +18,22 @@ namespace InventoryPOS.api.Controllers
 {
     [ApiController]
     [Route("[controller]")]
+    //This class needs to be rebuilt. Not all the end points are even functional
     public class AuthenticatorController : ControllerBase
     {
 
         private IConfiguration _config;
+
         private readonly SignInManager<IdentityUser> _signInManager;
+
         private readonly UserManager<IdentityUser> _userManager;
+
         private readonly RoleManager<IdentityRole> _roleManager;
+
         private readonly DBContext _context;
+
+        private byte[] SecretBytes => Encoding.UTF8.GetBytes(_config["SecretKey"]);
+
         public AuthenticatorController
         (
             IConfiguration config,
@@ -39,9 +47,8 @@ namespace InventoryPOS.api.Controllers
             _signInManager = signinManager;
             _userManager = userManager;
             _roleManager = roleManager;
-            _context = context;
+            _context = context;      
         }
-
 
         [HttpPost("register")]
         public async Task<IActionResult> Register(Object jsonResult)
@@ -49,6 +56,7 @@ namespace InventoryPOS.api.Controllers
             dynamic reqBody = JObject.Parse(jsonResult.ToString());
             string userName = reqBody.userName;
             string password = reqBody.password;
+
             if (userName.Length > 4 && password.Length > 4)
             {
                 var user = new IdentityUser { UserName = userName };
@@ -58,13 +66,17 @@ namespace InventoryPOS.api.Controllers
                     await Login(new { userName = userName, password = password });
                     return Ok("signed in!");
                 }
-                string error = "";
+
+                var errors = new StringBuilder();
+
                 foreach (var err in result.Errors)
                 {
-                    error += err + "\n";
+                    errors.AppendLine(err.ToString());
                 }
-                return BadRequest(error);
+
+                return BadRequest(errors);
             }
+
             return BadRequest("password and username must be 5 characters or longer");
         }
 
@@ -74,6 +86,7 @@ namespace InventoryPOS.api.Controllers
             dynamic reqBody = JObject.Parse(jsonObj.ToString());
             string userName = reqBody.userName;
             string password = reqBody.password;
+
             IdentityUser user = await _userManager.FindByNameAsync(userName);
 
             if (user == null)
@@ -89,9 +102,8 @@ namespace InventoryPOS.api.Controllers
                     return  Ok(await GenerateToken(userName));
                 }
             }
+
             return BadRequest("Incorrect Password");
-            //      await _signInManager.SignInAsync(user, isPersistent: false);
-            //    var claimsPrincipal = await _signInManager.CreateUserPrincipalAsync(user);
         }
 
         [Authorize]
@@ -117,16 +129,15 @@ namespace InventoryPOS.api.Controllers
                 new Claim("addy", "hamilton")
             };
 
-            var secretBytes = Encoding.UTF8.GetBytes(_config["SecretKey"]);
-            var key = new SymmetricSecurityKey(secretBytes);
+            var key = new SymmetricSecurityKey(SecretBytes);
             var algorithm = SecurityAlgorithms.HmacSha256;
 
             SigningCredentials signingCredentials = new SigningCredentials(key, algorithm);
 
             var token = new JwtSecurityToken
                 (
-                  "http://inventoryapi.local",//_config["JwtTokenParam:Issuer"],
-                    "https://localhost:3000",//_config["JwtTokenParam:Audience"],
+                   "http://inventoryapi.local",//_config["JwtTokenParam:Issuer"],
+                   "https://localhost:3000",//_config["JwtTokenParam:Audience"],
                    shopClaims,
                    notBefore: DateTime.Now,
                    expires: DateTime.Now.AddHours(1),
@@ -165,6 +176,7 @@ namespace InventoryPOS.api.Controllers
             {               
                 return Ok(roleAdded.Succeeded);
             }
+
             return BadRequest("somthing went wrong");
         }
 
@@ -174,6 +186,7 @@ namespace InventoryPOS.api.Controllers
             var user = await _userManager.FindByNameAsync(userName);
             var c1 = new Claim(ClaimTypes.Name, userName);
             var c2 = new Claim(ClaimTypes.Role, "shopAdmin");
+
             await _userManager.RemoveClaimAsync(user, c2);
             await _userManager.AddClaimAsync(user, c1);
             await _userManager.AddClaimAsync(user, c2);
@@ -191,8 +204,7 @@ namespace InventoryPOS.api.Controllers
             {
                 new Claim(ClaimTypes.Name, userName),
                 new Claim(ClaimTypes.NameIdentifier, user.Id),
-                new Claim(JwtRegisteredClaimNames.Nbf,  new DateTimeOffset(DateTime.Now).ToUnixTimeSeconds().ToString()),
-
+                new Claim(JwtRegisteredClaimNames.Nbf,  new DateTimeOffset(DateTime.Now).ToUnixTimeSeconds().ToString())
             };
 
             foreach (var role in roles)
@@ -213,16 +225,17 @@ namespace InventoryPOS.api.Controllers
                 claims.Add(defaultExpire);
             }
 
-            var secretBytes = Encoding.UTF8.GetBytes(_config["SecretKey"]);
-            var key = new SymmetricSecurityKey(secretBytes);
+            var key = new SymmetricSecurityKey(SecretBytes);
             var algorithm = SecurityAlgorithms.HmacSha256;
             SigningCredentials signingCredentials = new SigningCredentials(key, algorithm);
             var token = new JwtSecurityToken(new JwtHeader(signingCredentials), new JwtPayload(claims));
+
             var output = new
             {
                 AccessToken = "Bearer " + new JwtSecurityTokenHandler().WriteToken(token),
                 UserName = userName
             };
+
             return output;
         }
     }
