@@ -44,6 +44,7 @@ namespace InventoryPOSApp.Core.Repositories
             var product = _context.Promotions.FirstOrDefault(pr => pr.PromotionName == promotionName);
             return product;
         }
+
         public void ClearPromotionProducts(int promotionId)
         {
             var productPromos = from pp in _context.ProductPromotions
