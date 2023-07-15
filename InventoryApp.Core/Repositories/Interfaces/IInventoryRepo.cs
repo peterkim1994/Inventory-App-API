@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 using InventoryPOS.DataStore.Daos;
 using InventoryPOS.DataStore.Daos.Interfaces;
 
@@ -21,7 +22,9 @@ namespace InventoryPOSApp.Core.Repositories
         bool ContainsProduct(Product product);
 
         List<Product> GetProducts();
-         
+
+        Task<IList<Product>> GetProductsAsync(int nTake, int nSkip, int storeId);
+
         void EditProduct(Product product);
 
         void DeleteProduct(Product product);
@@ -49,7 +52,9 @@ namespace InventoryPOSApp.Core.Repositories
         List<T> GetProductAttributes<T>() where T : ProductAttribute;
 
         Product GetProductByBarcode(long code);
+
         List<Product> SearchProducts(string searchWord);
+
         void SaveChanges();
 
         Brand GetBrandByName(string brandName);
