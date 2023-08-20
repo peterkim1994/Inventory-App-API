@@ -1,5 +1,6 @@
 namespace InventoryPOS.api.Tests
 {
+    [TestFixture]
     public class Tests
     {
         [SetUp]
