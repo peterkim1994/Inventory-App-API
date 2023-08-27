@@ -7,6 +7,7 @@ namespace InventoryPOSApp.Core.Dtos
     public class ColourDto
     {
         public  int Id { get; set; }
+
         public  string Value { get; set; } 
     }
 }

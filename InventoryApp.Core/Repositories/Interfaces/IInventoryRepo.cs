@@ -70,7 +70,5 @@ namespace InventoryPOSApp.Core.Repositories
         bool IncreaseProductQty(int productId, int qty);
 
         bool DecreaseProductQty(int productId, int qty);
-
-       
     }
 }
