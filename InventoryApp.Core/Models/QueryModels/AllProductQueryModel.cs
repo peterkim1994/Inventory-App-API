@@ -13,5 +13,7 @@ namespace InventoryPOSApp.Core.Models.QueryModels
         public int StoreId { get; set; }
 
         public int NumItemsPerPage { get; set; }
+
+        public int? TotalPages { get; set; }
     }
 }
