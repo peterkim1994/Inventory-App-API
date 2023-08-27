@@ -103,9 +103,9 @@ namespace InventoryPOSApp.Core.Repositories
 
         public void ClearProductSales(int saleId)
         {
-            var productSales = from ps in _context.ProductSales
-                               where ps.SaleInvoiceId == saleId
-                               select ps;
+            var productSales = from productSale in _context.ProductSales
+                               where productSale.SaleInvoiceId == saleId
+                               select productSale;
             if (productSales.Count() == 0)
                 return;
             else {
@@ -136,8 +136,8 @@ namespace InventoryPOSApp.Core.Repositories
                                select new Payment { PaymentMethod = paymentMethod, Amount = payment.Amount };
 
             return salePayments.ToList();
-
         }
+
         public bool RemovePayment(Payment payment)
         {
             Payment pay = _context.Payments

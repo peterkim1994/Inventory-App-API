@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -7,6 +8,7 @@ using InventoryPOS.Core.Dtos;
 using InventoryPOS.DataStore.Daos;
 using InventoryPOS.DataStore.Daos.Interfaces;
 using InventoryPOSApp.Core.Dtos;
+using InventoryPOSApp.Core.Models.QueryModels;
 using InventoryPOSApp.Core.Repositories;
 using InventoryPOSApp.Core.Services;
 using InventoryPOSApp.Core.Utils;
@@ -43,7 +45,6 @@ namespace Inventory.api.Controllers
             _mapper = mapper;
         }
 
-
         [HttpGet("ProductAttributes")]
         public IActionResult GetAttributes()
         {
@@ -53,12 +54,29 @@ namespace Inventory.api.Controllers
         [HttpGet]
         public IActionResult GetProducts()
         {
-            var productDtos = _mapper.Map<List<Product>, List<ProductDto>>(_inventoryService.GetAllProducts());
+            List<ProductDto> productDtos = _mapper.Map<List<Product>, List<ProductDto>>(_inventoryService.GetAllProducts());
             return Ok(productDtos);
         }
 
-        [HttpPost("GetTheseProducts")]
-        public IActionResult GetProductsForPrinting(ICollection<int> productIds)
+        [HttpGet("GetInventoryProducts")]
+        //[Authorize(Roles = "shopAdmin, staff")]
+        public async Task<IActionResult> GetInventoryProducts([FromQuery] int storeId, [FromQuery] int pageNum, [FromQuery] int numItemsToDisplay)
+        {
+            AllProductQueryModel queryModel = new AllProductQueryModel()
+            {
+                NumItemsPerPage = numItemsToDisplay,
+                PageNum = pageNum,
+                StoreId = storeId
+            };
+
+            var products = await _inventoryService.GetAllProductsAsync(queryModel);
+            List<ProductDto> productDtos = _mapper.Map<IList<Product>, List<ProductDto>>(products);
+
+            return Ok(productDtos);
+        }
+
+        [HttpGet("GetTheseProducts")]
+        public IActionResult GetProductsForPrinting([FromQuery] ICollection<int> productIds)
         {
             if (productIds != null || productIds.Count > 0)
             {
@@ -79,22 +97,22 @@ namespace Inventory.api.Controllers
                 var colourDto = _mapper.Map<Colour, ColourDto>(colour);
                 return Ok(colourDto);
             }
+
             return BadRequest("Colour Already Exists");
         }
-
 
         [HttpPost("AddProduct")]
         public ProductDto AddProduct(ProductDto productDto)
         {
             if (!ModelState.IsValid)
             {
-                throw new InvalidOperationException("invalid product");                
+                throw new InvalidOperationException("invalid product");
             }
 
             var product = _mapper.Map<ProductDto, Product>(productDto);
 
             if (_inventoryRepo.ContainsProduct(product))
-            {               
+            {
                 //hack -- user does insists products can have the same description & attributes and still be differientiated by price     
                 product.Description += "Price: " + product.Price;
 
@@ -106,14 +124,14 @@ namespace Inventory.api.Controllers
                 if (_inventoryService.AddProduct(product))
                 {
                     productDto = _mapper.Map<Product, ProductDto>(product);
-                 
+
                     return productDto;
-                }                          
+                }
             }
 
             if (_inventoryService.AddProduct(product))
             {
-                productDto = _mapper.Map<Product, ProductDto>(product);              
+                productDto = _mapper.Map<Product, ProductDto>(product);
                 //return CreatedAtRoute("AddProduct", new { productDto.Id }, productDto);
 
                 return productDto;
@@ -196,8 +214,8 @@ namespace Inventory.api.Controllers
                 if (_inventoryService.EditBrand(brand))
                 {
                     return Ok(brand);
-                }                    
-              
+                }
+
                 return BadRequest("This brand already exists");
             }
             else
@@ -238,10 +256,10 @@ namespace Inventory.api.Controllers
                 else
                 {
                     return BadRequest("This size already exists");
-                }                   
+                }
             }
 
-            return BadRequest("Improper size name format");           
+            return BadRequest("Improper size name format");
         }
 
         private ProductAttribute GetAttribute(List<IEnumerable<InventoryPOS.DataStore.Daos.Interfaces.ProductAttribute>> atts, string val)

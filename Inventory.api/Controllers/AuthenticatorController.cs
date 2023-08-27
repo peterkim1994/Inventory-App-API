@@ -18,10 +18,9 @@ namespace InventoryPOS.api.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    //This class needs to be rebuilt. Not all the end points are even functional
+    //This functionality needs to be rebuilt. Not all the end points are even functional
     public class AuthenticatorController : ControllerBase
     {
-
         private IConfiguration _config;
 
         private readonly SignInManager<IdentityUser> _signInManager;
@@ -113,7 +112,6 @@ namespace InventoryPOS.api.Controllers
             await _signInManager.SignOutAsync();
         }
 
-
         [HttpPost("authenticate")]
         public IActionResult Authenticate()
         {
@@ -162,7 +160,6 @@ namespace InventoryPOS.api.Controllers
             }
             return BadRequest();
         }
-
 
         [HttpPost("createStaffRole")]
         public async Task<IActionResult> CreateWokerRole([FromBody]string userName)

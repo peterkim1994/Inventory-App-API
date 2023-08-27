@@ -6,21 +6,36 @@ using InventoryPOS.DataStore.Daos;
 using InventoryPOS.DataStore.Daos.Interfaces;
 using InventoryPOSApp.Core.Repositories;
 using InventoryPOSApp.Core.Utils;
+using System.Threading.Tasks;
+using InventoryPOSApp.Core.Models.QueryModels;
 
 namespace InventoryPOSApp.Core.Services
 {
     public class InventoryService : IInventoryService
     {
         private IInventoryRepo _repo { get; set; }
+
         public InventoryService(IInventoryRepo inventoryRepo)
         {
             _repo = inventoryRepo;
+        }
+
+        public async Task<IList<Product>> GetAllProductsAsync(AllProductQueryModel productQuery)
+        {
+            int skipAmmount = (productQuery.PageNum - 1) * productQuery.NumItemsPerPage;
+
+            return await _repo.GetProductsAsync(productQuery.NumItemsPerPage, skipAmmount, productQuery.StoreId);
         }
 
         public List<Product> GetAllProducts()
         {
             return _repo.GetProducts();
         }
+
+        //public async Task<List<Product>> GetProductPage()
+        //{
+
+        //}
 
         public bool AddColour(Colour colour)
         {
@@ -29,28 +44,35 @@ namespace InventoryPOSApp.Core.Services
             {
                 return false;
             }
+
             _repo.AddColour(colour);
             _repo.SaveChanges();
+
             return true;
         }
 
+        [Obsolete("create async method pls")]
         public List<IEnumerable<ProductAttribute>> GetProductAttributes()   
         {
-            List<IEnumerable<ProductAttribute>> allAttributes= new List<IEnumerable<ProductAttribute>>();
+            List<IEnumerable<ProductAttribute>> allAttributes = new List<IEnumerable<ProductAttribute>>();
+
             IEnumerable<ProductAttribute> colours =_repo.GetProductAttributes<Colour>();
             IEnumerable<ProductAttribute> brands = _repo.GetProductAttributes<Brand>();
             IEnumerable<ProductAttribute> categories = _repo.GetProductAttributes<ItemCategory>();
+
             SizeComparer sc = new SizeComparer();
             List<Size> sizeList =  _repo.GetProductAttributes<Size>();
             sizeList.Sort(sc); 
+
             IEnumerable<ProductAttribute> sizes = sizeList;
+
             allAttributes.Add(colours); 
             allAttributes.Add(brands);
             allAttributes.Add(categories);
             allAttributes.Add(sizes);
+
             return allAttributes;
         }
-
 
         public bool AddItemCategory(ItemCategory category)
         {
@@ -59,34 +81,40 @@ namespace InventoryPOSApp.Core.Services
             {
                 return false;
             }
+
             _repo.AddItemCategory(category);
             _repo.SaveChanges();
+
             return true;
         }
-
 
         public bool AddSize(Size size)
         {
             size.Value = size.Value.ToUpper();
+
             if (_repo.ContainsAtt(size))
             {
                 return false;
             }
+
             _repo.AddSize(size);
             _repo.SaveChanges();
+
             return true;
         }
 
         public bool AddBrand(Brand brand)
         {
-
             brand.Value = TextProcessor.ToTitleCase(brand.Value);
+
             if (_repo.ContainsAtt(brand))
             {
                 return false;
             }
+
             _repo.AddBrand(brand);
             _repo.SaveChanges();
+
             return true;
         }
 
@@ -226,6 +254,7 @@ namespace InventoryPOSApp.Core.Services
             {
                 productList.Add(products.First(p=> p.Id == prod));
             }
+
             return productList;
         }
 

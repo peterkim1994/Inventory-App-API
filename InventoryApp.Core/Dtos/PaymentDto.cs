@@ -9,9 +9,12 @@ namespace InventoryPOSApp.Core.Dtos
     public class PaymentDto
     {
         public int SaleInvoiceId { get; set; }   
+
         [Required]
         public int PaymentMethodId { get; set; }
+
         public string PaymentMethod { get; set; }
+
         [Required]
         public double Amount { get; set; }
     }

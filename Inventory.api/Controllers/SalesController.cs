@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
-using Inventory.api.Controllers;
 using InventoryPOS.Core.Dtos;
 using InventoryPOS.DataStore.Daos;
 using InventoryPOSApp.Core.Dtos;
@@ -10,10 +9,8 @@ using InventoryPOSApp.Core.Repositories;
 using InventoryPOSApp.Core.Services;
 using InventoryPOSApp.Core.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace InventoryPOS.api.Controllers
@@ -69,6 +66,7 @@ namespace InventoryPOS.api.Controllers
                 {
                     return BadRequest("The promotions start date must be prior to the end date");
                 }
+
                 if (_promoService.AddPromotion(promotion))
                 {
                     return Ok(promotionDto);
@@ -88,6 +86,7 @@ namespace InventoryPOS.api.Controllers
             {
                 return Ok(new ProductPromotion { ProductId = productId, PromotionId = promotionId });
             }
+
             return BadRequest("This promotion already contains this product");
         }
 
@@ -96,6 +95,7 @@ namespace InventoryPOS.api.Controllers
         {
             var promotions = _promoService.GetActivePromotions();
             var PromotionDtos = _mapper.Map<IList<Promotion>, IList<PromotionDto>>(promotions);
+
             return Ok(PromotionDtos);
         }
 
@@ -104,9 +104,11 @@ namespace InventoryPOS.api.Controllers
         public IActionResult GetPromotionsProducts(int promotionId)
         {
             var products = _promoService.GetPromotionsProducts(promotionId);
-            if (products == null)
-                return BadRequest();
+
+            if (products == null) return BadRequest();
+
             var ProductDtos = _mapper.Map<IList<Product>, IList<ProductDto>>(products);
+
             return Ok(ProductDtos);
         }
 
@@ -119,16 +121,16 @@ namespace InventoryPOS.api.Controllers
             IList<int> productIds = reqBody.productIds.ToObject<IList<int>>();
 
             Promotion promo = _promoService.GetPromotion(promotionId);
-            if (promo == null)
-            {
-                return BadRequest("promotion doesnt exist");
-            }
+
+            if (promo == null) return BadRequest("promotion doesnt exist");
+
             foreach (var productId in productIds)
             {
                 _promoService.AddProductToPromotion(productId, promotionId);
             }
 
             var promoDto = _mapper.Map<Promotion, PromotionDto>(promo);
+
             return Ok(promoDto);
         }
 

@@ -17,21 +17,17 @@ namespace InventoryPOSApp.Core.Repositories
             _context = context;
         }
 
-
-
         public void AddProductPromotion(ProductPromotion productPromotion)
         {
             _context.ProductPromotions.Add(productPromotion);
             _context.SaveChanges();
         }
 
-
         public void AddPromotion(Promotion promotion)
         {
             _context.Promotions.Add(promotion);
             _context.SaveChanges();
         }
-
 
         public void EditPromotion(Promotion promotion)
         {
@@ -44,6 +40,7 @@ namespace InventoryPOSApp.Core.Repositories
             var product = _context.Promotions.FirstOrDefault(pr => pr.PromotionName == promotionName);
             return product;
         }
+
         public void ClearPromotionProducts(int promotionId)
         {
             var productPromos = from pp in _context.ProductPromotions
@@ -70,7 +67,6 @@ namespace InventoryPOSApp.Core.Repositories
                          select pr;
             return promos.ToList();
         }
-
 
         public IList<Promotion> GetActivePromotions()
         {

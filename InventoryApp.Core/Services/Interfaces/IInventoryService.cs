@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 using InventoryPOS.DataStore.Daos;
 using InventoryPOS.DataStore.Daos.Interfaces;
+using InventoryPOSApp.Core.Models.QueryModels;
 
 namespace InventoryPOSApp.Core.Services
 {
@@ -31,6 +33,8 @@ namespace InventoryPOSApp.Core.Services
         List<IEnumerable<ProductAttribute>> GetProductAttributes();
 
         List<Product> GetAllProducts();
+
+        Task<IList<Product>> GetAllProductsAsync(AllProductQueryModel productQuery);
 
         List<Product> GetProducts(List<int> productIds);
 

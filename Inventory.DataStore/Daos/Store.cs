@@ -21,5 +21,7 @@ namespace InventoryPOS.DataStore.Daos
 
         [MaxLength(50)]
         public string Contact { get; set; }
+
+        public virtual IList<Product> Products { get; set; }
     }
 }

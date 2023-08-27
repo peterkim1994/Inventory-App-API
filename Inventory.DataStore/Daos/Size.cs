@@ -19,6 +19,5 @@ namespace InventoryPOS.DataStore.Daos
         public override string Value { get; set; }
 
         public virtual List<Product> Products { get; set; }
-       
     }
 }

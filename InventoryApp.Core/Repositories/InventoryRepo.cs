@@ -6,6 +6,7 @@ using InventoryPOS.DataStore.Daos;
 using InventoryPOS.DataStore.Daos.Interfaces;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks;
 
 namespace InventoryPOSApp.Core.Repositories
 {
@@ -69,12 +70,13 @@ namespace InventoryPOSApp.Core.Repositories
         {
             var set = _context.Set<T>();
             var rows = set.ToList();
+
             var attribute = from at in rows
                             where at.Value == newAtt.Value
                             select at;
+
             return (attribute.Count() == 1);
         }
-
 
         public bool ContainsProduct(Product product)
         {
@@ -89,7 +91,8 @@ namespace InventoryPOSApp.Core.Repositories
                   pr.ItemCategoryId == product.ItemCategoryId
                )
             );
-            return (prod != null);       
+
+            return (prod != null);
         }
 
         public void EditProduct(Product editedProduct)
@@ -99,32 +102,30 @@ namespace InventoryPOSApp.Core.Repositories
             _context.SaveChanges();
         }
 
-
         public Product GetProduct(int id)
         {
             return _context.Products
-              .Include(pr => pr.Brand)
-              .Include(pr => pr.Colour)
-              .Include(pr => pr.Size)
-              .Include(pr => pr.ItemCategory)
-              .FirstOrDefault(pr => pr.Id == id);
+                              .Include(pr => pr.Brand)
+                              .Include(pr => pr.Colour)
+                              .Include(pr => pr.Size)
+                              .Include(pr => pr.ItemCategory)
+                              .FirstOrDefault(pr => pr.Id == id);
         }
 
         public List<Product> GetProducts(List<int> productIds)
         {
             return _context.Products.Where(p => productIds.Contains(p.Id))
-             .Include(pr => pr.Brand)
-             .Include(pr => pr.Colour)
-             .Include(pr => pr.Size)
-             .Include(pr => pr.ItemCategory)
-             .ToList();
+                                     .Include(pr => pr.Brand)
+                                     .Include(pr => pr.Colour)
+                                     .Include(pr => pr.Size)
+                                     .Include(pr => pr.ItemCategory)
+                                     .ToList();
         }
 
         public void DeleteProduct(Product product)
         {
             throw new NotImplementedException();
         }
-
 
         public List<ItemCategory> GetCategories()
         {
@@ -133,7 +134,7 @@ namespace InventoryPOSApp.Core.Repositories
 
         public List<Product> SearchProducts(string searchWord)
         {
-            var ignoreCase= System.StringComparison.CurrentCultureIgnoreCase;
+            var ignoreCase = System.StringComparison.CurrentCultureIgnoreCase;
             var products = from pr in _context.Products
                            join b in _context.Brands
                                 on pr.BrandId equals b.Id
@@ -163,19 +164,39 @@ namespace InventoryPOSApp.Core.Repositories
             return matches;
         }
 
+        //public Task<IList<Product>> GetProductPage(int slice)
+        //{
+
+        //}
 
         public List<Product> GetProducts()
         {
             return _context.Products
-                   .Include(pr => pr.Brand)
-                   .Include(pr => pr.Colour)
-                   .Include(pr => pr.Size)
-                   .Include(pr => pr.ItemCategory)
-                   .OrderBy(pr => pr.BrandId)
-                   .ThenBy(pr => pr.ItemCategoryId)
-                   .ThenBy(pr => pr.ColourId)
-                   .ThenBy(pr => pr.Size)
-                   .ToList();
+                    .Include(pr => pr.Brand)
+                    .Include(pr => pr.Colour)
+                    .Include(pr => pr.Size)
+                    .Include(pr => pr.ItemCategory)
+                    .ToList();
+
+        }
+
+        public async Task<IList<Product>> GetProductsAsync(int nTake, int nSkip, int storeId)
+        {
+            var products = await _context.Products
+                                .Include(pr => pr.Brand)
+                                .Include(pr => pr.Colour)
+                                .Include(pr => pr.Size)
+                                .Include(pr => pr.ItemCategory)
+                                .Where(pr => pr.StoreId == storeId)
+                                .Skip(nSkip)
+                                .Take(nTake)
+                                .ToListAsync();
+
+            return products;
+            //.ThenBy(pr => pr.ItemCategoryId)
+            //.ThenBy(pr => pr.ColourId)
+            //.ThenBy(pr => pr.Size)
+            //.ToList();
             //  var prods = _context.Products.Include()
         }
 
@@ -258,9 +279,8 @@ namespace InventoryPOSApp.Core.Repositories
                 _context.SaveChanges();
                 return true;
             }
+
             return false;
         }
-
-
     }
 }
