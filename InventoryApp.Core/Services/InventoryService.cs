@@ -8,6 +8,8 @@ using InventoryPOSApp.Core.Repositories;
 using InventoryPOSApp.Core.Utils;
 using System.Threading.Tasks;
 using InventoryPOSApp.Core.Models.QueryModels;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+using InventoryPOSApp.Core.Models.ResponseModels;
 
 namespace InventoryPOSApp.Core.Services
 {
@@ -20,22 +22,27 @@ namespace InventoryPOSApp.Core.Services
             _repo = inventoryRepo;
         }
 
-        public async Task<IList<Product>> GetAllProductsAsync(AllProductQueryModel productQuery)
+        public async Task<(IList<Product>, int)> GetInventoryCatelogAsync(InventoryCatelogRequest inventoryCatelogRequest)
         {
-            int skipAmmount = (productQuery.PageNum - 1) * productQuery.NumItemsPerPage;
+            var products = await GetInventorySlice(inventoryCatelogRequest);
+            int numItems = await _repo.GetInventorySizeAsync(inventoryCatelogRequest.StoreId);
 
-            return await _repo.GetProductsAsync(productQuery.NumItemsPerPage, skipAmmount, productQuery.StoreId);
+            return (products, numItems);
+        }
+
+        public async Task<IList<Product>> GetInventorySlice(InventoryCatelogRequest productQuery)
+        {
+            int skipAmmount = (productQuery.StartPage - 1) * productQuery.NumItemsPerPage;
+            int numPagesToLoad = productQuery.EndPage - productQuery.StartPage - 1;
+            int numbOfProductsToLoad = productQuery.NumItemsPerPage * numPagesToLoad;
+
+            return await _repo.GetProductsAsync(numbOfProductsToLoad, skipAmmount, productQuery.StoreId);
         }
 
         public List<Product> GetAllProducts()
         {
             return _repo.GetProducts();
         }
-
-        //public async Task<List<Product>> GetProductPage()
-        //{
-
-        //}
 
         public bool AddColour(Colour colour)
         {
@@ -158,10 +165,7 @@ namespace InventoryPOSApp.Core.Services
             {
                 product.Barcode = GenerateBarcode();
             }
-      //      else if (!IsValidBarcode(product.Barcode))
-      //      {
-        //        return null;
-          //  }
+
             _repo.EditProduct(product);
             
             return product;
@@ -180,8 +184,10 @@ namespace InventoryPOSApp.Core.Services
             {
                 return false;
             }
+
             brand.Value = TextProcessor.ToPronounCasing(brand.Value);
             var existingBrand = _repo.GetBrandByName(brand.Value);
+
             if (existingBrand == null)
             {
                 _repo.EditBrand(brand);
@@ -246,14 +252,9 @@ namespace InventoryPOSApp.Core.Services
             }
         }
 
-        public List<Product> GetProducts(List<int> productIds)
+        public List<Product> GetProductsWithAttributes(IEnumerable<int> productIds)
         {
-            var products = _repo.GetProducts(productIds);
-            List<Product> productList = new List<Product>();
-            foreach(int prod in productIds)
-            {
-                productList.Add(products.First(p=> p.Id == prod));
-            }
+            var productList = _repo.GetProducts(productIds).ToList();
 
             return productList;
         }

@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using InventoryPOS.DataStore;
 
-
 //bootstrap the application, use top lvl statements instead of public static void Main()
 //todo: Create static partial classes for bootstrapping and tidy code up
 

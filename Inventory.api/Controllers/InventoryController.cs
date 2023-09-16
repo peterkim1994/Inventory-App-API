@@ -9,11 +9,13 @@ using InventoryPOS.DataStore.Daos;
 using InventoryPOS.DataStore.Daos.Interfaces;
 using InventoryPOSApp.Core.Dtos;
 using InventoryPOSApp.Core.Models.QueryModels;
+using InventoryPOSApp.Core.Models.ResponseModels;
 using InventoryPOSApp.Core.Repositories;
 using InventoryPOSApp.Core.Services;
 using InventoryPOSApp.Core.Utils;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -60,27 +62,47 @@ namespace Inventory.api.Controllers
 
         [HttpGet("GetInventoryProducts")]
         //[Authorize(Roles = "shopAdmin, staff")]
-        public async Task<IActionResult> GetInventoryProducts([FromQuery] int storeId, [FromQuery] int pageNum, [FromQuery] int numItemsToDisplay)
+        public async Task<IActionResult> GetInventoryCatelog([FromQuery] InventoryCatelogRequest inventoryCatalogRequest)
         {
-            AllProductQueryModel queryModel = new AllProductQueryModel()
+            //todo: get store id from token claim
+            inventoryCatalogRequest.StoreId = 1;
+
+            (IList<Product> products, int totalItems) = await _inventoryService.GetInventoryCatelogAsync(inventoryCatalogRequest);
+
+            if(totalItems == 0)
             {
-                NumItemsPerPage = numItemsToDisplay,
-                PageNum = pageNum,
-                StoreId = storeId
+                return BadRequest("You have no products in your inventory");
+            }
+
+            var inventoryCatalog = new InventoryCatalogModel
+            {
+                IncludedProducts = _mapper.Map<IList<Product>, List<ProductDto>>(products),
+                StoreId = inventoryCatalogRequest.StoreId,
+                AvailableNumberOfPages = (int) Math.Ceiling( totalItems/ (double) inventoryCatalogRequest.NumItemsPerPage)
             };
 
-            var products = await _inventoryService.GetAllProductsAsync(queryModel);
-            List<ProductDto> productDtos = _mapper.Map<IList<Product>, List<ProductDto>>(products);
+            return Ok(inventoryCatalog);
+        }
+
+        [HttpGet("GetInventorySearch")]
+        public async Task<IActionResult> SearchInventory([FromQuery] InventorySearchQuery searchQuery)
+        {
+            //todo: get store id from token claim
+            searchQuery.StoreId = 1;
+
+            var products = await _inventoryRepo.SearchProductsAsync(searchQuery);
+            var productDtos = _mapper.Map<List<Product>, List<ProductDto>>(products);
 
             return Ok(productDtos);
         }
 
         [HttpGet("GetTheseProducts")]
-        public IActionResult GetProductsForPrinting([FromQuery] ICollection<int> productIds)
+        public IActionResult GetProducts([FromQuery] ICollection<int> productIds)
         {
-            if (productIds != null || productIds.Count > 0)
+            if (productIds != null && productIds.Count > 0)
             {
-                var productDtos = _mapper.Map<List<Product>, List<ProductDto>>(_inventoryService.GetAllProducts())
+                var products = _inventoryService.GetProductsWithAttributes(productIds);
+                var productDtos = _mapper.Map<List<Product>, List<ProductDto>>(products)
                                     .Where(p => productIds.Contains(p.Id)).ToList();
                 return Ok(productDtos);
             }
@@ -102,11 +124,11 @@ namespace Inventory.api.Controllers
         }
 
         [HttpPost("AddProduct")]
-        public ProductDto AddProduct(ProductDto productDto)
+        public IActionResult AddProduct(ProductDto productDto)
         {
             if (!ModelState.IsValid)
             {
-                throw new InvalidOperationException("invalid product");
+                return BadRequest("invalid product");
             }
 
             var product = _mapper.Map<ProductDto, Product>(productDto);
@@ -125,7 +147,7 @@ namespace Inventory.api.Controllers
                 {
                     productDto = _mapper.Map<Product, ProductDto>(product);
 
-                    return productDto;
+                    return Ok(productDto);
                 }
             }
 
@@ -134,14 +156,14 @@ namespace Inventory.api.Controllers
                 productDto = _mapper.Map<Product, ProductDto>(product);
                 //return CreatedAtRoute("AddProduct", new { productDto.Id }, productDto);
 
-                return productDto;
+                return Ok(productDto);
             }
             else if (product.Barcode != 0 && _inventoryService.BarcodeIsAvailable(product.Barcode))
             {
-                throw new InvalidOperationException("Barcode already exists");
+                return BadRequest("Barcode already exists");
             }
 
-            throw new InvalidOperationException("Product already exists");
+            return BadRequest("Product already exists");
         }
 
         [HttpPost("EditProduct")]

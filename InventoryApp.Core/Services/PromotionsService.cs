@@ -20,11 +20,13 @@ namespace InventoryPOSApp.Core.Services
         public bool AddPromotion(Promotion promotion)
         {
             promotion.PromotionName = TextProcessor.ToTitleCase(promotion.PromotionName);
+
             if (_repo.GetPromotionByName(promotion.PromotionName) == null)
             {
                 _repo.AddPromotion(promotion);
                 return true;
             }
+
             return false;
         }
 

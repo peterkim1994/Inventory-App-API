@@ -7,6 +7,7 @@ using InventoryPOS.DataStore.Daos.Interfaces;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
+using InventoryPOSApp.Core.Models.QueryModels;
 
 namespace InventoryPOSApp.Core.Repositories
 {
@@ -112,14 +113,14 @@ namespace InventoryPOSApp.Core.Repositories
                               .FirstOrDefault(pr => pr.Id == id);
         }
 
-        public List<Product> GetProducts(List<int> productIds)
+        public IEnumerable<Product> GetProducts(IEnumerable<int> productIds)
         {
             return _context.Products.Where(p => productIds.Contains(p.Id))
                                      .Include(pr => pr.Brand)
                                      .Include(pr => pr.Colour)
                                      .Include(pr => pr.Size)
                                      .Include(pr => pr.ItemCategory)
-                                     .ToList();
+                                     .AsQueryable();
         }
 
         public void DeleteProduct(Product product)
@@ -132,42 +133,33 @@ namespace InventoryPOSApp.Core.Repositories
             return _context.ItemCategories.OrderBy(c => c.Value).ToList();
         }
 
-        public List<Product> SearchProducts(string searchWord)
-        {
-            var ignoreCase = System.StringComparison.CurrentCultureIgnoreCase;
-            var products = from pr in _context.Products
-                           join b in _context.Brands
-                                on pr.BrandId equals b.Id
-                           join ic in _context.ItemCategories
-                                on pr.ItemCategoryId equals ic.Id
-                           join c in _context.Colours
-                                on pr.ColourId equals c.Id
-                           where
-                                pr.Description.Contains(searchWord) ||
-                                b.Value.Contains(searchWord, ignoreCase) ||
-                                ic.Value.Contains(searchWord, ignoreCase) ||
-                                b.Value.Contains(searchWord, ignoreCase)
-                           select pr;
 
+        //inefficient but ohwell
+        public async Task<List<Product>> SearchProductsAsync(InventorySearchQuery searchQuery)
+        {
             var matches =
-                _context.Products
+                await _context.Products
                .Include(p => p.Brand)
                .Include(p => p.ItemCategory)
                .Include(p => p.Colour)
                .Include(p => p.Size)
                .Where(p =>
-                     p.Description.Contains(searchWord) ||
-                     p.Brand.Value.Contains(searchWord, ignoreCase) ||
-                     p.ItemCategory.Value.Contains(searchWord, ignoreCase) ||
-                     p.Colour.Value.Contains(searchWord, ignoreCase)
-               ).ToList();
+                     p.StoreId == searchQuery.StoreId &&
+                     (searchQuery.SearchString == null ||
+                      p.Description.Contains(searchQuery.SearchString) ||
+                      p.ItemCategory.Value.Contains(searchQuery.SearchString) ||
+                      p.Brand.Value.Contains(searchQuery.SearchString) || 
+                      p.Brand.Value.Contains(searchQuery.SearchString) || 
+                      p.Colour.Value.Contains(searchQuery.SearchString)
+                     ) &&
+                     (searchQuery.Category == null || p.ItemCategoryId.Equals(searchQuery.Category)) &&
+                     (searchQuery.Brand == null || p.BrandId.Equals(searchQuery.Brand)) &&
+                     (searchQuery.Size == null || p.SizeId.Equals(searchQuery.Size)) &&
+                     (searchQuery.Colour == null || p.ColourId.Equals(searchQuery.Colour))
+               ).ToListAsync();
+
             return matches;
         }
-
-        //public Task<IList<Product>> GetProductPage(int slice)
-        //{
-
-        //}
 
         public List<Product> GetProducts()
         {
@@ -193,11 +185,6 @@ namespace InventoryPOSApp.Core.Repositories
                                 .ToListAsync();
 
             return products;
-            //.ThenBy(pr => pr.ItemCategoryId)
-            //.ThenBy(pr => pr.ColourId)
-            //.ThenBy(pr => pr.Size)
-            //.ToList();
-            //  var prods = _context.Products.Include()
         }
 
         public List<Size> GetSizes()
@@ -281,6 +268,11 @@ namespace InventoryPOSApp.Core.Repositories
             }
 
             return false;
+        }
+
+        public Task<int> GetInventorySizeAsync(int storeId)
+        {
+            return _context.Products.CountAsync(p => p.StoreId == storeId);
         }
     }
 }

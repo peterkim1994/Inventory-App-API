@@ -4,6 +4,7 @@ using System.Text;
 using System.Threading.Tasks;
 using InventoryPOS.DataStore.Daos;
 using InventoryPOS.DataStore.Daos.Interfaces;
+using InventoryPOSApp.Core.Models.QueryModels;
 
 namespace InventoryPOSApp.Core.Repositories
 {
@@ -53,7 +54,7 @@ namespace InventoryPOSApp.Core.Repositories
 
         Product GetProductByBarcode(long code);
 
-        List<Product> SearchProducts(string searchWord);
+        Task<List<Product>> SearchProductsAsync(InventorySearchQuery searchQuery);
 
         void SaveChanges();
 
@@ -65,10 +66,12 @@ namespace InventoryPOSApp.Core.Repositories
 
         Size GetSizeByName(string sizeName);
 
-        List<Product> GetProducts(List<int> productIds);
+        IEnumerable<Product> GetProducts(IEnumerable<int> productIds);
 
         bool IncreaseProductQty(int productId, int qty);
 
         bool DecreaseProductQty(int productId, int qty);
+
+        Task<int> GetInventorySizeAsync(int storeId);
     }
 }

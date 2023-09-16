@@ -196,7 +196,7 @@ namespace InventoryPOS.api.Controllers
         {
             dynamic reqBody = JObject.Parse(jsonResult.ToString());
             //     List<int> productIds = reqBody.productIds.ToObject<IList<int>>();
-            List<Product> products = _inventoryService.GetProducts(reqBody.productIds.ToObject<IList<int>>());
+            List<Product> products = _inventoryService.GetProductsWithAttributes(reqBody.productIds.ToObject<IList<int>>());
             var promos = _saleService.ApplyPromotionsToSale(1, products);
             var dtos = _mapper.Map<IList<ProductSale>, IList<ProductSaleDto>>(promos);
             return Ok(dtos);
@@ -258,7 +258,7 @@ namespace InventoryPOS.api.Controllers
             dynamic reqBody = JObject.Parse(jsonResult.ToString());
             //var productDtos = _inventoryService.GetProducts(reqBody.productIds.ToObject<List<int>>());
             //var saleProducts = _mapper.Map<List<ProductDto>, List<Product>>(productDtos);
-            var saleProducts = _inventoryService.GetProducts(reqBody.productIds.ToObject<List<int>>());
+            var saleProducts = _inventoryService.GetProductsWithAttributes(reqBody.productIds.ToObject<List<int>>());
             int saleId = reqBody.saleId;
             SaleInvoice sale = _saleService.GetSale(saleId);
 

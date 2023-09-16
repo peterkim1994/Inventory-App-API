@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using InventoryPOS.DataStore.Daos;
 using InventoryPOS.DataStore.Daos.Interfaces;
 using InventoryPOSApp.Core.Models.QueryModels;
+using InventoryPOSApp.Core.Models.ResponseModels;
 
 namespace InventoryPOSApp.Core.Services
 {
@@ -34,12 +35,14 @@ namespace InventoryPOSApp.Core.Services
 
         List<Product> GetAllProducts();
 
-        Task<IList<Product>> GetAllProductsAsync(AllProductQueryModel productQuery);
+        Task<IList<Product>> GetInventorySlice(InventoryCatelogRequest productQuery);
 
-        List<Product> GetProducts(List<int> productIds);
+        List<Product> GetProductsWithAttributes(IEnumerable<int> productIds);
 
         bool BarcodeIsAvailable(long barcode);
 
         Product EditProduct(Product product);
+
+        Task<(IList<Product>, int)> GetInventoryCatelogAsync(InventoryCatelogRequest catelogRequest);
     }
 }

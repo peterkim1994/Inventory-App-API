@@ -25,6 +25,8 @@ namespace InventoryPOS.Core.Dtos
         public double Price { get; set; }
         public int Qty { get; set; }
 
+        [Required]
+        public int StoreId { get; set; }
         public bool Active { get; set; }
     }
 }
