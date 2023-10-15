@@ -19,356 +19,274 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
-namespace Inventory.api.Controllers
+namespace Inventory.api.Controllers;
+
+[ApiController]
+[Route("[controller]")]
+public class InventoryController : ControllerBase
 {
-    [ApiController]
-    [Route("[controller]")]
-    public class InventoryController : ControllerBase
+    private readonly ILogger<InventoryController> _logger;
+
+    private IInventoryRepo _inventoryRepo { get; set; }
+
+    private IInventoryService _inventoryService { get; set; }
+
+    private readonly IMapper _mapper;
+
+    public InventoryController
+    (
+        ILogger<InventoryController> logger,
+        IInventoryRepo inventoryRepo,
+        IInventoryService service,
+        IMapper mapper
+    )
     {
-        private readonly ILogger<InventoryController> _logger;
+        _logger = logger;
+        _inventoryRepo = inventoryRepo;
+        _inventoryService = service;
+        _mapper = mapper;
+    }
 
-        private IInventoryRepo _inventoryRepo { get; set; }
+    [HttpGet("ProductAttributes")]
+    public IActionResult GetAttributes()
+    {
+        return Ok(_inventoryService.GetProductAttributes());
+    }
 
-        private IInventoryService _inventoryService { get; set; }
+    [HttpGet]
+    public IActionResult GetProducts()
+    {
+        List<ProductDto> productDtos = _mapper.Map<List<Product>, List<ProductDto>>(_inventoryService.GetAllProducts());
+        return Ok(productDtos);
+    }
 
-        private readonly IMapper _mapper;
+    [HttpGet("GetInventoryProducts")]
+    //[Authorize(Roles = "shopAdmin, staff")]
+    public async Task<IActionResult> GetInventoryCatelog([FromQuery] InventoryCatelogRequest inventoryCatalogRequest)
+    {
+        //todo: get store id from token claim
+        inventoryCatalogRequest.StoreId = 1;
 
-        public InventoryController
-        (
-            ILogger<InventoryController> logger,
-            IInventoryRepo inventoryRepo,
-            IInventoryService service,
-            IMapper mapper
-        )
+        (IList<Product> products, int totalItems) = await _inventoryService.GetInventoryCatelogAsync(inventoryCatalogRequest);
+
+        if(totalItems == 0)
         {
-            _logger = logger;
-            _inventoryRepo = inventoryRepo;
-            _inventoryService = service;
-            _mapper = mapper;
+            return BadRequest("You have no products in your inventory");
         }
 
-        [HttpGet("ProductAttributes")]
-        public IActionResult GetAttributes()
+        var inventoryCatalog = new InventoryCatalogModel
         {
-            return Ok(_inventoryService.GetProductAttributes());
-        }
+            IncludedProducts = _mapper.Map<IList<Product>, List<ProductDto>>(products),
+            StoreId = inventoryCatalogRequest.StoreId,
+            AvailableNumberOfPages = (int) Math.Ceiling( totalItems/ (double) inventoryCatalogRequest.NumItemsPerPage)
+        };
 
-        [HttpGet]
-        public IActionResult GetProducts()
+        return Ok(inventoryCatalog);
+    }
+
+    [HttpGet("GetInventorySearch")]
+    public async Task<IActionResult> SearchInventory([FromQuery] InventorySearchQuery searchQuery)
+    {
+        //todo: get store id from token claim
+        searchQuery.StoreId = 1;
+
+        var products = await _inventoryRepo.SearchProductsAsync(searchQuery);
+        var productDtos = _mapper.Map<List<Product>, List<ProductDto>>(products);
+
+        return Ok(productDtos);
+    }
+
+    [HttpGet("GetTheseProducts")]
+    public IActionResult GetProducts([FromQuery] ICollection<int> productIds)
+    {
+        if (productIds != null && productIds.Count > 0)
         {
-            List<ProductDto> productDtos = _mapper.Map<List<Product>, List<ProductDto>>(_inventoryService.GetAllProducts());
+            var products = _inventoryService.GetProductsWithAttributes(productIds);
+            var productDtos = _mapper.Map<List<Product>, List<ProductDto>>(products)
+                                .Where(p => productIds.Contains(p.Id)).ToList();
             return Ok(productDtos);
         }
 
-        [HttpGet("GetInventoryProducts")]
-        //[Authorize(Roles = "shopAdmin, staff")]
-        public async Task<IActionResult> GetInventoryCatelog([FromQuery] InventoryCatelogRequest inventoryCatalogRequest)
+        return BadRequest();
+    }
+
+    [HttpPost("AddColour", Name = "AddColour")]
+    [Route("[controller]/[action]")]
+    public IActionResult AddColour(Colour colour)
+    {
+        if (_inventoryService.AddColour(colour))
         {
-            //todo: get store id from token claim
-            inventoryCatalogRequest.StoreId = 1;
-
-            (IList<Product> products, int totalItems) = await _inventoryService.GetInventoryCatelogAsync(inventoryCatalogRequest);
-
-            if(totalItems == 0)
-            {
-                return BadRequest("You have no products in your inventory");
-            }
-
-            var inventoryCatalog = new InventoryCatalogModel
-            {
-                IncludedProducts = _mapper.Map<IList<Product>, List<ProductDto>>(products),
-                StoreId = inventoryCatalogRequest.StoreId,
-                AvailableNumberOfPages = (int) Math.Ceiling( totalItems/ (double) inventoryCatalogRequest.NumItemsPerPage)
-            };
-
-            return Ok(inventoryCatalog);
+            var colourDto = _mapper.Map<Colour, ColourDto>(colour);
+            return Ok(colourDto);
         }
 
-        [HttpGet("GetInventorySearch")]
-        public async Task<IActionResult> SearchInventory([FromQuery] InventorySearchQuery searchQuery)
+        return BadRequest("Colour Already Exists");
+    }
+
+    [HttpPost("AddProduct")]
+    public IActionResult AddProduct(ProductDto productDto)
+    {
+        if (!ModelState.IsValid)
         {
-            //todo: get store id from token claim
-            searchQuery.StoreId = 1;
-
-            var products = await _inventoryRepo.SearchProductsAsync(searchQuery);
-            var productDtos = _mapper.Map<List<Product>, List<ProductDto>>(products);
-
-            return Ok(productDtos);
+            return BadRequest("invalid product");
         }
 
-        [HttpGet("GetTheseProducts")]
-        public IActionResult GetProducts([FromQuery] ICollection<int> productIds)
+        var product = _mapper.Map<ProductDto, Product>(productDto);
+
+        if (_inventoryRepo.ContainsProduct(product))
         {
-            if (productIds != null && productIds.Count > 0)
-            {
-                var products = _inventoryService.GetProductsWithAttributes(productIds);
-                var productDtos = _mapper.Map<List<Product>, List<ProductDto>>(products)
-                                    .Where(p => productIds.Contains(p.Id)).ToList();
-                return Ok(productDtos);
-            }
-
-            return BadRequest();
-        }
-
-        [HttpPost("AddColour", Name = "AddColour")]
-        [Route("[controller]/[action]")]
-        public IActionResult AddColour(Colour colour)
-        {
-            if (_inventoryService.AddColour(colour))
-            {
-                var colourDto = _mapper.Map<Colour, ColourDto>(colour);
-                return Ok(colourDto);
-            }
-
-            return BadRequest("Colour Already Exists");
-        }
-
-        [HttpPost("AddProduct")]
-        public IActionResult AddProduct(ProductDto productDto)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest("invalid product");
-            }
-
-            var product = _mapper.Map<ProductDto, Product>(productDto);
+            //hack -- user does insists products can have the same description & attributes and still be differientiated by price     
+            product.Description += "Price: " + product.Price;
 
             if (_inventoryRepo.ContainsProduct(product))
             {
-                //hack -- user does insists products can have the same description & attributes and still be differientiated by price     
-                product.Description += "Price: " + product.Price;
-
-                if (_inventoryRepo.ContainsProduct(product))
-                {
-                    throw new InvalidOperationException("Product already exists");
-                }
-
-                if (_inventoryService.AddProduct(product))
-                {
-                    productDto = _mapper.Map<Product, ProductDto>(product);
-
-                    return Ok(productDto);
-                }
+                throw new InvalidOperationException("Product already exists");
             }
 
             if (_inventoryService.AddProduct(product))
             {
                 productDto = _mapper.Map<Product, ProductDto>(product);
-                //return CreatedAtRoute("AddProduct", new { productDto.Id }, productDto);
 
                 return Ok(productDto);
             }
-            else if (product.Barcode != 0 && _inventoryService.BarcodeIsAvailable(product.Barcode))
-            {
-                return BadRequest("Barcode already exists");
-            }
-
-            return BadRequest("Product already exists");
         }
 
-        [HttpPost("EditProduct")]
-        [Authorize(Roles = "shopAdmin")]
-        public IActionResult EditProduct(ProductDto productDto)
+        if (_inventoryService.AddProduct(product))
         {
-            if (ModelState.IsValid)
-            {
-                Product productToUpdate = _inventoryRepo.GetProduct(productDto.Id);
+            productDto = _mapper.Map<Product, ProductDto>(product);
+            //return CreatedAtRoute("AddProduct", new { productDto.Id }, productDto);
 
-                if (productDto.Barcode != productToUpdate.Barcode)
-                {
-                    return BadRequest("A product's barcode can not be changed");
-                }
-
-                var product = _mapper.Map<ProductDto, Product>(productDto);
-                _inventoryService.EditProduct(product);
-
-                productToUpdate = _inventoryRepo.GetProduct(product.Id);
-                productDto = _mapper.Map<Product, ProductDto>(productToUpdate);
-
-                return Ok(productDto);
-            }
-
-            return BadRequest("Product Details are not valid");
+            return Ok(productDto);
+        }
+        else if (product.Barcode != 0 && _inventoryService.BarcodeIsAvailable(product.Barcode))
+        {
+            return BadRequest("Barcode already exists");
         }
 
+        return BadRequest("Product already exists");
+    }
 
-        [HttpPost("AddSize")]
-        [Authorize(Roles = "shopAdmin")]
-        public IActionResult AddSize(Size size)
+    [HttpPost("EditProduct")]
+    [Authorize(Roles = "shopAdmin")]
+    public IActionResult EditProduct(ProductDto productDto)
+    {
+        if (ModelState.IsValid)
         {
-            if (_inventoryService.AddSize(size))
+            Product productToUpdate = _inventoryRepo.GetProduct(productDto.Id);
+
+            if (productDto.Barcode != productToUpdate.Barcode)
             {
-                return Ok(size);
+                return BadRequest("A product's barcode can not be changed");
             }
 
-            return BadRequest("Size already exists");
+            var product = _mapper.Map<ProductDto, Product>(productDto);
+            _inventoryService.EditProduct(product);
+
+            productToUpdate = _inventoryRepo.GetProduct(product.Id);
+            productDto = _mapper.Map<Product, ProductDto>(productToUpdate);
+
+            return Ok(productDto);
         }
 
-        [HttpPost("AddCategory")]
-        public IActionResult AddItemCategory(ItemCategory category)
-        {
-            if (_inventoryService.AddItemCategory(category))
-            {
-                return Ok(category);
-            }
+        return BadRequest("Product Details are not valid");
+    }
 
-            return BadRequest("Category Already Exists");
+
+    [HttpPost("AddSize")]
+    [Authorize(Roles = "shopAdmin")]
+    public IActionResult AddSize(Size size)
+    {
+        if (_inventoryService.AddSize(size))
+        {
+            return Ok(size);
         }
 
+        return BadRequest("Size already exists");
+    }
 
-        [HttpPost("AddBrand")]
-        public IActionResult AddBrand(Brand brand)
+    [HttpPost("AddCategory")]
+    public IActionResult AddItemCategory(ItemCategory category)
+    {
+        if (_inventoryService.AddItemCategory(category))
         {
-            if (_inventoryService.AddBrand(brand))
+            return Ok(category);
+        }
+
+        return BadRequest("Category Already Exists");
+    }
+
+
+    [HttpPost("AddBrand")]
+    public IActionResult AddBrand(Brand brand)
+    {
+        if (_inventoryService.AddBrand(brand))
+        {
+            return Ok(brand);
+        }
+
+        return BadRequest("Brand already exists");
+    }
+
+    [HttpPost("EditBrand")]
+    [Authorize(Roles = "shopAdmin")]
+    public IActionResult EditBrand(Brand brand)
+    {
+        if (ModelState.IsValid)
+        {
+            if (_inventoryService.EditBrand(brand))
             {
                 return Ok(brand);
             }
 
-            return BadRequest("Brand already exists");
+            return BadRequest("This brand already exists");
         }
-
-        [HttpPost("EditBrand")]
-        [Authorize(Roles = "shopAdmin")]
-        public IActionResult EditBrand(Brand brand)
+        else
         {
-            if (ModelState.IsValid)
-            {
-                if (_inventoryService.EditBrand(brand))
-                {
-                    return Ok(brand);
-                }
+            return BadRequest("Improper brand name format");
+        }
+    }
 
-                return BadRequest("This brand already exists");
+    [HttpPost("EditCategory")]
+    [Authorize(Roles = "shopAdmin")]
+    public IActionResult EditItemCategory(ItemCategory category)
+    {
+        if (ModelState.IsValid)
+        {
+            if (_inventoryService.EditCategory(category))
+            {
+                return Ok(category);
+            }
+
+            return BadRequest("This category already exists");
+        }
+        else
+        {
+            return BadRequest("Improper item category format");
+        }
+    }
+
+    [Authorize(Roles = "shopAdmin")]
+    [HttpPost("EditSize")]
+    public IActionResult EditSize(Size size)
+    {
+        if (ModelState.IsValid)
+        {
+            if (_inventoryService.EditSize(size))
+            {
+                return Ok(size);
             }
             else
             {
-                return BadRequest("Improper brand name format");
+                return BadRequest("This size already exists");
             }
         }
 
-        [HttpPost("EditCategory")]
-        [Authorize(Roles = "shopAdmin")]
-        public IActionResult EditItemCategory(ItemCategory category)
-        {
-            if (ModelState.IsValid)
-            {
-                if (_inventoryService.EditCategory(category))
-                {
-                    return Ok(category);
-                }
+        return BadRequest("Improper size name format");
+    }
 
-                return BadRequest("This category already exists");
-            }
-            else
-            {
-                return BadRequest("Improper item category format");
-            }
-        }
-
-        [Authorize(Roles = "shopAdmin")]
-        [HttpPost("EditSize")]
-        public IActionResult EditSize(Size size)
-        {
-            if (ModelState.IsValid)
-            {
-                if (_inventoryService.EditSize(size))
-                {
-                    return Ok(size);
-                }
-                else
-                {
-                    return BadRequest("This size already exists");
-                }
-            }
-
-            return BadRequest("Improper size name format");
-        }
-
-        private ProductAttribute GetAttribute(List<IEnumerable<InventoryPOS.DataStore.Daos.Interfaces.ProductAttribute>> atts, string val)
-        {
-            var attss = atts.SelectMany(a => a);
-            return attss.FirstOrDefault(a => a.Value.Equals(val));
-        }
-
-        /// This was a hack used to import 1000s of products via a excel sheet. NOT TO BE USED
-        /*
-        [HttpPost("import")]
-        public IActionResult ImportExcelSheet()
-        {
-            var lines = System.IO.File.ReadAllLines(@"C:\Users\peter\rand\inventory2.csv").ToList();
-            string newCsv = lines[0] + ",ID\n";
-            foreach (var item in lines.Skip(1))
-            {
-                var details = item.Split(",");
-                List<IEnumerable<InventoryPOS.DataStore.Daos.Interfaces.ProductAttribute>> atts = _inventoryService.GetProductAttributes();
-
-                var brandVal = TextProcessor.ToTitleCase(details[1]).Trim();
-                Brand brand = GetAttribute(atts, brandVal) as Brand;              
-                if (brand == null)
-                {
-                   var newBrand = new Brand { Value = brandVal };
-                   _inventoryService.AddBrand(newBrand);
-                   brand = newBrand;                                      
-                }
-
-                var colourVal = TextProcessor.ToTitleCase(details[2]).Trim();
-                Colour colour = (Colour)GetAttribute(atts, colourVal);
-                if(colour == null)
-                {
-                    var newColour = new Colour() { Value = colourVal };
-                    _inventoryService.AddColour(newColour);
-                    colour = newColour;
-                }
-
-                var sizeVal = details[3].ToUpper().Trim();
-                Size size = (Size)GetAttribute(atts, sizeVal);
-                if(size == null)
-                {
-                    var newSize = new Size() { Value = sizeVal };
-                    _inventoryService.AddSize(newSize);
-                    size = newSize;
-                }
-
-                var categoryVal = TextProcessor.ToTitleCase(details[4]).Trim();
-                ItemCategory category = (ItemCategory)GetAttribute(atts, categoryVal);
-
-                if(category == null)
-                {
-                    var newCategory = new ItemCategory() { Value = categoryVal };
-                    _inventoryService.AddItemCategory(newCategory);
-                    category = newCategory;
-                }
-                string desc = (String.IsNullOrEmpty(details[0])) ? details[5] : (details[5] + " [" + details[0] + "]");
-                int qty;
-                bool successQty = int.TryParse(details[9], out qty);
-
-                if (!successQty)
-                {
-                    qty = 1000;
-                }
-
-                var newProduct = new ProductDto()
-                {
-                    Active = true,
-                    BrandId = brand.Id,
-                    ColourId = colour.Id,
-                    ItemCategoryId = category.Id,
-                    SizeId = size.Id,
-                    Description = desc,
-                    ManufactureCode = details[0],
-                    Barcode = 0,
-                    Qty = qty,
-                    Price = Double.Parse(details[7])
-                };
-
-                string id = AddProduct(newProduct).Id.ToString();
-                newCsv += (item + ",,,, ID:" + id + ",\n");
-            }
-
-            System.IO.File.WriteAllText(@"C:\Users\peter\rand\newInventory.csv", newCsv);
-
-            return Ok();
-        }
-        */
+    private ProductAttribute GetAttribute(List<IEnumerable<InventoryPOS.DataStore.Daos.Interfaces.ProductAttribute>> atts, string val)
+    {
+        var attss = atts.SelectMany(a => a);
+        return attss.FirstOrDefault(a => a.Value.Equals(val));
     }
 }

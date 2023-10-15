@@ -265,7 +265,7 @@ namespace InventoryPOS.api.Controllers
             if (sale == null)
             {
                 return BadRequest("This sale does not exist");
-            }                
+            }
             else if (sale.Finalised == true)
             {
                 return BadRequest("This Sale Has Already Been Finalised");

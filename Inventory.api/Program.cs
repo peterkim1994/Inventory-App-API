@@ -5,6 +5,8 @@ using InventoryPOSApp.Core.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using InventoryPOS.DataStore;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 //bootstrap the application, use top lvl statements instead of public static void Main()
 //todo: Create static partial classes for bootstrapping and tidy code up
@@ -21,7 +23,10 @@ builder.Services.AddControllers();
 builder.Services.AddIdentity<IdentityUser, IdentityRole>()
     .AddEntityFrameworkStores<DBContext>();
 
-builder.Services.AddDbContext<DBContext>();
+builder.Services.AddDbContext<DBContext>(options =>
+{
+    options.UseSqlServer(config.GetConnectionString("testDb"));
+}); 
 
 builder.Services.Configure<IdentityOptions>(opt =>
 {
