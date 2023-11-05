@@ -33,7 +33,7 @@ namespace InventoryPOSApp.Core.Services
         public async Task<IList<Product>> GetInventorySlice(InventoryCatelogRequest productQuery)
         {
             int skipAmmount = (productQuery.StartPage - 1) * productQuery.NumItemsPerPage;
-            int numPagesToLoad = productQuery.EndPage - productQuery.StartPage - 1;
+            int numPagesToLoad = productQuery.PageLoadBuffer - productQuery.StartPage - 1;
             int numbOfProductsToLoad = productQuery.NumItemsPerPage * numPagesToLoad;
 
             return await _repo.GetProductsAsync(numbOfProductsToLoad, skipAmmount, productQuery.StoreId);

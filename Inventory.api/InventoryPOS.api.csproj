@@ -23,6 +23,6 @@
   </ItemGroup>
 
 	<ItemGroup>
-		<InternalsVisibleTo Include="InventoryPOS.api.Tests" />
+		<InternalsVisibleTo Include="InventoryPOS.api.Tests.Integration" />
 	</ItemGroup>
 </Project>

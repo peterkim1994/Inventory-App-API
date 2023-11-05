@@ -105,3 +105,6 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+//making this internal class public as a hack for tests
+public partial class Program { }

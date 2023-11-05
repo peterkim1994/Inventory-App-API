@@ -4,7 +4,7 @@
     {
         public int StartPage { get; set; }
 
-        public int EndPage { get; set; }
+        public int PageLoadBuffer { get; set; }
 
         public int StoreId { get; set; }
 

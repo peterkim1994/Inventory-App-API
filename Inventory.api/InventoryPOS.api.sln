@@ -9,7 +9,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InventoryPOS.DataStore", ".
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InventoryPOSApp.Core", "..\InventoryApp.Core\InventoryPOSApp.Core.csproj", "{C01F4C4E-CF6F-4F5A-B29F-DCCF8D73D789}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InventoryPOS.api.Tests", "..\InventoryPOS.api.Tests\InventoryPOS.api.Tests.csproj", "{B0CD5CEC-DDFE-4268-83EC-AA979F159251}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InventoryPOS.api.Tests.Integration", "..\InventoryPOS.api.Tests.Integration\InventoryPOS.api.Tests.Integration.csproj", "{B0CD5CEC-DDFE-4268-83EC-AA979F159251}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{3B963DAC-F730-4DF5-B783-F234E45FA64C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -36,6 +38,9 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{B0CD5CEC-DDFE-4268-83EC-AA979F159251} = {3B963DAC-F730-4DF5-B783-F234E45FA64C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {F819C023-031F-41FC-9A70-56C9E02E4857}
